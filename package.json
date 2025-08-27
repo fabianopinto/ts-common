@@ -14,7 +14,7 @@
     "format": "pnpm -r format",
     "clean": "pnpm -r clean",
     "changeset": "changeset",
-    "release": "changeset version && pnpm install --no-frozen-lockfile && pnpm -r build && changeset publish"
+    "release": "changeset version && pnpm install --no-frozen-lockfile && pnpm install -r --offline && pnpm -r build && changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.9",
