@@ -16,6 +16,7 @@
     "release": "changeset version && pnpm -r build && changeset publish"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.27.9"
+    "@changesets/cli": "^2.27.9",
+    "tsup": "^8.5.0"
   }
 }
