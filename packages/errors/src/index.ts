@@ -100,5 +100,3 @@ function serializeCause(cause: unknown): unknown {
   }
   return cause;
 }
-
-export default AppError;

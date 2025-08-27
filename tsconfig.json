@@ -1,0 +1,9 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/errors" },
+    { "path": "packages/utils" },
+    { "path": "packages/config" },
+    { "path": "packages/logger" }
+  ]
+}

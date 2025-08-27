@@ -1,4 +1,4 @@
-import AppError, { AppErrorOptions } from "@fabianopinto/errors";
+import { AppError, AppErrorOptions } from "@fabianopinto/errors";
 import { config as dotenvConfig } from "dotenv";
 import { z } from "zod";
 

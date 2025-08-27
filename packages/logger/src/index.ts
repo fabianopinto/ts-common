@@ -1,4 +1,4 @@
-import AppError from "@fabianopinto/errors";
+import { AppError } from "@fabianopinto/errors";
 import pino, { Logger as PinoLogger, LoggerOptions as PinoOptions } from "pino";
 
 export type LogLevel = "silent" | "error" | "warn" | "info" | "debug" | "trace";
@@ -77,5 +77,3 @@ function extractMessage(err: unknown): string | undefined {
   if (typeof err === "string") return err;
   return undefined;
 }
-
-export default createLogger;

@@ -11,9 +11,18 @@ importers:
       '@changesets/cli':
         specifier: ^2.27.9
         version: 2.29.6(@types/node@20.19.11)
+      '@types/node':
+        specifier: ^20.12.7
+        version: 20.19.11
+      rimraf:
+        specifier: ^5.0.0
+        version: 5.0.10
       tsup:
         specifier: ^8.5.0
         version: 8.5.0(typescript@5.9.2)
+      typescript:
+        specifier: ^5.4.0
+        version: 5.9.2
 
   packages/config:
     dependencies:
@@ -26,31 +35,8 @@ importers:
       zod:
         specifier: ^3.23.8
         version: 3.25.76
-    devDependencies:
-      '@types/node':
-        specifier: ^20.12.7
-        version: 20.19.11
-      rimraf:
-        specifier: ^5.0.0
-        version: 5.0.10
-      tsup:
-        specifier: ^8.1.0
-        version: 8.5.0(typescript@5.9.2)
-      typescript:
-        specifier: ^5.4.0
-        version: 5.9.2
 
-  packages/errors:
-    devDependencies:
-      rimraf:
-        specifier: ^5.0.0
-        version: 5.0.10
-      tsup:
-        specifier: ^8.1.0
-        version: 8.5.0(typescript@5.9.2)
-      typescript:
-        specifier: ^5.4.0
-        version: 5.9.2
+  packages/errors: {}
 
   packages/logger:
     dependencies:
@@ -60,34 +46,8 @@ importers:
       pino:
         specifier: ^9.0.0
         version: 9.9.0
-    devDependencies:
-      '@types/node':
-        specifier: ^20.12.7
-        version: 20.19.11
-      rimraf:
-        specifier: ^5.0.0
-        version: 5.0.10
-      tsup:
-        specifier: ^8.1.0
-        version: 8.5.0(typescript@5.9.2)
-      typescript:
-        specifier: ^5.4.0
-        version: 5.9.2
 
-  packages/utils:
-    devDependencies:
-      '@types/node':
-        specifier: ^20.12.7
-        version: 20.19.11
-      rimraf:
-        specifier: ^5.0.0
-        version: 5.0.10
-      tsup:
-        specifier: ^8.1.0
-        version: 8.5.0(typescript@5.9.2)
-      typescript:
-        specifier: ^5.4.0
-        version: 5.9.2
+  packages/utils: {}
 
 packages:
 

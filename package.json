@@ -8,15 +8,19 @@
   },
   "packageManager": "pnpm@10.15.0",
   "scripts": {
-    "build": "pnpm -r build",
+    "build": "tsc -b && pnpm -r build",
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
     "format": "pnpm -r format",
+    "clean": "pnpm -r clean",
     "changeset": "changeset",
     "release": "changeset version && pnpm -r build && changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.9",
-    "tsup": "^8.5.0"
+    "tsup": "^8.5.0",
+    "typescript": "^5.4.0",
+    "rimraf": "^5.0.0",
+    "@types/node": "^20.12.7"
   }
 }

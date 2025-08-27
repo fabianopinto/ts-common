@@ -10,17 +10,11 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup --clean",
+    "build": "tsup",
     "dev": "tsup --watch",
     "clean": "rimraf dist || rm -rf dist",
     "lint": "echo 'no lint configured'",
     "test": "echo 'no tests yet'"
   },
-  "sideEffects": false,
-  "devDependencies": {
-    "typescript": "^5.4.0",
-    "rimraf": "^5.0.0",
-    "@types/node": "^20.12.7",
-    "tsup": "^8.1.0"
-  }
+  "sideEffects": false
 }
