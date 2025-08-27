@@ -14,7 +14,17 @@
     "format": "pnpm -r format",
     "clean": "pnpm -r clean",
     "changeset": "changeset",
-    "release": "changeset version && pnpm install --no-frozen-lockfile && pnpm install -r --offline && pnpm -r build && changeset publish"
+    "release": "changeset version && pnpm install --no-frozen-lockfile && pnpm install -r --no-frozen-lockfile && pnpm -r build && changeset publish --no-git-tag",
+    "pkg:build": "tsup",
+    "pkg:dev": "tsup --watch",
+    "pkg:clean": "rimraf dist || rm -rf dist",
+    "pkg:lint": "echo 'no lint configured'",
+    "pkg:test": "echo 'no tests yet'"
+  },
+  "pnpm": {
+    "overrides": {
+      "@fabianopinto/*": "workspace:*"
+    }
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.9",
