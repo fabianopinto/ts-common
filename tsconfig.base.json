@@ -4,6 +4,13 @@
     "lib": ["ES2022"],
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
+    "baseUrl": ".",
+    "paths": {
+      "@fabianopinto/errors": ["packages/errors/src/index.ts"],
+      "@fabianopinto/logger": ["packages/logger/src/index.ts"],
+      "@fabianopinto/config": ["packages/config/src/index.ts"],
+      "@fabianopinto/utils": ["packages/utils/src/index.ts"]
+    },
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "forceConsistentCasingInFileNames": true,
