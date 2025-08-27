@@ -2,7 +2,7 @@
   "name": "@fabianopinto/config",
   "version": "0.1.0",
   "private": false,
-  "license": "MIT",
+  "license": "ISC",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -10,8 +10,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --sourcemap --clean --external dotenv,zod",
-    "dev": "tsup src/index.ts --watch --dts --sourcemap --external dotenv,zod",
+    "build": "tsup --clean",
+    "dev": "tsup --watch",
     "clean": "rimraf dist || rm -rf dist",
     "lint": "echo 'no lint configured'",
     "test": "echo 'no tests yet'"
