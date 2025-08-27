@@ -1,13 +1,15 @@
-import { config as dotenvConfig } from 'dotenv';
-import { z } from 'zod';
-import AppError, { AppErrorOptions } from '@fabianopinto/errors';
+import AppError, { AppErrorOptions } from "@fabianopinto/errors";
+import { config as dotenvConfig } from "dotenv";
+import { z } from "zod";
 
 export const EnvSchema = z.object({
   NODE_ENV: z
-    .enum(['development', 'test', 'production'])
-    .default('development'),
+    .enum(["development", "test", "production"])
+    .default("development"),
   PORT: z.coerce.number().int().min(0).max(65535).default(3000),
-  LOG_LEVEL: z.enum(['silent', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
+  LOG_LEVEL: z
+    .enum(["silent", "error", "warn", "info", "debug", "trace"])
+    .default("info"),
 });
 
 export type Env = z.infer<typeof EnvSchema>;
@@ -28,22 +30,22 @@ export function loadConfig(options: LoadConfigOptions = {}): Env {
 
   const result = dotenvConfig({ path, override });
   if (result.error) {
-    throw new AppError('Failed to load environment variables', {
+    throw new AppError("Failed to load environment variables", {
       ...options,
       cause: result.error,
       context: { path },
-      code: 'CONFIG_DOTENV_ERROR',
+      code: "CONFIG_DOTENV_ERROR",
     });
   }
 
   const parsed = EnvSchema.safeParse(process.env);
   if (!parsed.success) {
     const formatted = parsed.error.format();
-    throw new AppError('Invalid environment configuration', {
+    throw new AppError("Invalid environment configuration", {
       ...options,
       cause: parsed.error,
       context: { issues: formatted },
-      code: 'CONFIG_VALIDATION_ERROR',
+      code: "CONFIG_VALIDATION_ERROR",
       status: 500,
     });
   }
