@@ -4,6 +4,8 @@
 
 # ts-common
 
+[![CI](https://github.com/fabianopinto/ts-common/actions/workflows/ci.yml/badge.svg)](https://github.com/fabianopinto/ts-common/actions/workflows/ci.yml)
+
 A TypeScript monorepo of reusable packages:
 
 - @fabianopinto/errors — AppError with cause and context
