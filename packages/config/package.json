@@ -10,7 +10,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsup src/index.ts --format esm,cjs --dts --sourcemap --clean --external dotenv,zod",
+    "dev": "tsup src/index.ts --watch --dts --sourcemap --external dotenv,zod",
     "clean": "rimraf dist || rm -rf dist",
     "lint": "echo 'no lint configured'",
     "test": "echo 'no tests yet'"
@@ -24,6 +25,7 @@
   "devDependencies": {
     "typescript": "^5.4.0",
     "rimraf": "^5.0.0",
-    "@types/node": "^20.12.7"
+    "@types/node": "^20.12.7",
+    "tsup": "^8.1.0"
   }
 }
