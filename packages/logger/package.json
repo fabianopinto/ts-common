@@ -21,7 +21,7 @@
     "access": "public"
   },
   "dependencies": {
-    "pino": "^9.0.0",
-    "@fabianopinto/errors": "workspace:*"
+    "@fabianopinto/errors": "workspace:*",
+    "pino": "^9.9.0"
   }
 }
