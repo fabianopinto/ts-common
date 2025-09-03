@@ -30,7 +30,7 @@ graph TD
 
 ## Tech stack
 
-- Node 18+, pnpm workspace
+- Node 22+, pnpm workspace
 - TypeScript strict mode; ESM-first build with CJS compatibility
 - tsup per package (bundler mode) emitting ESM, CJS, and d.ts
 - Changesets for per-package SemVer and changelogs

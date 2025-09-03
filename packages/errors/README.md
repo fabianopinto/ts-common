@@ -237,7 +237,7 @@ This package ships types at `dist/index.d.ts` and supports TypeScript strict mod
 
 ## Compatibility
 
-- Node 18+
+- Node 22+
 - TypeScript target/lib: ES2024, module: NodeNext, resolution: NodeNext/Bundler
 - ESM-first. CJS is available via `require` export.
 

@@ -152,7 +152,7 @@ flowchart TD
 
 ## Compatibility
 
-- Node 18+
+- Node 22+
 - TypeScript target/lib: ES2024, module: NodeNext, resolution: NodeNext/Bundler
 - ESM-first. CJS is available via `require` export.
 

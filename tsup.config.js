@@ -18,7 +18,7 @@ export const baseConfig = {
   clean: true,
 
   // Target modern JavaScript
-  target: "es2022",
+  target: "node22",
 
   // Build for Node.js runtime by default
   platform: "node",
