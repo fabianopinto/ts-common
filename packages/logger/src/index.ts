@@ -21,6 +21,21 @@ import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 
 /**
+ * Log level type alias for external consumers.
+ *
+ * Mirrors `pino.Level` so you can import a stable level type from this package
+ * without depending on Pino types directly.
+ *
+ * Valid values: "fatal" | "error" | "warn" | "info" | "debug" | "trace"
+ *
+ * @example
+ * import { logger, type Level } from "@fabianopinto/logger";
+ * const level: Level = "info";
+ * logger.setLevel(level);
+ */
+export type Level = pino.Level;
+
+/**
  * Helper levels used to validate inputs when normalizing a log level.
  * @internal
  */
