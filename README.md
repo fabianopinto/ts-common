@@ -8,9 +8,9 @@
 
 A TypeScript monorepo of reusable packages:
 
-- @fabianopinto/errors — AppError with cause and context
+- [@fabianopinto/errors](./packages/errors/README.md) — AppError with cause and context
 - @fabianopinto/config — dotenv + zod config loader
-- @fabianopinto/logger — Pino-based logger with clean interface
+- [@fabianopinto/logger](./packages/logger/README.md) — Pino-based logger with clean interface
 - @fabianopinto/utils — string, date, and object helpers
 
 ## Architecture
