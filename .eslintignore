@@ -1,0 +1,7 @@
+node_modules
+dist
+coverage
+*.d.ts
+!.changeset/*.md
+.eslintrc.*
+tsup.config.*
