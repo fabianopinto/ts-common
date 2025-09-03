@@ -7,7 +7,7 @@ AppError with cause, context and rich specializations for HTTP, data, common inf
 - Safe JSON serialization of error trees via `toJSON()`
 - Ergonomic composition: `AppError.from(err)`, `error.withContext(extra)`
 
-See the monorepo overview in the root README: [../../README.md](../../README.md)
+This package is part of the ts-common monorepo (see the [root README](../../README.md)) and integrates with the [@fabianopinto/logger](../logger/README.md) module for structured logging.
 
 ## Install
 
