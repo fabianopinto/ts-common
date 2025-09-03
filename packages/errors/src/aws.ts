@@ -1,14 +1,19 @@
 /**
- * @fileoverview This file contains error classes for AWS-specific services.
- * These errors are useful for handling failures in applications that interact with AWS.
+ * @fileoverview AWS-related error classes for applications interacting with AWS services.
+ * Exports `AwsError` as a base and service-specific errors like `S3Error`.
+ *
+ * @remarks
+ * These errors are operational by default, as service disruptions are often transient.
  */
 
 import { AppError, AppErrorOptions } from "./base";
 
 /**
  * A base error for AWS service-related issues.
- * This is an operational error, as AWS service issues can often be transient.
  * @public
+ *
+ * @example
+ * throw new AwsError("STS token retrieval failed", { code: "AWS_STS_ERROR" });
  */
 export class AwsError extends AppError {
   /**
@@ -25,6 +30,9 @@ export class AwsError extends AppError {
 /**
  * An error for AWS S3 service-related issues.
  * @public
+ *
+ * @example
+ * throw new S3Error("S3 putObject failed", { code: "S3_PUT_ERROR" });
  */
 export class S3Error extends AwsError {
   /**
@@ -57,6 +65,9 @@ export class DynamoDbError extends AwsError {
 /**
  * An error for AWS Lambda service-related issues.
  * @public
+ *
+ * @example
+ * throw new LambdaError("Lambda invocation failed", { code: "LAMBDA_INVOKE_ERROR" });
  */
 export class LambdaError extends AwsError {
   /**
@@ -73,6 +84,9 @@ export class LambdaError extends AwsError {
 /**
  * An error for AWS SQS service-related issues.
  * @public
+ *
+ * @example
+ * throw new SqsError("SQS sendMessage failed", { code: "SQS_SEND_ERROR" });
  */
 export class SqsError extends AwsError {
   /**
@@ -89,6 +103,9 @@ export class SqsError extends AwsError {
 /**
  * An error for AWS SNS service-related issues.
  * @public
+ *
+ * @example
+ * throw new SnsError("SNS publish failed", { code: "SNS_PUBLISH_ERROR" });
  */
 export class SnsError extends AwsError {
   /**

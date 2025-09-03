@@ -20,6 +20,9 @@ export const baseConfig = {
   // Target modern JavaScript
   target: "es2022",
 
+  // Build for Node.js runtime by default
+  platform: "node",
+
   // Output directory
   outDir: "dist",
 
