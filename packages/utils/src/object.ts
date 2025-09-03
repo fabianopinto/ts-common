@@ -4,7 +4,7 @@
 export function deepFreeze<T extends object>(obj: T): Readonly<T> {
   Object.freeze(obj);
   for (const key of Object.getOwnPropertyNames(obj)) {
-    const value = (obj as any)[key];
+    const value = obj[key as keyof T];
     if (
       value &&
       (typeof value === "object" || typeof value === "function") &&
@@ -17,16 +17,19 @@ export function deepFreeze<T extends object>(obj: T): Readonly<T> {
 }
 
 /** Create a new object without undefined values. */
-export function compact<T extends Record<string, any>>(obj: T): Partial<T> {
-  const out: Record<string, any> = {};
-  for (const [k, v] of Object.entries(obj)) {
-    if (v !== undefined) out[k] = v;
-  }
-  return out as Partial<T>;
+export function compact<T extends Record<string, unknown>>(obj: T): Partial<T> {
+  const out = {} as Partial<T>;
+  (Object.keys(obj) as Array<keyof T>).forEach((key) => {
+    const value = obj[key];
+    if (value !== undefined) {
+      out[key] = value;
+    }
+  });
+  return out;
 }
 
 /** Shallow equality check for plain objects. */
-export function shallowEqual(a: any, b: any): boolean {
+export function shallowEqual(a: Record<string, unknown>, b: unknown): boolean {
   if (a === b) return true;
   if (!a || !b) return false;
   if (typeof a !== "object" || typeof b !== "object") return false;
@@ -34,7 +37,7 @@ export function shallowEqual(a: any, b: any): boolean {
   const bk = Object.keys(b);
   if (ak.length !== bk.length) return false;
   for (const k of ak) {
-    if (a[k] !== b[k]) return false;
+    if (a[k] !== (b as Record<string, unknown>)[k]) return false;
   }
   return true;
 }

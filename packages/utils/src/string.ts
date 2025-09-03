@@ -18,11 +18,7 @@ export function slugify(input: string): string {
 }
 
 /** Truncate a string to maxLength and append suffix if truncated. */
-export function truncate(
-  input: string,
-  maxLength: number,
-  suffix = "…",
-): string {
+export function truncate(input: string, maxLength: number, suffix = "…"): string {
   if (maxLength <= 0) return "";
   if (input.length <= maxLength) return input;
   const sliceLen = Math.max(0, maxLength - suffix.length);

@@ -19,10 +19,7 @@ export class AppError extends Error {
 
   constructor(message: string, options: AppErrorOptions = {}) {
     // Pass cause to native Error so it's visible in stacks where supported
-    super(
-      message,
-      options.cause !== undefined ? { cause: options.cause as any } : undefined,
-    );
+    super(message, options.cause !== undefined ? { cause: options.cause as Error } : undefined);
 
     this.name = "AppError";
     // Fix prototype when targeting ES5/older transpilation scenarios
@@ -57,11 +54,7 @@ export class AppError extends Error {
     };
   }
 
-  static from(
-    err: unknown,
-    message?: string,
-    context?: ErrorContext,
-  ): AppError {
+  static from(err: unknown, message?: string, context?: ErrorContext): AppError {
     if (err instanceof AppError) {
       return message || context
         ? new AppError(message ?? err.message, {

@@ -26,11 +26,7 @@ export interface CreateLoggerOptions {
  * Create a logger backed by pino but exposing a minimal, clean interface.
  */
 export function createLogger(opts: CreateLoggerOptions = {}): Logger {
-  const {
-    level = (process.env.LOG_LEVEL as LogLevel) || "info",
-    base,
-    pino: pinoOpts,
-  } = opts;
+  const { level = (process.env.LOG_LEVEL as LogLevel) || "info", base, pino: pinoOpts } = opts;
 
   const instance: PinoLogger = pino({
     level,
