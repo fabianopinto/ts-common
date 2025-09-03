@@ -24,5 +24,13 @@ module.exports = {
     "@typescript-eslint/no-explicit-any": "warn",
     "prettier/prettier": "warn",
   },
-  ignorePatterns: ["node_modules", "dist", "**/*.d.ts", "**/dist/**", "**/node_modules/**", "vitest.config.ts"],
+  ignorePatterns: [
+    "node_modules",
+    "dist",
+    "**/*.d.ts",
+    "**/dist/**",
+    "**/node_modules/**",
+    "**/*.test.ts",
+    "vitest.config.ts",
+  ],
 };

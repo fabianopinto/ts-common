@@ -20,19 +20,20 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "clean": "rimraf dist || rm -rf dist",
-    "lint": "echo 'no lint configured'",
-    "test": "echo 'no tests yet'"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "sideEffects": false,
   "publishConfig": {
     "access": "public"
   },
   "dependencies": {
-    "@fabianopinto/errors": "workspace:*",
-    "pino": "^9.9.0"
+    "@fabianopinto/errors": "workspace:*"
   },
   "peerDependencies": {
-    "pino-pretty": "^11.2.1"
+    "pino-pretty": "^11.2.1",
+    "pino": "^9.9.0"
   },
   "peerDependenciesMeta": {
     "pino-pretty": {
@@ -40,6 +41,7 @@
     }
   },
   "devDependencies": {
-    "pino-pretty": "^11.2.1"
+    "pino-pretty": "^11.2.1",
+    "pino": "^9.9.0"
   }
 }
