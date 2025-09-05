@@ -16,8 +16,9 @@
  */
 
 import { AppError } from "@fabianopinto/errors";
-import pino from "pino";
 import { createRequire } from "module";
+import pino from "pino";
+
 const require = createRequire(import.meta.url);
 
 /**
@@ -27,19 +28,20 @@ const require = createRequire(import.meta.url);
  * without depending on Pino types directly.
  *
  * Valid values: "fatal" | "error" | "warn" | "info" | "debug" | "trace"
+ * @public
  *
  * @example
  * import { logger, type Level } from "@fabianopinto/logger";
  * const level: Level = "info";
  * logger.setLevel(level);
  */
-export type Level = pino.Level;
+export type LogLevel = pino.Level;
 
 /**
  * Helper levels used to validate inputs when normalizing a log level.
  * @internal
  */
-const VALID_LEVELS: readonly pino.Level[] = [
+const VALID_LEVELS: readonly LogLevel[] = [
   "fatal",
   "error",
   "warn",
@@ -55,9 +57,9 @@ const VALID_LEVELS: readonly pino.Level[] = [
  * @returns A valid Pino level.
  * @internal
  */
-function normalizeLevel(value: unknown, fallback: pino.Level): pino.Level {
+function normalizeLevel(value: unknown, fallback: LogLevel): LogLevel {
   if (typeof value === "string" && (VALID_LEVELS as readonly string[]).includes(value)) {
-    return value as pino.Level;
+    return value as LogLevel;
   }
   return fallback;
 }
@@ -101,7 +103,7 @@ export interface Logger {
    *   logger.debug({ data: debugData }, "Debug info");
    * }
    */
-  isLevelEnabled(level: pino.Level): boolean;
+  isLevelEnabled(level: LogLevel): boolean;
 
   /**
    * Set the logger level
@@ -113,7 +115,7 @@ export interface Logger {
    * // Set logger to only output warnings and above
    * logger.setLevel("warn");
    */
-  setLevel(level: pino.Level): void;
+  setLevel(level: LogLevel): void;
 
   /**
    * Log a trace message
@@ -215,7 +217,7 @@ export interface LoggerOptions {
   /**
    * The minimum log level to output
    */
-  level?: pino.Level;
+  level?: LogLevel;
 
   /**
    * Name for the logger instance (included in log output)
@@ -387,7 +389,7 @@ export class BaseLogger implements Logger {
    * @param level - The log level to check
    * @returns True if the level is enabled, false otherwise
    */
-  isLevelEnabled(level: pino.Level): boolean {
+  isLevelEnabled(level: LogLevel): boolean {
     return this.logger.isLevelEnabled(level);
   }
 
@@ -395,7 +397,7 @@ export class BaseLogger implements Logger {
    * Set the minimum log level
    * @param level - The new minimum log level
    */
-  setLevel(level: pino.Level): void {
+  setLevel(level: LogLevel): void {
     this.logger.level = level;
   }
 
