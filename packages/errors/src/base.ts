@@ -1,18 +1,17 @@
 /**
  * @fileoverview This file contains the base error classes and types for the application.
+ *
  * It provides a foundation for creating more specific error types with support for
  * structured context, error codes, and cause-chaining.
  */
 
 /**
  * Defines a record for structured error context.
- * @public
  */
 export type ErrorContext = Record<string, unknown>;
 
 /**
  * Options for creating a `BaseError`.
- * @public
  */
 export interface BaseErrorOptions {
   /** The original error or cause of this error. */
@@ -28,7 +27,6 @@ export interface BaseErrorOptions {
 /**
  * The base error class for the application.
  * All other custom errors should extend this class.
- * @public
  */
 export class BaseError extends Error {
   /** A unique code for this error type. */
@@ -75,7 +73,6 @@ export class BaseError extends Error {
 
 /**
  * Options for creating an `AppError`.
- * @public
  */
 export interface AppErrorOptions extends BaseErrorOptions {
   /** An HTTP-like status code. */
@@ -85,7 +82,6 @@ export interface AppErrorOptions extends BaseErrorOptions {
 /**
  * A general-purpose application error.
  * This class is a good starting point for most custom errors.
- * @public
  */
 export class AppError extends BaseError {
   /** An HTTP-like status code. */
@@ -159,7 +155,6 @@ export class AppError extends BaseError {
  * Safely serializes the cause of an error.
  * @param cause - The error cause to serialize.
  * @returns A serializable representation of the cause.
- * @internal
  */
 function serializeCause(cause: unknown): unknown {
   if (!cause) return cause;

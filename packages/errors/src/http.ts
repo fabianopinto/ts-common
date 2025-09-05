@@ -7,7 +7,6 @@ import { AppError, AppErrorOptions, ErrorContext } from "./base";
 
 /**
  * A collection of standard HTTP error codes.
- * @public
  */
 export enum ErrorCode {
   /** 400 Bad Request */
@@ -32,7 +31,6 @@ export enum ErrorCode {
 
 /**
  * Maps `ErrorCode` enum members to HTTP status codes.
- * @internal
  */
 const errorCodeToHttpStatus: Record<ErrorCode, number> = {
   [ErrorCode.BAD_REQUEST]: 400,
@@ -48,7 +46,6 @@ const errorCodeToHttpStatus: Record<ErrorCode, number> = {
 
 /**
  * Options for creating an `HttpError`.
- * @public
  */
 export interface HttpErrorOptions extends AppErrorOptions {
   /** The specific HTTP error code. */
@@ -58,7 +55,6 @@ export interface HttpErrorOptions extends AppErrorOptions {
 /**
  * An error class for representing HTTP-specific errors.
  * It automatically maps an `ErrorCode` to an HTTP status code.
- * @public
  */
 export class HttpError extends AppError {
   /**

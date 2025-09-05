@@ -28,7 +28,6 @@ const require = createRequire(import.meta.url);
  * without depending on Pino types directly.
  *
  * Valid values: "fatal" | "error" | "warn" | "info" | "debug" | "trace"
- * @public
  *
  * @example
  * import { logger, type Level } from "@fabianopinto/logger";
@@ -39,7 +38,6 @@ export type LogLevel = pino.Level;
 
 /**
  * Helper levels used to validate inputs when normalizing a log level.
- * @internal
  */
 const VALID_LEVELS: readonly LogLevel[] = [
   "fatal",
@@ -55,7 +53,6 @@ const VALID_LEVELS: readonly LogLevel[] = [
  * @param value - The incoming level value, typically from env or options.
  * @param fallback - The default level to use when value is invalid.
  * @returns A valid Pino level.
- * @internal
  */
 function normalizeLevel(value: unknown, fallback: LogLevel): LogLevel {
   if (typeof value === "string" && (VALID_LEVELS as readonly string[]).includes(value)) {
@@ -70,7 +67,6 @@ function normalizeLevel(value: unknown, fallback: LogLevel): LogLevel {
  * Defines a consistent logging API that can be implemented using various
  * logging libraries. The current implementation uses Pino for high-performance
  * structured logging.
- * @public
  */
 export interface Logger {
   /**
@@ -211,7 +207,6 @@ export interface Logger {
  *
  * Defines options for configuring logger instances including
  * log level, name, and other Pino-specific settings.
- * @public
  */
 export interface LoggerOptions {
   /**
@@ -238,7 +233,6 @@ export interface LoggerOptions {
 
 /**
  * Default logger options used to initialize the logger.
- * @internal
  */
 const DEFAULT_OPTIONS: LoggerOptions = {
   // pretty default will be finalized at construction time based on NODE_ENV
@@ -249,7 +243,6 @@ const DEFAULT_OPTIONS: LoggerOptions = {
  * Creates Pino transport configuration based on options
  * @param options - Logger configuration options
  * @returns Pino transport configuration
- * @internal
  */
 function createTransport(options: LoggerOptions) {
   if (options.pretty) {
@@ -279,7 +272,6 @@ function createTransport(options: LoggerOptions) {
  *
  * Implements the Logger interface using Pino for high-performance
  * structured logging with support for different environments.
- * @public
  * @class BaseLogger
  * @implements {Logger}
  */
@@ -406,6 +398,5 @@ export class BaseLogger implements Logger {
 
 /**
  * Default logger instance for convenience
- * @public
  */
 export const logger = new BaseLogger();

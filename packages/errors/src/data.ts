@@ -1,5 +1,6 @@
 /**
  * @fileoverview This file contains error classes related to data processing, validation, and transformation.
+ *
  * These errors are useful for building robust data pipelines and services.
  */
 
@@ -8,7 +9,6 @@ import { AppError, AppErrorOptions } from "./base";
 /**
  * A base error for data processing or transformation issues.
  * This is an operational error, as it often relates to malformed or unexpected input data.
- * @public
  */
 export class DataError extends AppError {
   /**
@@ -24,7 +24,6 @@ export class DataError extends AppError {
 
 /**
  * An error for when input data fails validation checks.
- * @public
  */
 export class ValidationError extends DataError {
   /**
@@ -40,7 +39,6 @@ export class ValidationError extends DataError {
 
 /**
  * An error for when data processing or transformation logic fails.
- * @public
  */
 export class TransformationError extends DataError {
   /**

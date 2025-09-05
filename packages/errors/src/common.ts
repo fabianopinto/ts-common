@@ -1,5 +1,6 @@
 /**
  * @fileoverview This file contains common error classes for widespread use across systems.
+ *
  * These errors represent failures in configuration, database interactions, and third-party services.
  */
 
@@ -8,7 +9,6 @@ import { AppError, AppErrorOptions } from "./base";
 /**
  * An error for missing or invalid application configuration.
  * This is a non-operational error, as it typically requires a code or configuration change to fix.
- * @public
  */
 export class ConfigurationError extends AppError {
   /**
@@ -25,7 +25,6 @@ export class ConfigurationError extends AppError {
 /**
  * A base error for database-related issues.
  * This is an operational error, as it may be transient or recoverable.
- * @public
  */
 export class DatabaseError extends AppError {
   /**
@@ -42,7 +41,6 @@ export class DatabaseError extends AppError {
 /**
  * An error for failures in external service integrations.
  * This is an operational error, as the external service may recover.
- * @public
  */
 export class ThirdPartyServiceError extends AppError {
   /**
