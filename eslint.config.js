@@ -1,8 +1,8 @@
 // ESLint v9 flat config
-// Migrated from .eslintrc.cjs and .eslintignore
 import tsPlugin from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
 import prettier from "eslint-plugin-prettier";
+import simpleImportSort from "eslint-plugin-simple-import-sort";
 
 export default [
   // Global ignores (replacement for .eslintignore)
@@ -34,6 +34,7 @@ export default [
     plugins: {
       "@typescript-eslint": tsPlugin,
       prettier,
+      "simple-import-sort": simpleImportSort,
     },
     rules: {
       // Rough equivalents to previous extends:
@@ -55,6 +56,10 @@ export default [
       "@typescript-eslint/explicit-module-boundary-types": "off",
       "@typescript-eslint/no-explicit-any": "warn",
       "prettier/prettier": "warn",
+
+      // Organize imports/exports deterministically
+      "simple-import-sort/imports": "warn",
+      "simple-import-sort/exports": "warn",
     },
   },
 ];

@@ -35,6 +35,9 @@ importers:
       eslint-plugin-prettier:
         specifier: ^5.5.4
         version: 5.5.4(eslint-config-prettier@9.1.2(eslint@9.34.0))(eslint@9.34.0)(prettier@3.6.2)
+      eslint-plugin-simple-import-sort:
+        specifier: ^12.1.1
+        version: 12.1.1(eslint@9.34.0)
       prettier:
         specifier: ^3.6.2
         version: 3.6.2
@@ -78,7 +81,14 @@ importers:
         specifier: ^11.2.1
         version: 11.3.0
 
-  packages/utils: {}
+  packages/utils:
+    dependencies:
+      '@fabianopinto/errors':
+        specifier: workspace:*
+        version: link:../errors
+      '@fabianopinto/logger':
+        specifier: workspace:*
+        version: link:../logger
 
 packages:
 
@@ -1002,6 +1012,11 @@ packages:
         optional: true
       eslint-config-prettier:
         optional: true
+
+  eslint-plugin-simple-import-sort@12.1.1:
+    resolution: {integrity: sha512-6nuzu4xwQtE3332Uz0to+TxDQYRLTKRESSc2hefVT48Zc8JthmN23Gx9lnYhu0FtkRSL1oxny3kJ2aveVhmOVA==}
+    peerDependencies:
+      eslint: '>=5.0.0'
 
   eslint-scope@8.4.0:
     resolution: {integrity: sha512-sNXOfKCn74rt8RICKMvJS7XKV/Xk9kA7DyJr8mJik3S7Cwgy3qlkkmyS2uQB3jiJg6VNdZd/pDBJu0nvG2NlTg==}
@@ -2857,6 +2872,10 @@ snapshots:
       synckit: 0.11.11
     optionalDependencies:
       eslint-config-prettier: 9.1.2(eslint@9.34.0)
+
+  eslint-plugin-simple-import-sort@12.1.1(eslint@9.34.0):
+    dependencies:
+      eslint: 9.34.0
 
   eslint-scope@8.4.0:
     dependencies:

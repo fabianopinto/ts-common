@@ -6,8 +6,19 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
   "engines": {
     "node": ">=22.0.0"
+  },
+  "dependencies": {
+    "@fabianopinto/errors": "workspace:*",
+    "@fabianopinto/logger": "workspace:*"
   },
   "files": [
     "dist"
@@ -17,7 +28,9 @@
     "dev": "tsup --watch",
     "clean": "rimraf dist || rm -rf dist",
     "lint": "echo 'no lint configured'",
-    "test": "echo 'no tests yet'"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "sideEffects": false,
   "publishConfig": {
