@@ -5,10 +5,5 @@ export default defineConfig({
   ...baseConfig,
   entry: ["src/index.ts"],
   external: ["dotenv", "zod", "@fabianopinto/errors"],
-  dts: {
-    resolve: true,
-    compilerOptions: {
-      composite: false,
-    },
-  },
+  dts: { resolve: true },
 });
