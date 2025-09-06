@@ -5,5 +5,5 @@ export default defineConfig({
   ...baseConfig,
   entry: ["src/index.ts"],
   external: ["@fabianopinto/errors", "@fabianopinto/logger"],
-  dts: { resolve: true },
+  dts: true,
 });
