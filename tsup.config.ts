@@ -1,10 +1,7 @@
-import { defineConfig } from "tsup";
+import { defineConfig, type Options } from "tsup";
 
-/**
- * Base configuration for all packages.
- * @type {import('tsup').Options}
- */
-export const baseConfig = {
+// Base configuration for all packages.
+export const baseConfig: Options = {
   // Output both ESM and CJS formats
   format: ["esm", "cjs"],
 
@@ -48,10 +45,7 @@ export const baseConfig = {
   keepNames: true,
 };
 
-/**
- * Default configuration that can be extended by packages
- * @type {import('tsup').Options}
- */
+// Default configuration that can be extended by packages
 export default defineConfig((options) => ({
   ...baseConfig,
   entry: ["src/index.ts"],
