@@ -9,7 +9,7 @@ export const baseConfig = {
   format: ["esm", "cjs"],
 
   // Disable .d.ts generation by default (can be overridden per package)
-  dts: true,
+  dts: { resolve: true },
 
   // Generate source maps for better debugging
   sourcemap: true,
