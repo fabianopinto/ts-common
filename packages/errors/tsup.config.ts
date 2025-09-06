@@ -4,5 +4,5 @@ import { baseConfig } from "../../tsup.config";
 export default defineConfig({
   ...baseConfig,
   entry: ["src/index.ts"],
-  composite: true,
+  dts: true,
 });
