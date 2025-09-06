@@ -314,7 +314,7 @@ export class BaseLogger implements Logger {
       ...transport,
       // Ensure error objects are consistently captured under `error` so the serializer applies.
       hooks: {
-        logMethod(inputArgs, method) {
+        logMethod(inputArgs: unknown[], method: pino.LogFn) {
           // Per Pino types, inputArgs always has at least one element
           const [first, ...rest] = inputArgs as unknown[];
 
@@ -337,13 +337,12 @@ export class BaseLogger implements Logger {
       serializers: {
         error: (err: unknown) => {
           if (err instanceof AppError) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
             return err.toJSON();
           }
           if (err instanceof Error) {
-            return pino.stdSerializers.err(err);
+            return pino.stdSerializers.err(err as Error);
           }
-          return err;
+          return err as unknown;
         },
       },
     });

@@ -5,4 +5,5 @@ export default defineConfig({
   ...baseConfig,
   entry: ["src/index.ts"],
   external: ["pino", "pino-pretty", "@fabianopinto/errors"],
+  composite: true,
 });

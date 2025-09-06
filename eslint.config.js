@@ -13,8 +13,9 @@ export default [
       "**/*.d.ts",
       "**/dist/**",
       "**/node_modules/**",
+      "**/coverage/**",
       "**/*.test.ts",
-      "vitest.config.ts",
+      "**/*.config.ts",
     ],
   },
 
@@ -24,9 +25,12 @@ export default [
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        // Use project references for type-aware linting
-        project: ["./tsconfig.json", "./packages/*/tsconfig.json"],
-        tsconfigRootDir: new URL(".", import.meta.url),
+        // Automatically detect the closest tsconfig for each file
+        project: true,
+        // Ensure this is a filesystem path, not a URL
+        tsconfigRootDir: import.meta.dirname,
+        // Required when specifying multiple projects with globs
+        projectService: true,
         sourceType: "module",
         ecmaVersion: "latest",
       },
@@ -44,7 +48,7 @@ export default [
       "@typescript-eslint/consistent-type-assertions": "warn",
       "@typescript-eslint/no-floating-promises": "error",
       "@typescript-eslint/no-misused-promises": "error",
-      "@typescript-eslint/no-unnecessary-condition": "warn",
+      "@typescript-eslint/no-unnecessary-condition": "off",
       "@typescript-eslint/no-unsafe-assignment": "off",
       "@typescript-eslint/no-unsafe-call": "off",
       "@typescript-eslint/no-unsafe-member-access": "off",

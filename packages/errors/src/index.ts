@@ -4,8 +4,8 @@
  * from the submodules to provide a single import surface for consumers.
  */
 
+export * from "./aws";
 export * from "./base";
-export * from "./http";
 export * from "./common";
 export * from "./data";
-export * from "./aws";
+export * from "./http";
