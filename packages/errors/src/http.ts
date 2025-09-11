@@ -3,7 +3,7 @@
  * It provides a standardized way to represent common HTTP error conditions.
  */
 
-import { AppError, AppErrorOptions, ErrorContext } from "./base";
+import { AppError, AppErrorOptions, ErrorContext } from "./base.js";
 
 /**
  * A collection of standard HTTP error codes.

@@ -14,12 +14,12 @@
  * - `UrlUtils` for URL and query string helpers
  */
 
-export * from "./date";
-export * from "./env";
-export * from "./number";
-export * from "./obfuscation";
-export * from "./object";
-export * from "./random";
-export * from "./retry";
-export * from "./string";
-export * from "./url";
+export * from "./date.js";
+export * from "./env.js";
+export * from "./number.js";
+export * from "./obfuscation.js";
+export * from "./object.js";
+export * from "./random.js";
+export * from "./retry.js";
+export * from "./string.js";
+export * from "./url.js";

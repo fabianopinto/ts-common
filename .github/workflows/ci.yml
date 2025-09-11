@@ -34,3 +34,17 @@ jobs:
 
       - name: Test
         run: pnpm -r test
+
+      - name: Pack tarballs
+        run: |
+          rm -rf artifacts
+          mkdir -p artifacts
+          pnpm -r pack --pack-destination artifacts
+          ls -la artifacts
+
+      - name: Upload tarballs
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-tarballs
+          path: artifacts/*.tgz
+          if-no-files-found: error

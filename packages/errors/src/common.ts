@@ -4,7 +4,7 @@
  * These errors represent failures in configuration, database interactions, and third-party services.
  */
 
-import { AppError, AppErrorOptions } from "./base";
+import { AppError, AppErrorOptions } from "./base.js";
 
 /**
  * An error for missing or invalid application configuration.

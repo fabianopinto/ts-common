@@ -4,7 +4,7 @@
  * These errors are useful for building robust data pipelines and services.
  */
 
-import { AppError, AppErrorOptions } from "./base";
+import { AppError, AppErrorOptions } from "./base.js";
 
 /**
  * A base error for data processing or transformation issues.

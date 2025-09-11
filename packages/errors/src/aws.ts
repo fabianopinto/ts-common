@@ -7,7 +7,7 @@
  * These errors are operational by default, as service disruptions are often transient.
  */
 
-import { AppError, AppErrorOptions } from "./base";
+import { AppError, AppErrorOptions } from "./base.js";
 
 /**
  * A base error for AWS service-related issues.

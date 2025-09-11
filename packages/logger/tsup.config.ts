@@ -5,5 +5,10 @@ export default defineConfig({
   ...baseConfig,
   entry: ["src/index.ts"],
   external: ["pino", "pino-pretty", "@fabianopinto/errors"],
-  dts: true,
+  dts: {
+    resolve: true,
+    compilerOptions: {
+      composite: false,
+    },
+  },
 });

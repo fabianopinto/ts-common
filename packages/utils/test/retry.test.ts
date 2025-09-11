@@ -48,9 +48,11 @@ describe("RetryUtils.retryAsync", () => {
         setTimeout(() => controller.abort(abortErr), 10);
       },
     });
+    // Capture rejection immediately to avoid unhandled rejection warning
+    const handled = p.catch((e) => e);
     await Promise.resolve();
     await vi.advanceTimersByTimeAsync(10);
-    await expect(p).rejects.toMatchObject({ name: "AbortError" });
+    await expect(handled).resolves.toMatchObject({ name: "AbortError" });
   });
 
   it("aborts during sleep with Error reason (covers signal.reason instanceof Error branch)", async () => {
@@ -67,9 +69,11 @@ describe("RetryUtils.retryAsync", () => {
         setTimeout(() => controller.abort(abortErr), 10);
       },
     });
+    // Capture rejection immediately to avoid unhandled rejection warning
+    const handled = p.catch((e) => e);
     await Promise.resolve();
     await vi.advanceTimersByTimeAsync(10);
-    await expect(p).rejects.toBe(abortErr);
+    await expect(handled).resolves.toBe(abortErr);
     expect(op).toHaveBeenCalledTimes(1);
   });
 

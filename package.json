@@ -19,12 +19,7 @@
     "clean": "pnpm -r clean",
     "rebuild": "pnpm run clean && pnpm run build",
     "changeset": "changeset",
-    "release": "changeset version && pnpm install --no-frozen-lockfile && pnpm install -r --no-frozen-lockfile && pnpm -r build && changeset publish --no-git-tag",
-    "pkg:build": "tsup",
-    "pkg:dev": "tsup --watch",
-    "pkg:clean": "rimraf dist || rm -rf dist",
-    "pkg:lint": "eslint src --ext .ts,.tsx --cache --cache-location ../../node_modules/.cache/eslint",
-    "pkg:test": "echo 'no tests yet'"
+    "release": "changeset version && pnpm -w install && pnpm -r build && changeset publish"
   },
   "pnpm": {
     "overrides": {
@@ -32,19 +27,20 @@
     }
   },
   "devDependencies": {
-    "@changesets/cli": "^2.29.6",
-    "@types/node": "^22.0.0",
-    "@typescript-eslint/eslint-plugin": "^8.42.0",
-    "@typescript-eslint/parser": "^8.42.0",
-    "@vitest/coverage-v8": "^1.6.1",
-    "eslint": "^9.34.0",
-    "eslint-config-prettier": "^9.1.2",
+    "@changesets/cli": "^2.29.7",
+    "@tsconfig/node22": "^22.0.2",
+    "@types/node": "^22.18.1",
+    "@typescript-eslint/eslint-plugin": "^8.43.0",
+    "@typescript-eslint/parser": "^8.43.0",
+    "@vitest/coverage-v8": "^3.2.4",
+    "eslint": "^9.35.0",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "prettier": "^3.6.2",
-    "rimraf": "^5.0.10",
+    "rimraf": "^6.0.1",
     "tsup": "^8.5.0",
     "typescript": "~5.9.2",
-    "vitest": "^1.6.1"
+    "vitest": "^3.2.4"
   }
 }

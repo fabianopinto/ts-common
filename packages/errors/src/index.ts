@@ -4,8 +4,8 @@
  * from the submodules to provide a single import surface for consumers.
  */
 
-export * from "./aws";
-export * from "./base";
-export * from "./common";
-export * from "./data";
-export * from "./http";
+export * from "./aws.js";
+export * from "./base.js";
+export * from "./common.js";
+export * from "./data.js";
+export * from "./http.js";
