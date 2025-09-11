@@ -11,6 +11,7 @@
   "scripts": {
     "build": "pnpm -r --stream build",
     "test": "pnpm -r test",
+    "coverage": "vitest run --coverage",
     "lint": "eslint . --ext .ts,.tsx --cache --cache-location node_modules/.cache/eslint",
     "lint:ci": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
