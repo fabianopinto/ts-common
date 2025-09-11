@@ -11,7 +11,7 @@ A TypeScript monorepo of reusable packages:
 - [@fabianopinto/errors](./packages/errors/README.md) — AppError with cause and context
 - @fabianopinto/config — dotenv + zod config loader
 - [@fabianopinto/logger](./packages/logger/README.md) — Pino-based logger with clean interface
-- @fabianopinto/utils — string, date, and object helpers
+- [@fabianopinto/utils](./packages/utils/README.md) — string, date, and object helpers
 
 ## Architecture
 
