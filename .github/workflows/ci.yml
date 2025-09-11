@@ -29,8 +29,12 @@ jobs:
       - name: Install dependencies
         run: pnpm -w install
 
-      - name: Build
-        run: pnpm -r build
+      - name: Build (topological order)
+        run: |
+          pnpm -F @fabianopinto/errors build
+          pnpm -F @fabianopinto/logger build
+          pnpm -F @fabianopinto/config build
+          pnpm -F @fabianopinto/utils build
 
       - name: Test
         run: pnpm -r test
