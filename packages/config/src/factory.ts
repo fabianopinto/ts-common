@@ -14,6 +14,7 @@ import { type Logger, logger as baseLogger } from "@fabianopinto/logger";
 import { ObjectUtils } from "@fabianopinto/utils";
 
 import { Configuration } from "./configuration.js";
+import { resolveS3 } from "./resolvers.js";
 import type { ConfigObject, ConfigurationOptions } from "./types.js";
 
 /**
@@ -108,7 +109,29 @@ export class ConfigurationFactory {
         code: "CONFIG_READ_FILE_ERROR",
         cause: error as Error,
         context: { filePath },
-        isOperational: true,
+        isOperational: false,
+      });
+    }
+  }
+
+  /**
+   * Add configuration from an S3 JSON object (s3://bucket/key). The content is parsed and merged.
+   *
+   * @param s3Path - S3 object URL (s3://bucket/key)
+   * @returns This factory for chaining
+   */
+  public async addS3(s3Path: string): Promise<this> {
+    try {
+      const text = await resolveS3(s3Path, this.logger);
+      const obj = JSON.parse(text) as ConfigObject;
+      return this.addObject(obj);
+    } catch (error) {
+      this.logger.error({ error, s3Path }, "Failed to add configuration from S3");
+      throw new ConfigurationError("Failed to read configuration from S3", {
+        code: "CONFIG_READ_S3_ERROR",
+        cause: error as Error,
+        context: { s3Path },
+        isOperational: false,
       });
     }
   }
@@ -121,5 +144,17 @@ export class ConfigurationFactory {
   public build(): Configuration {
     this.logger.info("Building configuration instance");
     return Configuration.initialize(this.data, this.options);
+  }
+}
+
+// Static helper to build directly from S3 paths
+export namespace ConfigurationFactory {
+  export async function buildFromS3(
+    s3Paths: string[],
+    options?: ConfigurationFactoryOptions,
+  ): Promise<Configuration> {
+    const factory = new ConfigurationFactory(options);
+    for (const s3 of s3Paths) await factory.addS3(s3);
+    return factory.build();
   }
 }

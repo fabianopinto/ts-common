@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import type { Mock } from "vitest";
 import { ConfigurationFactory } from "../src/factory";
 import { Configuration } from "../src/configuration";
+import * as resolvers from "../src/resolvers";
 
 // Helper: minimal logger to avoid external dependency behavior differences
 const makeTestLogger = () =>
@@ -27,6 +28,58 @@ import { readFile } from "node:fs/promises";
 describe("ConfigurationFactory", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+  });
+
+  it("addS3 reads JSON from S3 and merges it", async () => {
+    const logger = makeTestLogger();
+    const f = new ConfigurationFactory({ logger, resolveExternal: false });
+
+    const s3Spy = vi
+      .spyOn(resolvers, "resolveS3")
+      .mockResolvedValueOnce('{"a":1}')
+      .mockResolvedValueOnce('{"nest":{"x":1}}');
+
+    await f.addS3("s3://bucket/base.json");
+    await f.addS3("s3://bucket/extra.json");
+
+    const initSpy = vi.spyOn(Configuration, "initialize").mockReturnValue({} as any);
+    f.build();
+
+    const [merged] = initSpy.mock.calls[0] as any[];
+    expect(merged).toEqual({ a: 1, nest: { x: 1 } });
+    expect(s3Spy).toHaveBeenCalledTimes(2);
+  });
+
+  it("addS3 wraps resolve/parse errors in ConfigurationError with code CONFIG_READ_S3_ERROR", async () => {
+    const logger = makeTestLogger();
+    const f = new ConfigurationFactory({ logger });
+    vi.spyOn(resolvers, "resolveS3").mockRejectedValueOnce(new Error("S3 error"));
+
+    await expect(f.addS3("s3://b/k.json")).rejects.toMatchObject({
+      name: expect.stringMatching(/ConfigurationError/),
+      code: "CONFIG_READ_S3_ERROR",
+      context: { s3Path: "s3://b/k.json" },
+      isOperational: false,
+    });
+  });
+
+  it("null values prune branches when merging via addObject and addFile/addS3", async () => {
+    const logger = makeTestLogger();
+    const f = new ConfigurationFactory({ logger });
+    f.addObject({ a: { b: { c: 1 }, d: 2 }, arr: [1, 2] } as any);
+    f.addObject({ a: { b: null }, arr: null } as any);
+
+    (readFile as unknown as Mock).mockResolvedValueOnce('{"a":{"x":1,"y":2}}');
+    await f.addFile("/tmp/file.json");
+
+    vi.spyOn(resolvers, "resolveS3").mockResolvedValueOnce('{"a":{"y":null,"z":3}}');
+    await f.addS3("s3://bucket/remove-y.json");
+
+    const initSpy = vi.spyOn(Configuration, "initialize").mockReturnValue({} as any);
+    f.build();
+    const [merged] = initSpy.mock.calls[0] as any[];
+    expect(merged).toEqual({ a: { d: 2, x: 1, z: 3 } });
+    expect("arr" in merged).toBe(false);
   });
   afterEach(() => {
     vi.restoreAllMocks();
