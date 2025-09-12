@@ -39,8 +39,8 @@ graph TD
 ## Getting started
 
 ```bash
-pnpm -w install
-pnpm -r build
+pnpm install
+pnpm build
 ```
 
 ## Packages
@@ -52,9 +52,9 @@ pnpm -r build
 
 ## Development
 
-- Build all: `pnpm -r build`
-- Watch a package: `pnpm --filter <pkg> run dev`
-- Test all: `pnpm -r test`
+- Build all: `pnpm build`
+- Watch a package: `pnpm --filter <pkg> dev`
+- Test all: `pnpm test`
 
 ### Example usage
 
@@ -75,7 +75,7 @@ logger.info("Service started");
 ```bash
 pnpm changeset         # create a changeset
 pnpm changeset version # apply versions and changelogs
-pnpm -r build          # build packages
+pnpm build             # build packages
 pnpm changeset publish # publish changed packages to npm
 ```
 

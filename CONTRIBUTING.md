@@ -8,8 +8,8 @@ Thanks for your interest in contributing!
 - Node: >= 22
 
 ```bash
-pnpm -w install
-pnpm -r build
+pnpm install
+pnpm build
 ```
 
 ## Workspace structure
@@ -22,8 +22,8 @@ pnpm -r build
 
 ## Development
 
-- Build all: `pnpm -r build`
-- Watch a single package: `pnpm --filter <pkg> run dev`
+- Build all: `pnpm build`
+- Watch a single package: `pnpm --filter <pkg> dev`
 - Test all: `pnpm -r test`
 - Root merged coverage: `pnpm coverage` (outputs to `coverage/` at repo root)
 - Lint all: `pnpm -w lint`
@@ -40,7 +40,7 @@ pnpm --filter ./packages/errors dev
 ### Vitest
 
 - Root config (`vitest.config.ts`) collects tests from all packages.
-- `pnpm -r test` runs tests from each package (works with include globs).
+- `pnpm test` runs tests from each package (works with include globs).
 - `pnpm coverage` runs a single root session and produces a merged coverage report in `coverage/`.
 
 ## Coding standards
@@ -73,15 +73,15 @@ Local release simulation:
 
 ```bash
 pnpm changeset version
-pnpm -r build
+pnpm build
 pnpm changeset publish
 ```
 
 ## CI
 
 - GitHub Actions run install, build, tests (PRs and pushes) and handle Releases via Changesets.
-- Install step uses recursive workspace install: `pnpm -r install`.
-- Builds are serialized/topological to ensure type resolution across packages: `pnpm -r --workspace-concurrency=1 build`.
+- Install step uses recursive workspace install: `pnpm install`.
+- Builds are serialized/topological to ensure type resolution across packages: `pnpm build`.
 - CI may also pack tarballs for each package for verification.
 
 ### Troubleshooting CI builds
@@ -94,7 +94,7 @@ pnpm changeset publish
     ```
     to avoid composite file-listing constraints in declaration emit.
 - Missing dev dependencies in a package:
-  - CI uses `pnpm -r install` so per-package `node_modules` symlinks are present.
+  - CI uses `pnpm install` so per-package `node_modules` symlinks are present.
 
 ## Pull Requests
 
