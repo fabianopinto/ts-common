@@ -59,15 +59,15 @@ pnpm --filter ./packages/errors dev
 
 This repo uses [Changesets](https://github.com/changesets/changesets).
 
-1) Create a changeset for user-visible changes:
+1. Create a changeset for user-visible changes:
 
 ```bash
 pnpm changeset
 ```
 
-2) Select affected packages and bump types (patch/minor/major).
+2. Select affected packages and bump types (patch/minor/major).
 
-3) Merge to `main`. Our Release workflow will version and publish changed packages.
+3. Merge to `main`. Our Release workflow will version and publish changed packages.
 
 Local release simulation:
 

@@ -11,10 +11,7 @@ export default defineConfig({
       // When running from a package directory (pnpm -r test)
       "**/test/**/*.{test,spec}.?(c|m)[jt]s?(x)",
     ],
-    exclude: [
-      "**/node_modules/**",
-      "**/dist/**",
-    ],
+    exclude: ["**/node_modules/**", "**/dist/**"],
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
