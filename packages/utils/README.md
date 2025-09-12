@@ -262,11 +262,11 @@ const input = { id: 1, name: "Jane", password: "secret" };
 const safe = ObjectUtils.omit(input, ["password"]);
 // => { id: 1, name: "Jane" }
 
-// Deep merge (objects recursively merged; arrays replaced by right-hand side)
-const a = { a: { x: 1, arr: [1, 2] }, b: 1 };
-const b = { a: { y: 2, arr: [9] }, c: 3 };
+// Deep merge with pruning (objects recursively merged; arrays replaced; null prunes keys)
+const a = { a: { x: 1, y: 2, arr: [1, 2] }, b: 1 };
+const b = { a: { y: null, arr: [9] }, c: 3 };
 const merged = ObjectUtils.deepMerge(a, b);
-// => { a: { x: 1, y: 2, arr: [9] }, b: 1, c: 3 }
+// => { a: { x: 1, arr: [9] }, b: 1, c: 3 }
 
 // Deep get (dot-notation path)
 const obj = { a: { b: { c: 123 } }, mixed: { arr: [{ x: 1 }, { y: 2 }] } };

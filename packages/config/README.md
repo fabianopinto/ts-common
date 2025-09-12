@@ -32,12 +32,46 @@ This package is part of the ts-common monorepo (see the [root README](../../READ
 ## Install
 
 ```bash
-pnpm add @fabianopinto/config
+# Core package (requires pino as a peer)
+pnpm add @fabianopinto/config pino
+
+# Optional peers (only if you enable external reference resolution for ssm:// or s3://)
+pnpm add @aws-sdk/client-ssm @aws-sdk/client-s3
+# Optional (for pretty printing in local/dev): pino-pretty
+pnpm add -D pino-pretty
+
 # or
-npm i @fabianopinto/config
+npm i @fabianopinto/config pino
+npm i @aws-sdk/client-ssm @aws-sdk/client-s3 # optional
+npm i -D pino-pretty # optional
+
 # or
-yarn add @fabianopinto/config
+yarn add @fabianopinto/config pino
+yarn add @aws-sdk/client-ssm @aws-sdk/client-s3 # optional
+yarn add -D pino-pretty # optional
 ```
+
+### Peer dependencies
+
+- `@aws-sdk/client-ssm` — optional peer dependency. Required only if you resolve `ssm://` parameters.
+- `@aws-sdk/client-s3` — optional peer dependency. Required only if you resolve `s3://` objects.
+
+Notes:
+
+- This package does not bundle AWS SDK v3 clients. If you use `resolveExternal: true` and your configuration contains `ssm://` or `s3://` references, install the corresponding clients in your application.
+- If these clients are missing at runtime and you attempt to resolve such references, module resolution will fail when the resolver is invoked.
+
+### Transitive peer dependencies
+
+This package integrates with `@fabianopinto/logger`, which declares the following peer dependencies in your application:
+
+- `pino` — required peer dependency for logging.
+- `pino-pretty` — optional peer dependency (used only for pretty printing in non-production environments).
+
+Notes:
+
+- If `pino` is not installed in your app, importing/using the logger will fail at runtime.
+- If `pino-pretty` is not installed and you enable pretty output, the logger falls back to JSON output.
 
 ## Import
 
@@ -71,9 +105,11 @@ const {
   - `new ConfigurationFactory(options?: ConfigurationFactoryOptions)`
   - `addObject(obj: ConfigObject): this`
   - `addFile(filePath: string): Promise<this>`
+  - `addS3(s3Path: string): Promise<this>`
   - `build(): Configuration`
   - `static buildFromObject(obj: ConfigObject, options?: ConfigurationFactoryOptions): Configuration`
   - `static buildFromFiles(files: string[], options?: ConfigurationFactoryOptions): Promise<Configuration>`
+  - `static buildFromS3(s3Paths: string[], options?: ConfigurationFactoryOptions): Promise<Configuration>`
 - [`DefaultConfigurationProvider`](./src/provider.ts)
   - Implements `ConfigurationProvider` by delegating to `Configuration.getInstance()`
 - [`resolvers`](./src/resolvers.ts)
@@ -133,7 +169,7 @@ const welcomeMsg = await cfg.getValue<string>("templates.welcome"); // resolved 
 
 To disable resolution (use raw values), set `resolveExternal: false` when initializing.
 
-### Factory usage (objects and JSON files)
+### Factory usage (objects, JSON files, and S3 JSON)
 
 ```ts
 import { ConfigurationFactory } from "@fabianopinto/config";
@@ -145,10 +181,17 @@ const cfg = await ConfigurationFactory.buildFromFiles(["./config/base.json", "./
 const cfg2 = ConfigurationFactory.buildFromObject({
   featureFlags: { newDashboard: true },
 });
+
+// Load from S3 JSON objects
+const cfg3 = await ConfigurationFactory.buildFromS3([
+  "s3://my-bucket/config/base.json",
+  "s3://my-bucket/config/prod.json",
+]);
 ```
 
-- Objects are deep-merged; arrays on the right replace arrays on the left.
+- Objects are deep-merged; arrays on the right replace arrays on the left; `null` prunes keys/branches.
 - File read/parse errors are wrapped in `ConfigurationError` (`code: "CONFIG_READ_FILE_ERROR"`).
+- S3 read/parse errors are wrapped in `ConfigurationError` (`code: "CONFIG_READ_S3_ERROR"`).
 
 ### Provider usage (DI-friendly)
 
@@ -183,9 +226,11 @@ classDiagram
     -readonly store: ConfigObject
     +addObject(obj: ConfigObject): this
     +addFile(filePath: string): Promise<this>
+    +addS3(s3Path: string): Promise<this>
     +build(): Configuration
     +buildFromObject(obj: ConfigObject, options?): Configuration
     +buildFromFiles(files: string[], options?): Promise<Configuration>
+    +buildFromS3(s3Paths: string[], options?): Promise<Configuration>
   }
 
   class ConfigurationProvider {
@@ -217,7 +262,7 @@ sequenceDiagram
 
   Note over App: Option A — Use ConfigurationFactory
   App->>Factory: new ConfigurationFactory(options?)
-  App->>Factory: addObject(obj) / addFile(path)
+  App->>Factory: addObject(obj) / addFile(path) / addS3(s3://...)
   Factory->>FS: readFile(path) and JSON.parse
   Factory-->>Factory: deepMerge(objects) arrays replaced by RHS
   App->>Factory: build()
@@ -228,6 +273,7 @@ sequenceDiagram
   Note over App: Option B — Static helpers
   App->>Factory: buildFromObject(obj, options?)
   App->>Factory: buildFromFiles([paths], options?)
+  App->>Factory: buildFromS3([s3://...], options?)
   Factory->>Config: initialize(...)
 
   Note over Provider: Access at call sites
