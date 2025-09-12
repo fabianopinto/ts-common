@@ -32,6 +32,18 @@ describe("DateUtils", () => {
     expect(DateUtils.isSameDay(a, c)).toBe(false);
   });
 
+  it("isSameDay returns false when same year but different month", () => {
+    const a = new Date("2020-01-15T12:00:00.000Z");
+    const b = new Date("2020-02-15T12:00:00.000Z");
+    expect(DateUtils.isSameDay(a, b)).toBe(false);
+  });
+
+  it("isSameDay returns false when different year and different month", () => {
+    const a = new Date("2020-01-15T12:00:00.000Z");
+    const b = new Date("2021-02-15T12:00:00.000Z");
+    expect(DateUtils.isSameDay(a, b)).toBe(false);
+  });
+
   it("addDays returns a new Date", () => {
     const d = new Date("2020-01-01T00:00:00.000Z");
     const d2 = DateUtils.addDays(d, 2);

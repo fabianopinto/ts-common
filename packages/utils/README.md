@@ -183,6 +183,26 @@ const result = await RetryUtils.retryAsync(fetchWithTransientFailures, {
 });
 ```
 
+#### Flow
+
+```mermaid
+flowchart TD
+  A[Start operation] --> B[attempt = 1]
+  B --> C["Execute operation()"]
+  C -->|success| Z[Resolve with result]
+  C -->|throw err| D{Abort signal aborted?}
+  D -->|yes| E[Reject with AbortError]
+  D -->|no| F{"shouldRetry(err, attempt)?"}
+  F -->|no| G[Reject with err]
+  F -->|yes| H["onAttemptError(err, attempt)"]
+  H --> I[Compute delay via backoff strategy]
+  I --> J["Wait delayMs (respecting maxDelayMs)"]
+  J --> K[attempt++]
+  K --> L{attempt > retries?}
+  L -->|yes| M[Reject with RetryExhaustedError]
+  L -->|no| C
+```
+
 ## Retry + Errors + Logger integration
 
 `RetryUtils` is designed to work seamlessly with `@fabianopinto/errors` and `@fabianopinto/logger` for end-to-end observability.
