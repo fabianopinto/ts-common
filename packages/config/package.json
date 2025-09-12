@@ -27,7 +27,7 @@
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest --passWithNoTests",
     "coverage": "vitest run --coverage --passWithNoTests",
-    "prepack": "pnpm run clean && pnpm run build"
+    "prepack": "pnpm clean && pnpm build"
   },
   "sideEffects": false,
   "publishConfig": {
