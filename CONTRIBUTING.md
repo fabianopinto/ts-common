@@ -24,9 +24,9 @@ pnpm build
 
 - Build all: `pnpm build`
 - Watch a single package: `pnpm --filter <pkg> dev`
-- Test all: `pnpm -r test`
+- Test all: `pnpm test`
 - Root merged coverage: `pnpm coverage` (outputs to `coverage/` at repo root)
-- Lint all: `pnpm -w lint`
+- Lint all: `pnpm lint`
 - Format check: `pnpm format:check` — fix with `pnpm format`
 
 Per-package examples:
