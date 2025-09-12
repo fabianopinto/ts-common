@@ -4,6 +4,7 @@
   "private": false,
   "license": "ISC",
   "type": "module",
+  "module": "dist/index.js",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "engines": {
