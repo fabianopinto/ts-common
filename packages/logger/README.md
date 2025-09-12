@@ -97,44 +97,7 @@ try {
 }
 ```
 
-Notes:
-
-- If you pass an `Error`/`AppError` as the first argument, the logger auto-wraps it as `{ error }` so the serializer runs.
-- When the object already contains `error`, it is passed through.
-- Passing an `Error` as the second positional argument is not auto-wrapped.
-
-## Diagrams
-
-### Class & interface overview
-
-```mermaid
-classDiagram
-  class Logger {
-    +child(bindings) Logger
-    +isLevelEnabled(level) boolean
-    +setLevel(level) void
-    +trace()
-    +debug()
-    +info()
-    +warn()
-    +error()
-    +fatal()
-  }
-  class BaseLogger {
-    +child(bindings) Logger
-    +isLevelEnabled(level) boolean
-    +setLevel(level) void
-    +trace()
-    +debug()
-    +info()
-    +warn()
-    +error()
-    +fatal()
-  }
-  Logger <|.. BaseLogger
-```
-
-### Error serialization flow
+#### Flow
 
 ```mermaid
 flowchart TD
@@ -149,6 +112,12 @@ flowchart TD
   F --> H
   G --> H
 ```
+
+#### Notes:
+
+- If you pass an `Error`/`AppError` as the first argument, the logger auto-wraps it as `{ error }` so the serializer runs.
+- When the object already contains `error`, it is passed through.
+- Passing an `Error` as the second positional argument is not auto-wrapped.
 
 ## Compatibility
 

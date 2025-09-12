@@ -13,6 +13,7 @@ A collection of focused, well-tested utilities for everyday Node/TypeScript deve
 - URL and querystring helpers
 
 This package is part of the ts-common monorepo (see the [root README](../../README.md)) and integrates naturally with:
+
 - [@fabianopinto/errors](../errors/README.md) for structured error handling
 - [@fabianopinto/logger](../logger/README.md) for structured logging
 
@@ -74,7 +75,7 @@ const {
 
 ## API
 
-- `DateUtils`
+- [`DateUtils`](./src/date.ts)
   - `formatISO(date?: Date): string`
   - `getCurrentTimestamp(): string`
   - `toUnix(date?: Date): number`
@@ -85,20 +86,20 @@ const {
   - `parseDuration(input: string): number`
   - `wait(duration: number | string): Promise<void>`
 
-- `EnvUtils`
+- [`EnvUtils`](./src/env.ts)
   - `getEnv(name: string, defaultValue?: string): string | undefined`
   - `requireEnv(name: string): string`
   - `getBoolEnv(name: string, defaultValue = false): boolean`
   - `getNumberEnv(name: string, defaultValue = 0): number`
   - `getJsonEnv<T = unknown>(name: string, defaultValue?: T): T | undefined`
 
-- `NumberUtils`
+- [`NumberUtils`](./src/number.ts)
   - `clamp(value: number, min: number, max: number): number`
   - `inRange(value: number, min: number, max: number): boolean`
   - `safeParseInt(input: unknown, defaultValue = 0, radix = 10): number`
   - `safeParseFloat(input: unknown, defaultValue = 0): number`
 
-- `ObfuscationUtils`
+- [`ObfuscationUtils`](./src/obfuscation.ts)
   - `mask(value: string, maskChar = "*"): string`
   - `partialMask(value: string, opts?: PartialMaskOptions): string`
   - `obfuscateHeaders(headers: Record<string, string>, opts?: PartialMaskOptions): Record<string, string>`
@@ -106,7 +107,7 @@ const {
   - `redactString(input: string, patterns: Array<string | RegExp>, replacement = "[REDACTED]"): string`
   - Types: `PartialMaskOptions`, `ObfuscateObjectOptions`
 
-- `ObjectUtils`
+- [`ObjectUtils`](./src/object.ts)
   - `deepFreeze<T extends object>(obj: T): Readonly<T>`
   - `compact<T extends Record<string, unknown>>(obj: T): Partial<T>`
   - `shallowEqual(a: Record<string, unknown>, b: unknown): boolean`
@@ -115,18 +116,18 @@ const {
   - `omit<T extends object, K extends keyof T>(obj: T, keys: K[]): Omit<T, K>`
   - `ensureArray<T>(value: T | T[] | null | undefined): T[]`
 
-- `RandomUtils`
+- [`RandomUtils`](./src/random.ts)
   - `uuid(): string`
   - `randomInt(min: number, max: number): number`
   - `randomString(length: number, charset?: string): string`
   - `pickOne<T>(arr: T[]): T`
   - `shuffle<T>(arr: T[]): T[]`
 
-- `RetryUtils`
+- [`RetryUtils`](./src/retry.ts)
   - `retryAsync<T>(operation: () => Promise<T>, options?: RetryOptions): Promise<T>`
   - Types: `BackoffStrategy`, `RetryOptions`, `RetryExhaustedError`
 
-- `StringUtils`
+- [`StringUtils`](./src/string.ts)
   - `isEmpty(value: string | null | undefined): boolean`
   - `toTitleCase(value: string): string`
   - `normalizeWhitespace(value: string): string`
@@ -139,7 +140,7 @@ const {
   - `slugify(value: string): string`
   - `stripAnsi(value: string): string`
 
-- `UrlUtils`
+- [`UrlUtils`](./src/url.ts)
   - `join(base: string, path: string): string`
   - `withQuery(url: string, params: Record<string, string | number | boolean | undefined>): string`
   - `toQueryString(params: Record<string, string | number | boolean | undefined>): string`
