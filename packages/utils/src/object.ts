@@ -169,4 +169,75 @@ export const ObjectUtils = {
     if (value == null) return [] as T[];
     return Array.isArray(value) ? value : [value];
   },
+
+  /**
+   * Deeply merge two plain objects. Arrays are replaced; objects are recursively merged.
+   *
+   * @typeParam T - Type of the first object
+   * @typeParam U - Type of the second object
+   * @param target - Object to merge properties into
+   * @param source - Object with properties to merge into `target`
+   * @return A new object that is the result of merging `target` and `source`
+   *
+   * @example
+   * ObjectUtils.deepMerge({ a: 1, b: { c: 2 } }, { b: { d: 3 }, e: 4 })
+   * // => { a: 1, b: { c: 2, d: 3 }, e: 4 }
+   *
+   * @see {@link https://github.com/davidgilbertson/deep-merge#deep-merge}
+   * for more details on the merge strategy.
+   */
+  deepMerge<T extends Record<string, unknown>, U extends Record<string, unknown>>(
+    target: T,
+    source: U,
+  ): T & U {
+    const out: Record<string, unknown> = { ...target };
+    for (const [key, value] of Object.entries(source)) {
+      const existing = out[key];
+      const bothObjects =
+        existing != null &&
+        value != null &&
+        typeof existing === "object" &&
+        typeof value === "object" &&
+        !Array.isArray(existing) &&
+        !Array.isArray(value);
+      if (bothObjects) {
+        out[key] = ObjectUtils.deepMerge(
+          existing as Record<string, unknown>,
+          value as Record<string, unknown>,
+        );
+      } else {
+        out[key] = value as unknown;
+      }
+    }
+    return out as T & U;
+  },
+
+  /**
+   * Safely get a value from a nested object using a dot-notation path.
+   *
+   * @param obj - The object to traverse.
+   * @param path - The dot-notation path to the desired value.
+   * @returns The value at the specified path, or `undefined` if the path does not exist.
+   *
+   * @example
+   * ObjectUtils.deepGet({ a: { b: 1 } }, "a.b")
+   * // => 1
+   *
+   * @example
+   * ObjectUtils.deepGet({ a: { b: 1 } }, "c")
+   * // => undefined
+   */
+  deepGet<T = unknown>(obj: unknown, path: string): T | undefined {
+    if (!obj || typeof obj !== "object" || !path) return undefined as T | undefined;
+    const parts = path.split(".").filter(Boolean);
+    let current: unknown = obj;
+    for (const part of parts) {
+      if (current && typeof current === "object" && part in (current as Record<string, unknown>)) {
+        current = (current as Record<string, unknown>)[part];
+      } else {
+        return undefined as T | undefined;
+      }
+    }
+    return current as T;
+  },
 } as const;

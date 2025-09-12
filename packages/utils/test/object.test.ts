@@ -70,4 +70,74 @@ describe("ObjectUtils", () => {
     expect(ObjectUtils.ensureArray(null)).toEqual([]);
     expect(ObjectUtils.ensureArray(undefined)).toEqual([]);
   });
+
+  describe("deepMerge", () => {
+    it("merges nested objects and replaces arrays", () => {
+      const a = { a: { x: 1, arr: [1, 2] }, b: 1 } as const;
+      const b = { a: { y: 2, arr: [9] }, c: 3 } as const;
+      const merged = ObjectUtils.deepMerge(a as any, b as any);
+      expect(merged).toEqual({ a: { x: 1, y: 2, arr: [9] }, b: 1, c: 3 });
+    });
+
+    it("does not mutate inputs", () => {
+      const a = { a: { x: 1 } };
+      const b = { a: { y: 2 } };
+      const copyA = JSON.parse(JSON.stringify(a));
+      const copyB = JSON.parse(JSON.stringify(b));
+      const merged = ObjectUtils.deepMerge(a, b);
+      expect(merged).toEqual({ a: { x: 1, y: 2 } });
+      expect(a).toEqual(copyA);
+      expect(b).toEqual(copyB);
+    });
+
+    it("prefers right-hand side for primitive and array values", () => {
+      const a = { k: 1, arr: [1, 2], obj: { a: 1 } };
+      const b = { k: 2, arr: [3], obj: { a: 1, b: 2 } };
+      const merged = ObjectUtils.deepMerge(a, b);
+      expect(merged.k).toBe(2);
+      expect(merged.arr).toEqual([3]);
+      expect(merged.obj).toEqual({ a: 1, b: 2 });
+    });
+
+    it("handles non-object sources gracefully", () => {
+      const a = { a: 1 } as Record<string, unknown>;
+      const merged = ObjectUtils.deepMerge(a, { a: 2 } as Record<string, unknown>);
+      expect(merged).toEqual({ a: 2 });
+    });
+  });
+
+  describe("deepGet", () => {
+    const obj = {
+      a: { b: { c: 123 } },
+      empty: {},
+      mixed: { arr: [{ x: 1 }, { y: 2 }], n: 0, f: false, s: "" },
+    } as const;
+
+    it("returns nested value for existing path", () => {
+      expect(ObjectUtils.deepGet<number>(obj, "a.b.c")).toBe(123);
+    });
+
+    it("returns undefined for missing path", () => {
+      expect(ObjectUtils.deepGet(obj, "a.b.z")).toBeUndefined();
+      expect(ObjectUtils.deepGet(obj, "z.y.x")).toBeUndefined();
+    });
+
+    it("returns undefined for empty path or non-object input", () => {
+      expect(ObjectUtils.deepGet(obj, "")).toBeUndefined();
+      expect(ObjectUtils.deepGet(null, "a")).toBeUndefined();
+      expect(ObjectUtils.deepGet(123 as unknown as object, "a")).toBeUndefined();
+    });
+
+    it("supports arrays in path traversal when accessed by dot key", () => {
+      // Our deepGet uses object property access; numeric keys are strings in objects
+      expect(ObjectUtils.deepGet(obj, "mixed.arr.0.x")).toBe(1);
+      expect(ObjectUtils.deepGet(obj, "mixed.arr.1.y")).toBe(2);
+    });
+
+    it("does not treat falsy values as missing", () => {
+      expect(ObjectUtils.deepGet<number>(obj, "mixed.n")).toBe(0);
+      expect(ObjectUtils.deepGet<boolean>(obj, "mixed.f")).toBe(false);
+      expect(ObjectUtils.deepGet<string>(obj, "mixed.s")).toBe("");
+    });
+  });
 });

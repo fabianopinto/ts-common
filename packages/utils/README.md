@@ -108,13 +108,15 @@ const {
   - Types: `PartialMaskOptions`, `ObfuscateObjectOptions`
 
 - [`ObjectUtils`](./src/object.ts)
-  - `deepFreeze<T extends object>(obj: T): Readonly<T>`
-  - `compact<T extends Record<string, unknown>>(obj: T): Partial<T>`
-  - `shallowEqual(a: Record<string, unknown>, b: unknown): boolean`
+  - `deepGet<T = unknown>(obj: unknown, path: string): T | undefined`
   - `deepSet<T extends Record<string, unknown>>(obj: T, path: string, value: unknown): T`
+  - `deepMerge<T extends Record<string, unknown>, U extends Record<string, unknown>>(target: T, source: U): T & U`
   - `pick<T extends object, K extends keyof T>(obj: T, keys: K[]): Pick<T, K>`
   - `omit<T extends object, K extends keyof T>(obj: T, keys: K[]): Omit<T, K>`
+  - `compact<T extends Record<string, unknown>>(obj: T): Partial<T>`
+  - `shallowEqual(a: Record<string, unknown>, b: unknown): boolean`
   - `ensureArray<T>(value: T | T[] | null | undefined): T[]`
+  - `deepFreeze<T extends object>(obj: T): Readonly<T>`
 
 - [`RandomUtils`](./src/random.ts)
   - `uuid(): string`
@@ -238,6 +240,18 @@ import { ObjectUtils } from "@fabianopinto/utils";
 
 const input = { id: 1, name: "Jane", password: "secret" };
 const safe = ObjectUtils.omit(input, ["password"]);
+// => { id: 1, name: "Jane" }
+
+// Deep merge (objects recursively merged; arrays replaced by right-hand side)
+const a = { a: { x: 1, arr: [1, 2] }, b: 1 };
+const b = { a: { y: 2, arr: [9] }, c: 3 };
+const merged = ObjectUtils.deepMerge(a, b);
+// => { a: { x: 1, y: 2, arr: [9] }, b: 1, c: 3 }
+
+// Deep get (dot-notation path)
+const obj = { a: { b: { c: 123 } }, mixed: { arr: [{ x: 1 }, { y: 2 }] } };
+ObjectUtils.deepGet<number>(obj, "a.b.c"); // => 123
+ObjectUtils.deepGet(obj, "mixed.arr.1.y"); // => 2
 ```
 
 ## Error handling and logging
