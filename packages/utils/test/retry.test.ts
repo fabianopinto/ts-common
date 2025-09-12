@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import type { SpyInstance, Mock } from "vitest";
+import type { Mock } from "vitest";
 
 vi.mock("@fabianopinto/logger", () => {
   // Enable debug to exercise short-circuit/logging branches
@@ -180,7 +180,7 @@ describe("RetryUtils.retryAsync", () => {
   });
   afterEach(() => {
     vi.useRealTimers();
-    (Math.random as unknown as SpyInstance).mockRestore?.();
+    vi.restoreAllMocks();
   });
 
   it("returns result on first attempt without retry", async () => {
@@ -301,7 +301,7 @@ describe("RetryUtils.retryAsync", () => {
     expect(err2).toBeInstanceOf(RetryExhaustedError);
 
     // Verify that debug logs were emitted with cap flag at least once
-    const debugCalls = (logger.debug as unknown as SpyInstance).mock.calls;
+    const debugCalls = (logger.debug as unknown as Mock).mock.calls;
     const capLogs = debugCalls.filter(
       (args) =>
         args[0] &&
@@ -310,5 +310,22 @@ describe("RetryUtils.retryAsync", () => {
         args[0].wasCapped === true,
     );
     expect(capLogs.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("aborts immediately after catch when operation aborts the signal before throwing (covers post-catch abort check)", async () => {
+    const controller = new AbortController();
+    const reason = new Error("stop-now");
+    const op = vi.fn().mockImplementation(async () => {
+      controller.abort(reason);
+      throw new Error("fail");
+    });
+    const p = RetryUtils.retryAsync(op, {
+      retries: 1,
+      delayMs: 100,
+      backoff: "fixed",
+      signal: controller.signal,
+    });
+    await expect(p).rejects.toBe(reason);
+    expect(op).toHaveBeenCalledTimes(1);
   });
 });

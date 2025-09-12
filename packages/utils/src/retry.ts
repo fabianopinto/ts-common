@@ -79,7 +79,12 @@ export class RetryExhaustedError extends Error {
    * @param options - The resolved retry options used.
    * @param cause - The original cause of the error (if any).
    */
-  constructor(message: string, attempts: number, options: ResolvedRetryOptions, cause?: unknown) {
+  public constructor(
+    message: string,
+    attempts: number,
+    options: ResolvedRetryOptions,
+    cause?: unknown,
+  ) {
     super(message);
     this.name = "RetryExhaustedError";
     this.attempts = attempts;
