@@ -83,8 +83,6 @@ const {
 - [`types`](./src/types.ts)
   - `ConfigValue`, `ConfigObject`, `ConfigurationOptions`, `ConfigurationProvider`
 
-Note: See `dist/index.d.ts` for the complete, strongly-typed API surface.
-
 ## Usage
 
 ### Initialize and read values
