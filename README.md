@@ -62,14 +62,24 @@ pnpm build
 ### Example usage
 
 ```ts
-import { loadConfig } from "@fabianopinto/config";
-import createLogger from "@fabianopinto/logger";
+import { Configuration } from "@fabianopinto/config";
+import { logger } from "@fabianopinto/logger";
 
-const cfg = loadConfig();
-const logger = createLogger({ level: cfg.LOG_LEVEL });
+// Initialize configuration (from object or using ConfigurationFactory to load JSON files)
+Configuration.initialize({
+  service: { name: "users", port: 3000 },
+  logging: { level: "info" },
+});
 
-logger.info("Service starting", { env: cfg.NODE_ENV, port: cfg.PORT });
-// startServer(cfg.PORT)
+// Retrieve values (external refs like ssm:// or s3:// are resolved when enabled)
+const cfg = Configuration.getInstance();
+const port = await cfg.getValue<number>("service.port");
+
+// Use the shared logger
+logger.setLevel((await cfg.getValue<string>("logging.level")) ?? "info");
+logger.info("Service starting", { port });
+
+// ... start your app
 logger.info("Service started");
 ```
 
