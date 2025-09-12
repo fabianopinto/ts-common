@@ -171,7 +171,12 @@ export const ObjectUtils = {
   },
 
   /**
-   * Deeply merge two plain objects. Arrays are replaced; objects are recursively merged.
+   * Deeply merge two plain objects with pruning semantics.
+   *
+   * Rules:
+   * - Objects are merged recursively
+   * - Arrays are replaced by the right-hand side
+   * - When the source has a key with value `null`, that key is deleted from the result (pruned)
    *
    * @typeParam T - Type of the first object
    * @typeParam U - Type of the second object
@@ -180,11 +185,8 @@ export const ObjectUtils = {
    * @return A new object that is the result of merging `target` and `source`
    *
    * @example
-   * ObjectUtils.deepMerge({ a: 1, b: { c: 2 } }, { b: { d: 3 }, e: 4 })
-   * // => { a: 1, b: { c: 2, d: 3 }, e: 4 }
-   *
-   * @see {@link https://github.com/davidgilbertson/deep-merge#deep-merge}
-   * for more details on the merge strategy.
+   * ObjectUtils.deepMerge({ a: 1, b: { c: 2, x: 1 }, arr: [1,2] }, { b: { d: 3, x: null }, e: 4, arr: [9] })
+   * // => { a: 1, b: { c: 2, d: 3 }, e: 4, arr: [9] }
    */
   deepMerge<T extends Record<string, unknown>, U extends Record<string, unknown>>(
     target: T,
@@ -192,6 +194,12 @@ export const ObjectUtils = {
   ): T & U {
     const out: Record<string, unknown> = { ...target };
     for (const [key, value] of Object.entries(source)) {
+      // Prune on explicit null in source
+      if (value === null) {
+        delete out[key];
+        continue;
+      }
+
       const existing = out[key];
       const bothObjects =
         existing != null &&
@@ -205,9 +213,11 @@ export const ObjectUtils = {
           existing as Record<string, unknown>,
           value as Record<string, unknown>,
         );
-      } else {
-        out[key] = value as unknown;
+        continue;
       }
+
+      // Arrays or primitives: replace
+      out[key] = value as unknown;
     }
     return out as T & U;
   },

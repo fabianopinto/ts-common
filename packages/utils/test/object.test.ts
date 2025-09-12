@@ -99,6 +99,22 @@ describe("ObjectUtils", () => {
       expect(merged.obj).toEqual({ a: 1, b: 2 });
     });
 
+    it("prunes keys when source has null (object branch)", () => {
+      const left = { a: { b: { c: 1 }, d: 2 }, e: 5 };
+      const right = { a: { b: null }, e: null } as any;
+      const merged = ObjectUtils.deepMerge(left as any, right as any);
+      expect(merged).toEqual({ a: { d: 2 } });
+      expect("e" in merged).toBe(false);
+    });
+
+    it("prunes entire arrays when source has null for array key", () => {
+      const left = { arr: [1, 2, 3], obj: { x: 1 } } as const;
+      const right = { arr: null, obj: { x: null } } as any;
+      const merged = ObjectUtils.deepMerge(left as any, right as any);
+      expect("arr" in merged).toBe(false);
+      expect(merged.obj).toEqual({});
+    });
+
     it("handles non-object sources gracefully", () => {
       const a = { a: 1 } as Record<string, unknown>;
       const merged = ObjectUtils.deepMerge(a, { a: 2 } as Record<string, unknown>);
