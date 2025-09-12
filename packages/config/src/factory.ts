@@ -1,0 +1,125 @@
+/**
+ * @fileoverview ConfigurationFactory: composable builder for immutable `Configuration` instances.
+ *
+ * Supports aggregating configuration from JSON files and in-memory objects, applies a
+ * predictable deep-merge strategy (objects merged recursively, arrays replaced), and
+ * initializes the global configuration instance.
+ */
+
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+
+import { ConfigurationError } from "@fabianopinto/errors";
+import { type Logger, logger as baseLogger } from "@fabianopinto/logger";
+import { ObjectUtils } from "@fabianopinto/utils";
+
+import { Configuration } from "./configuration.js";
+import type { ConfigObject, ConfigurationOptions } from "./types.js";
+
+/**
+ * Options for the ConfigurationFactory.
+ */
+export interface ConfigurationFactoryOptions extends ConfigurationOptions {
+  /** Optional logger used during factory operations */
+  logger?: Logger;
+}
+
+/**
+ * ConfigurationFactory accumulates configuration from multiple sources and builds an immutable Configuration.
+ *
+ * Typical usage:
+ * - Add one or more JSON files with {@link addFile}
+ * - Add in-memory objects with {@link addObject}
+ * - Call {@link build} to initialize the global {@link Configuration}
+ *
+ * Static helpers {@link buildFromFiles} and {@link buildFromObject} provide convenient single-call flows.
+ */
+export class ConfigurationFactory {
+  private data: ConfigObject = {};
+  private readonly options?: ConfigurationFactoryOptions;
+  private readonly logger: Logger;
+
+  constructor(options?: ConfigurationFactoryOptions) {
+    this.options = options;
+    this.logger = (options?.logger ?? baseLogger).child({ module: "config-factory" });
+  }
+
+  /**
+   * Build and initialize Configuration from one or more JSON files.
+   *
+   * @param filePaths - Array of JSON file paths to read and merge (later files override earlier)
+   * @param options - Factory behavior options (logger, resolution toggle)
+   * @returns The initialized global {@link Configuration}
+   */
+  public static async buildFromFiles(
+    filePaths: string[],
+    options?: ConfigurationFactoryOptions,
+  ): Promise<Configuration> {
+    const factory = new ConfigurationFactory(options);
+    for (const file of filePaths) {
+      await factory.addFile(file);
+    }
+    return factory.build();
+  }
+
+  /**
+   * Build and initialize Configuration directly from an object.
+   *
+   * @param obj - Plain configuration object to merge
+   * @param options - Factory behavior options (logger, resolution toggle)
+   * @returns The initialized global {@link Configuration}
+   */
+  public static buildFromObject(
+    obj: ConfigObject,
+    options?: ConfigurationFactoryOptions,
+  ): Configuration {
+    const factory = new ConfigurationFactory(options);
+    factory.addObject(obj);
+    return factory.build();
+  }
+
+  /** Add a configuration object (deep-merged). */
+  public addObject(obj: ConfigObject): this {
+    this.logger.debug({ keys: Object.keys(obj) }, "Adding configuration object");
+    this.data = ObjectUtils.deepMerge(
+      this.data as Record<string, unknown>,
+      obj as Record<string, unknown>,
+    ) as ConfigObject;
+    return this;
+  }
+
+  /**
+   * Add a JSON file path. The file is read, parsed, and merged into the current data.
+   *
+   * Later merges override earlier keys. Throws {@link ConfigurationError} on read/parse failures.
+   *
+   * @param filePath - Path to a JSON file
+   * @returns This factory for chaining
+   */
+  public async addFile(filePath: string): Promise<this> {
+    try {
+      const full = path.resolve(filePath);
+      const raw = await readFile(full, "utf8");
+      const obj = JSON.parse(raw) as ConfigObject;
+      return this.addObject(obj);
+    } catch (error) {
+      this.logger.error({ error, filePath }, "Failed to add configuration file");
+      throw new ConfigurationError("Failed to read configuration file", {
+        code: "CONFIG_READ_FILE_ERROR",
+        cause: error as Error,
+        context: { filePath },
+        isOperational: true,
+      });
+    }
+  }
+
+  /**
+   * Build and initialize the global Configuration instance.
+   *
+   * @returns The created global {@link Configuration}
+   */
+  public build(): Configuration {
+    this.logger.info("Building configuration instance");
+    return Configuration.initialize(this.data, this.options);
+  }
+}
