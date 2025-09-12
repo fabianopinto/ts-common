@@ -26,8 +26,7 @@
     "clean": "rimraf dist || rm -rf dist",
     "test": "vitest run",
     "test:watch": "vitest",
-    "coverage": "vitest run --coverage",
-    "prepack": "pnpm clean && pnpm build"
+    "coverage": "vitest run --coverage"
   },
   "sideEffects": false,
   "publishConfig": {

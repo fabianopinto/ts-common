@@ -24,10 +24,9 @@
     "build": "tsup",
     "dev": "tsup --watch",
     "clean": "rimraf dist || rm -rf dist",
-    "test": "vitest run --passWithNoTests",
-    "test:watch": "vitest --passWithNoTests",
-    "coverage": "vitest run --coverage --passWithNoTests",
-    "prepack": "pnpm clean && pnpm build"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "sideEffects": false,
   "publishConfig": {
