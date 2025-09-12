@@ -59,10 +59,11 @@ export interface HttpErrorOptions extends AppErrorOptions {
 export class HttpError extends AppError {
   /**
    * Creates an instance of HttpError.
+   *
    * @param message - The error message.
    * @param options - The error options, including a mandatory `code`.
    */
-  constructor(message: string, options: HttpErrorOptions) {
+  public constructor(message: string, options: HttpErrorOptions) {
     super(message, {
       ...options,
       status: options.status ?? errorCodeToHttpStatus[options.code],
@@ -73,82 +74,90 @@ export class HttpError extends AppError {
 
   /**
    * Creates a `BAD_REQUEST` error.
+   *
    * @param message - The error message.
    * @param context - Optional context for the error.
    * @returns A new `HttpError` instance.
    */
-  static badRequest(message: string, context?: ErrorContext) {
+  public static badRequest(message: string, context?: ErrorContext) {
     return new HttpError(message, { code: ErrorCode.BAD_REQUEST, context });
   }
 
   /**
    * Creates a `NOT_FOUND` error.
+   *
    * @param message - The error message.
    * @param context - Optional context for the error.
    * @returns A new `HttpError` instance.
    */
-  static notFound(message: string, context?: ErrorContext) {
+  public static notFound(message: string, context?: ErrorContext) {
     return new HttpError(message, { code: ErrorCode.NOT_FOUND, context });
   }
 
   /**
    * Creates an `UNAUTHORIZED` error.
+   *
    * @param message - The error message.
    * @param context - Optional context for the error.
    * @returns A new `HttpError` instance.
    */
-  static unauthorized(message: string, context?: ErrorContext) {
+  public static unauthorized(message: string, context?: ErrorContext) {
     return new HttpError(message, { code: ErrorCode.UNAUTHORIZED, context });
   }
 
   /**
    * Creates a `FORBIDDEN` error.
+   *
    * @param message - The error message.
    * @param context - Optional context for the error.
    * @returns A new `HttpError` instance.
    */
-  static forbidden(message: string, context?: ErrorContext) {
+  public static forbidden(message: string, context?: ErrorContext) {
     return new HttpError(message, { code: ErrorCode.FORBIDDEN, context });
   }
 
   /**
    * Creates a `CONFLICT` error.
+   *
    * @param message - The error message.
    * @param context - Optional context for the error.
    * @returns A new `HttpError` instance.
    */
-  static conflict(message: string, context?: ErrorContext) {
+  public static conflict(message: string, context?: ErrorContext) {
     return new HttpError(message, { code: ErrorCode.CONFLICT, context });
   }
 
   /**
    * Creates an `UNPROCESSABLE_ENTITY` error.
+   *
    * @param message - The error message.
    * @param context - Optional context for the error.
    * @returns A new `HttpError` instance.
    */
-  static unprocessableEntity(message: string, context?: ErrorContext) {
+  public static unprocessableEntity(message: string, context?: ErrorContext) {
     return new HttpError(message, { code: ErrorCode.UNPROCESSABLE_ENTITY, context });
   }
 
   /**
    * Creates a `TOO_MANY_REQUESTS` error.
+   *
    * @param message - The error message.
    * @param context - Optional context for the error.
    * @returns A new `HttpError` instance.
    */
-  static tooManyRequests(message: string, context?: ErrorContext) {
+  public static tooManyRequests(message: string, context?: ErrorContext) {
     return new HttpError(message, { code: ErrorCode.TOO_MANY_REQUESTS, context });
   }
 
   /**
    * Creates an `INTERNAL_SERVER_ERROR`.
+   *
    * @param message - The error message.
    * @param cause - The original error or cause.
    * @param context - Optional context for the error.
    * @returns A new `HttpError` instance.
    */
-  static internalServerError(message: string, cause?: unknown, context?: ErrorContext) {
+  public static internalServerError(message: string, cause?: unknown, context?: ErrorContext) {
     return new HttpError(message, { code: ErrorCode.INTERNAL_SERVER_ERROR, cause, context });
   }
 }

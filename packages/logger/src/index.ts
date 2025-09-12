@@ -50,6 +50,7 @@ const VALID_LEVELS: readonly LogLevel[] = [
 
 /**
  * Normalizes an unknown value to a valid Pino level, falling back when invalid.
+ *
  * @param value - The incoming level value, typically from env or options.
  * @param fallback - The default level to use when value is invalid.
  * @returns A valid Pino level.
@@ -74,6 +75,7 @@ export interface Logger {
    *
    * Child loggers inherit settings from their parent but include
    * additional context information with each log message.
+   *
    * @param bindings - Context properties to include with every log message
    * @return A new child logger instance with the provided context
    *
@@ -89,6 +91,7 @@ export interface Logger {
    *
    * Useful for avoiding expensive operations when a particular
    * log level is not enabled.
+   *
    * @param level - The log level to check
    * @return True if the level is enabled, false otherwise
    *
@@ -105,6 +108,7 @@ export interface Logger {
    * Set the logger level
    *
    * Changes the minimum level at which logs will be output.
+   *
    * @param level - The new minimum log level
    *
    * @example
@@ -117,6 +121,7 @@ export interface Logger {
    * Log a trace message
    *
    * For very detailed diagnostic information (more verbose than debug).
+   *
    * @param obj - Optional context object to include with the message
    * @param msg - The log message
    * @param ...args - Optional format arguments (printf-style)
@@ -131,6 +136,7 @@ export interface Logger {
    * Log a debug message
    *
    * For diagnostic information useful during development and troubleshooting.
+   *
    * @param obj - Optional context object to include with the message
    * @param msg - The log message
    * @param ...args - Optional format arguments (printf-style)
@@ -145,6 +151,7 @@ export interface Logger {
    * Log an info message
    *
    * For general information about application operation.
+   *
    * @param obj - Optional context object to include with the message
    * @param msg - The log message
    * @param ...args - Optional format arguments (printf-style)
@@ -159,6 +166,7 @@ export interface Logger {
    * Log a warning message
    *
    * For potentially problematic situations that don't cause errors.
+   *
    * @param obj - Optional context object to include with the message
    * @param msg - The log message
    * @param ...args - Optional format arguments (printf-style)
@@ -173,6 +181,7 @@ export interface Logger {
    * Log an error message
    *
    * For error conditions that affect operation but don't stop the application.
+   *
    * @param obj - Optional context object (including error) to include with the message
    * @param msg - The log message
    * @param ...args - Optional format arguments (printf-style)
@@ -191,6 +200,7 @@ export interface Logger {
    * Log a fatal message
    *
    * For severe error conditions that will likely lead to application termination.
+   *
    * @param obj - Optional context object (including error) to include with the message
    * @param msg - The log message
    * @param ...args - Optional format arguments (printf-style)
@@ -241,6 +251,7 @@ const DEFAULT_OPTIONS: LoggerOptions = {
 
 /**
  * Creates Pino transport configuration based on options
+ *
  * @param options - Logger configuration options
  * @returns Pino transport configuration
  */
@@ -272,8 +283,6 @@ function createTransport(options: LoggerOptions) {
  *
  * Implements the Logger interface using Pino for high-performance
  * structured logging with support for different environments.
- * @class BaseLogger
- * @implements {Logger}
  */
 export class BaseLogger implements Logger {
   private logger: pino.Logger;
@@ -286,9 +295,10 @@ export class BaseLogger implements Logger {
 
   /**
    * Create a new logger instance
+   *
    * @param options - Configuration options for the logger
    */
-  constructor(options?: LoggerOptions) {
+  public constructor(options?: LoggerOptions) {
     // Resolve options at construction time to pick up environment changes
     const level = normalizeLevel(
       options?.level ?? process.env.LOG_LEVEL ?? DEFAULT_OPTIONS.level,
@@ -358,10 +368,11 @@ export class BaseLogger implements Logger {
 
   /**
    * Create a child logger with additional context
+   *
    * @param bindings - Context to include with every log from this child
    * @returns A new child logger instance
    */
-  child(bindings: Record<string, unknown>): Logger {
+  public child(bindings: Record<string, unknown>): Logger {
     const childLogger = new BaseLogger();
     const childPino = this.logger.child(bindings);
     childLogger.logger = childPino;
@@ -377,18 +388,20 @@ export class BaseLogger implements Logger {
 
   /**
    * Check if a log level is enabled
+   *
    * @param level - The log level to check
    * @returns True if the level is enabled, false otherwise
    */
-  isLevelEnabled(level: LogLevel): boolean {
+  public isLevelEnabled(level: LogLevel): boolean {
     return this.logger.isLevelEnabled(level);
   }
 
   /**
    * Set the minimum log level
+   *
    * @param level - The new minimum log level
    */
-  setLevel(level: LogLevel): void {
+  public setLevel(level: LogLevel): void {
     this.logger.level = level;
   }
 

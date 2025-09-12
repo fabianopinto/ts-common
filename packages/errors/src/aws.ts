@@ -18,10 +18,11 @@ import { AppError, AppErrorOptions } from "./base.js";
 export class AwsError extends AppError {
   /**
    * Creates an instance of AwsError.
+   *
    * @param message - The error message.
    * @param options - The error options.
    */
-  constructor(message: string, options: AppErrorOptions = {}) {
+  public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, { ...options, isOperational: true });
     this.name = "AwsError";
   }
@@ -36,10 +37,11 @@ export class AwsError extends AppError {
 export class S3Error extends AwsError {
   /**
    * Creates an instance of S3Error.
+   *
    * @param message - The error message.
    * @param options - The error options.
    */
-  constructor(message: string, options: AppErrorOptions = {}) {
+  public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);
     this.name = "S3Error";
   }
@@ -47,14 +49,18 @@ export class S3Error extends AwsError {
 
 /**
  * An error for AWS DynamoDB service-related issues.
+ *
+ * @example
+ * throw new DynamoDbError("DynamoDB getItem failed", { code: "DYNAMODB_GET_ERROR" });
  */
 export class DynamoDbError extends AwsError {
   /**
    * Creates an instance of DynamoDbError.
+   *
    * @param message - The error message.
    * @param options - The error options.
    */
-  constructor(message: string, options: AppErrorOptions = {}) {
+  public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);
     this.name = "DynamoDbError";
   }
@@ -69,10 +75,11 @@ export class DynamoDbError extends AwsError {
 export class LambdaError extends AwsError {
   /**
    * Creates an instance of LambdaError.
+   *
    * @param message - The error message.
    * @param options - The error options.
    */
-  constructor(message: string, options: AppErrorOptions = {}) {
+  public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);
     this.name = "LambdaError";
   }
@@ -87,10 +94,11 @@ export class LambdaError extends AwsError {
 export class SqsError extends AwsError {
   /**
    * Creates an instance of SqsError.
+   *
    * @param message - The error message.
    * @param options - The error options.
    */
-  constructor(message: string, options: AppErrorOptions = {}) {
+  public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);
     this.name = "SqsError";
   }
@@ -105,10 +113,11 @@ export class SqsError extends AwsError {
 export class SnsError extends AwsError {
   /**
    * Creates an instance of SnsError.
+   *
    * @param message - The error message.
    * @param options - The error options.
    */
-  constructor(message: string, options: AppErrorOptions = {}) {
+  public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);
     this.name = "SnsError";
   }

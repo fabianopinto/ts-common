@@ -13,10 +13,11 @@ import { AppError, AppErrorOptions } from "./base.js";
 export class DataError extends AppError {
   /**
    * Creates an instance of DataError.
+   *
    * @param message - The error message.
    * @param options - The error options.
    */
-  constructor(message: string, options: AppErrorOptions = {}) {
+  public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, { ...options, isOperational: true });
     this.name = "DataError";
   }
@@ -28,10 +29,11 @@ export class DataError extends AppError {
 export class ValidationError extends DataError {
   /**
    * Creates an instance of ValidationError.
+   *
    * @param message - The error message.
    * @param options - The error options.
    */
-  constructor(message: string, options: AppErrorOptions = {}) {
+  public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);
     this.name = "ValidationError";
   }
@@ -43,10 +45,11 @@ export class ValidationError extends DataError {
 export class TransformationError extends DataError {
   /**
    * Creates an instance of TransformationError.
+   *
    * @param message - The error message.
    * @param options - The error options.
    */
-  constructor(message: string, options: AppErrorOptions = {}) {
+  public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);
     this.name = "TransformationError";
   }

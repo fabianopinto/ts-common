@@ -13,10 +13,11 @@ import { AppError, AppErrorOptions } from "./base.js";
 export class ConfigurationError extends AppError {
   /**
    * Creates an instance of ConfigurationError.
+   *
    * @param message - The error message.
    * @param options - The error options.
    */
-  constructor(message: string, options: AppErrorOptions = {}) {
+  public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, { ...options, isOperational: false });
     this.name = "ConfigurationError";
   }
@@ -29,10 +30,11 @@ export class ConfigurationError extends AppError {
 export class DatabaseError extends AppError {
   /**
    * Creates an instance of DatabaseError.
+   *
    * @param message - The error message.
    * @param options - The error options.
    */
-  constructor(message: string, options: AppErrorOptions = {}) {
+  public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, { ...options, isOperational: true });
     this.name = "DatabaseError";
   }
@@ -45,10 +47,11 @@ export class DatabaseError extends AppError {
 export class ThirdPartyServiceError extends AppError {
   /**
    * Creates an instance of ThirdPartyServiceError.
+   *
    * @param message - The error message.
    * @param options - The error options.
    */
-  constructor(message: string, options: AppErrorOptions = {}) {
+  public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, { ...options, isOperational: true });
     this.name = "ThirdPartyServiceError";
   }

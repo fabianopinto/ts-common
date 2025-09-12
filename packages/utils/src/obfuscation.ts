@@ -14,7 +14,9 @@
 
 import { logger } from "@fabianopinto/logger";
 
-/** Options for partial masking */
+/**
+ * Options for partial masking
+ */
 export interface PartialMaskOptions {
   /** How many characters to keep visible at the start. Default: 2 */
   visibleStart?: number;
@@ -26,7 +28,9 @@ export interface PartialMaskOptions {
   minMasked?: number;
 }
 
-/** Options for object obfuscation */
+/**
+ * Options for object obfuscation
+ */
 export interface ObfuscateObjectOptions extends PartialMaskOptions {
   /**
    * Property name patterns that should be masked when encountered.

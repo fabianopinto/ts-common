@@ -20,6 +20,9 @@ import { logger } from "@fabianopinto/logger";
  */
 export type BackoffStrategy = "fixed" | "exponential" | "exponential-jitter";
 
+/**
+ * Options for retry operations.
+ */
 export interface RetryOptions {
   /** Number of retries after the first attempt (total attempts = retries + 1). */
   retries?: number;

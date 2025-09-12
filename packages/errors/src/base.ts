@@ -40,11 +40,13 @@ export class BaseError extends Error {
 
   /**
    * Creates an instance of BaseError.
+   *
    * @param message - The error message.
    * @param options - The error options.
    */
-  constructor(message: string, options: BaseErrorOptions = {}) {
-    super(message, options.cause !== undefined ? { cause: options.cause as Error } : undefined);
+  public constructor(message: string, options: BaseErrorOptions = {}) {
+    // Avoid relying on ErrorOptions (cause) to maintain compatibility across TS/lib targets
+    super(message);
     this.name = new.target.name;
     Object.setPrototypeOf(this, new.target.prototype);
 
@@ -56,9 +58,10 @@ export class BaseError extends Error {
 
   /**
    * Returns a JSON representation of the error.
+   *
    * @returns A plain object representing the error.
    */
-  toJSON() {
+  public toJSON() {
     return {
       name: this.name,
       message: this.message,
@@ -89,20 +92,22 @@ export class AppError extends BaseError {
 
   /**
    * Creates an instance of AppError.
+   *
    * @param message - The error message.
    * @param options - The error options.
    */
-  constructor(message: string, options: AppErrorOptions = {}) {
+  public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);
     this.status = options.status;
   }
 
   /**
    * Attaches or merges extra context to the error.
+   *
    * @param extra - The extra context to add.
    * @returns A new `AppError` instance with the merged context.
    */
-  withContext(extra: ErrorContext): AppError {
+  public withContext(extra: ErrorContext): AppError {
     return new AppError(this.message, {
       code: this.code,
       status: this.status,
@@ -114,9 +119,10 @@ export class AppError extends BaseError {
 
   /**
    * Returns a JSON representation of the error.
+   *
    * @returns A plain object representing the error.
    */
-  toJSON() {
+  public toJSON() {
     return {
       ...super.toJSON(),
       status: this.status,
@@ -125,12 +131,13 @@ export class AppError extends BaseError {
 
   /**
    * Creates an `AppError` from an unknown error type.
+   *
    * @param err - The unknown error.
    * @param message - An optional new message for the error.
    * @param context - Optional context to add to the error.
    * @returns An `AppError` instance.
    */
-  static from(err: unknown, message?: string, context?: ErrorContext): AppError {
+  public static from(err: unknown, message?: string, context?: ErrorContext): AppError {
     if (err instanceof AppError) {
       return message || context
         ? new AppError(message ?? err.message, {
@@ -153,6 +160,7 @@ export class AppError extends BaseError {
 
 /**
  * Safely serializes the cause of an error.
+ *
  * @param cause - The error cause to serialize.
  * @returns A serializable representation of the cause.
  */
