@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write # allow changesets to create commits/tags
+  pull-requests: write # allow creating "Version Packages" PRs
   packages: write
 
 jobs:
