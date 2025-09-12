@@ -13,12 +13,28 @@ This package is part of the ts-common monorepo (see the [root README](../../READ
 ## Install
 
 ```bash
-pnpm add @fabianopinto/logger
+# Required peer: pino
+pnpm add @fabianopinto/logger pino
+# Optional (for pretty printing in local/dev): pino-pretty
+pnpm add -D pino-pretty
+
 # or
-npm i @fabianopinto/logger
+npm i @fabianopinto/logger pino && npm i -D pino-pretty
 # or
-yarn add @fabianopinto/logger
+yarn add @fabianopinto/logger pino && yarn add -D pino-pretty
 ```
+
+### Peer dependencies
+
+- `pino` — required peer dependency. You must install it in your app.
+- `pino-pretty` — optional peer dependency. Install it if you want pretty output in non-production environments.
+
+Notes:
+
+- This package declares `pino` and `pino-pretty` as peer dependencies so your application controls their versions.
+- We also develop and test with these peers as devDependencies internally, but they are not bundled.
+- If `pino` is missing at runtime, importing/using the logger will throw a module resolution error.
+- If `pino-pretty` is missing and you enable `pretty: true`, the logger will gracefully fall back to JSON output.
 
 ## Import
 
