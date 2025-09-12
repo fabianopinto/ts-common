@@ -22,10 +22,13 @@ graph TD
   logger["@fabianopinto/logger"]
   utils["@fabianopinto/utils"]
 
-  errors --> config
-  errors --> logger
-  utils -.-> config
-  utils -.-> logger
+  %% Internal package dependencies (direction: dependent --> dependency)
+  logger --> errors
+  utils --> errors
+  utils --> logger
+  config --> errors
+  config --> utils
+  config --> logger
 ```
 
 ## Tech stack
