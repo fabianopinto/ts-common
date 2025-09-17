@@ -13,15 +13,20 @@ export class MskError extends AwsError {
   /**
    * Creates an instance of MskError.
    *
-   * @param message - The error message.
-   * @param options - Additional error options and context.
+   * @param message - Error message
+   * @param options - Additional error options and context
    */
   public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);
     this.name = "MskError";
   }
 
-  /** MSK cluster not found. */
+  /**
+   * MSK cluster not found.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static clusterNotFound(message = "MSK cluster not found", options: AppErrorOptions = {}) {
     // There isn't a specific code defined earlier; using CLUSTER_NOT_FOUND from AwsErrorCodes.MSK
     return makeAwsServiceError(
@@ -35,7 +40,12 @@ export class MskError extends AwsError {
     );
   }
 
-  /** Throttling on MSK operations. */
+  /**
+   * Throttling on MSK operations.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static throttling(message = "MSK throttling", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       MskError,
@@ -48,7 +58,12 @@ export class MskError extends AwsError {
     );
   }
 
-  /** Access denied by IAM policies. */
+  /**
+   * Access denied by IAM policies.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static accessDenied(message = "MSK access denied", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       MskError,
@@ -61,7 +76,12 @@ export class MskError extends AwsError {
     );
   }
 
-  /** Validation error. */
+  /**
+   * Validation error.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static validation(message = "MSK validation error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       MskError,
@@ -74,7 +94,12 @@ export class MskError extends AwsError {
     );
   }
 
-  /** Timeout while calling MSK. */
+  /**
+   * Timeout while calling MSK.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static timeout(message = "MSK request timed out", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       MskError,
@@ -87,7 +112,12 @@ export class MskError extends AwsError {
     );
   }
 
-  /** Internal error in MSK service. */
+  /**
+   * Internal error in MSK service.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static internal(message = "MSK internal error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       MskError,

@@ -13,15 +13,20 @@ export class StepFunctionsError extends AwsError {
   /**
    * Creates an instance of StepFunctionsError.
    *
-   * @param message - The error message.
-   * @param options - Additional error options and context.
+   * @param message - Error message
+   * @param options - Additional error options and context
    */
   public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);
     this.name = "StepFunctionsError";
   }
 
-  /** Execution not found. */
+  /**
+   * Execution not found.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static executionNotFound(message = "Execution not found", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       StepFunctionsError,
@@ -34,7 +39,12 @@ export class StepFunctionsError extends AwsError {
     );
   }
 
-  /** State machine not found. */
+  /**
+   * State machine not found.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static stateMachineNotFound(
     message = "State machine not found",
     options: AppErrorOptions = {},
@@ -50,7 +60,12 @@ export class StepFunctionsError extends AwsError {
     );
   }
 
-  /** Throttled Step Functions request. */
+  /**
+   * Throttled Step Functions request.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static throttling(message = "Step Functions throttling", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       StepFunctionsError,
@@ -63,7 +78,12 @@ export class StepFunctionsError extends AwsError {
     );
   }
 
-  /** Access denied by IAM policies. */
+  /**
+   * Access denied by IAM policies.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static accessDenied(
     message = "Step Functions access denied",
     options: AppErrorOptions = {},
@@ -79,7 +99,12 @@ export class StepFunctionsError extends AwsError {
     );
   }
 
-  /** Validation error in Step Functions API. */
+  /**
+   * Validation error in Step Functions API.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static validation(
     message = "Step Functions validation error",
     options: AppErrorOptions = {},
@@ -95,7 +120,12 @@ export class StepFunctionsError extends AwsError {
     );
   }
 
-  /** Internal error in Step Functions service. */
+  /**
+   * Internal error in Step Functions service.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static internal(message = "Step Functions internal error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       StepFunctionsError,

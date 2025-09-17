@@ -23,6 +23,12 @@ export type CanonicalService =
   | "APIGATEWAY"
   | "STEPFUNCTIONS";
 
+/**
+ * Normalizes service names to canonical values.
+ *
+ * @param input - The service name to normalize
+ * @returns The canonical service name, or undefined if the input is invalid
+ */
 export function canonicalService(input?: string): CanonicalService | undefined {
   if (!input) return undefined;
   // Normalize by lowercasing and removing non-alphanumeric characters so

@@ -13,15 +13,20 @@ export class KinesisError extends AwsError {
   /**
    * Creates an instance of KinesisError.
    *
-   * @param message - The error message.
-   * @param options - Additional error options and context.
+   * @param message - Error message
+   * @param options - Additional error options and context
    */
   public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);
     this.name = "KinesisError";
   }
 
-  /** Provisioned throughput exceeded (throttling) on Kinesis streams. */
+  /**
+   * Provisioned throughput exceeded (throttling) on Kinesis streams.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static provisionedThroughputExceeded(
     message = "Kinesis provisioned throughput exceeded",
     options: AppErrorOptions = {},
@@ -37,7 +42,12 @@ export class KinesisError extends AwsError {
     );
   }
 
-  /** General throttling on Kinesis operations. */
+  /**
+   * General throttling on Kinesis operations.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static throttling(message = "Kinesis throttling", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       KinesisError,
@@ -50,7 +60,12 @@ export class KinesisError extends AwsError {
     );
   }
 
-  /** Stream not found. */
+  /**
+   * Stream not found.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static streamNotFound(
     message = "Kinesis stream not found",
     options: AppErrorOptions = {},
@@ -66,7 +81,12 @@ export class KinesisError extends AwsError {
     );
   }
 
-  /** Access denied by IAM/KMS policies. */
+  /**
+   * Access denied by IAM/KMS policies.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static accessDenied(message = "Kinesis access denied", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       KinesisError,
@@ -79,7 +99,12 @@ export class KinesisError extends AwsError {
     );
   }
 
-  /** Validation error in the request parameters. */
+  /**
+   * Validation error in the request parameters.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static validation(message = "Kinesis validation error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       KinesisError,
@@ -92,7 +117,12 @@ export class KinesisError extends AwsError {
     );
   }
 
-  /** Network or service timeout. */
+  /**
+   * Network or service timeout.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static timeout(message = "Kinesis request timed out", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       KinesisError,
@@ -105,7 +135,12 @@ export class KinesisError extends AwsError {
     );
   }
 
-  /** Internal error returned by Kinesis service. */
+  /**
+   * Internal error returned by Kinesis service.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static internal(message = "Kinesis internal error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       KinesisError,

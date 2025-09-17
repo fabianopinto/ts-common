@@ -13,15 +13,20 @@ export class DynamoDbError extends AwsError {
   /**
    * Creates an instance of DynamoDbError.
    *
-   * @param message - The error message.
-   * @param options - Additional error options and context.
+   * @param message - Error message
+   * @param options - Additional error options and context
    */
   public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);
     this.name = "DynamoDbError";
   }
 
-  /** Conditional check failed (e.g., Put/Update with ConditionExpression). */
+  /**
+   * Conditional check failed (e.g., Put/Update with ConditionExpression).
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static conditionalCheckFailed(
     message = "DynamoDB conditional check failed",
     options: AppErrorOptions = {},
@@ -37,7 +42,12 @@ export class DynamoDbError extends AwsError {
     );
   }
 
-  /** Provisioned throughput exceeded / request throttled. */
+  /**
+   * Provisioned throughput exceeded / request throttled.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static throughputExceeded(
     message = "DynamoDB provisioned throughput exceeded",
     options: AppErrorOptions = {},
@@ -53,7 +63,12 @@ export class DynamoDbError extends AwsError {
     );
   }
 
-  /** Item not found. */
+  /**
+   * Item not found.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static itemNotFound(message = "DynamoDB item not found", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       DynamoDbError,
@@ -66,7 +81,12 @@ export class DynamoDbError extends AwsError {
     );
   }
 
-  /** Transaction conflict/canceled/resource in use. */
+  /**
+   * Transaction conflict/canceled/resource in use.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static transactionConflict(
     message = "DynamoDB transaction conflict",
     options: AppErrorOptions = {},
@@ -82,7 +102,12 @@ export class DynamoDbError extends AwsError {
     );
   }
 
-  /** Access denied by IAM/KMS policies. */
+  /**
+   * Access denied by IAM/KMS policies.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static accessDenied(message = "DynamoDB access denied", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       DynamoDbError,
@@ -95,7 +120,12 @@ export class DynamoDbError extends AwsError {
     );
   }
 
-  /** Throttling. */
+  /**
+   * Throttling.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static throttling(message = "DynamoDB throttling", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       DynamoDbError,
@@ -108,7 +138,12 @@ export class DynamoDbError extends AwsError {
     );
   }
 
-  /** Validation errors from DynamoDB API. */
+  /**
+   * Validation errors from DynamoDB API.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static validation(message = "DynamoDB validation error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       DynamoDbError,
@@ -121,7 +156,12 @@ export class DynamoDbError extends AwsError {
     );
   }
 
-  /** Internal error returned by DynamoDB service. */
+  /**
+   * Internal error returned by DynamoDB service.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static internal(message = "DynamoDB internal error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       DynamoDbError,

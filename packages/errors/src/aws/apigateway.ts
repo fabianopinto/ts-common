@@ -13,15 +13,20 @@ export class ApiGatewayError extends AwsError {
   /**
    * Creates an instance of ApiGatewayError.
    *
-   * @param message - The error message.
-   * @param options - Additional error options and context.
+   * @param message - Error message
+   * @param options - Additional error options and context
    */
   public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);
     this.name = "ApiGatewayError";
   }
 
-  /** Resource not found. */
+  /**
+   * Resource not found.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static notFound(
     message = "API Gateway resource not found",
     options: AppErrorOptions = {},
@@ -37,7 +42,12 @@ export class ApiGatewayError extends AwsError {
     );
   }
 
-  /** Throttling. */
+  /**
+   * Throttling.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static throttling(message = "API Gateway throttling", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       ApiGatewayError,
@@ -50,7 +60,12 @@ export class ApiGatewayError extends AwsError {
     );
   }
 
-  /** Access denied. */
+  /**
+   * Access denied.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static accessDenied(message = "API Gateway access denied", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       ApiGatewayError,
@@ -63,7 +78,12 @@ export class ApiGatewayError extends AwsError {
     );
   }
 
-  /** Validation error in API Gateway. */
+  /**
+   * Validation error in API Gateway.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static validation(
     message = "API Gateway validation error",
     options: AppErrorOptions = {},
@@ -79,7 +99,12 @@ export class ApiGatewayError extends AwsError {
     );
   }
 
-  /** Timeout on API Gateway integration. */
+  /**
+   * Timeout on API Gateway integration.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static timeout(message = "API Gateway request timed out", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       ApiGatewayError,
@@ -92,7 +117,12 @@ export class ApiGatewayError extends AwsError {
     );
   }
 
-  /** Internal error in API Gateway service. */
+  /**
+   * Internal error in API Gateway service.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static internal(message = "API Gateway internal error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       ApiGatewayError,

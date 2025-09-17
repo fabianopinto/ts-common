@@ -13,15 +13,20 @@ export class LambdaError extends AwsError {
   /**
    * Creates an instance of LambdaError.
    *
-   * @param message - The error message.
-   * @param options - Additional error options and context.
+   * @param message - Error message
+   * @param options - Additional error options and context
    */
   public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);
     this.name = "LambdaError";
   }
 
-  /** Function/alias/version not found. */
+  /**
+   * Function/alias/version not found.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static functionNotFound(
     message = "Lambda function not found",
     options: AppErrorOptions = {},
@@ -37,7 +42,12 @@ export class LambdaError extends AwsError {
     );
   }
 
-  /** Throttled (TooManyRequests). */
+  /**
+   * Throttled (TooManyRequests).
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static throttling(message = "Lambda throttling", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       LambdaError,
@@ -50,7 +60,12 @@ export class LambdaError extends AwsError {
     );
   }
 
-  /** Access denied by IAM/KMS policies. */
+  /**
+   * Access denied by IAM/KMS policies.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static accessDenied(message = "Lambda access denied", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       LambdaError,
@@ -63,7 +78,12 @@ export class LambdaError extends AwsError {
     );
   }
 
-  /** Timeout while invoking/processing. */
+  /**
+   * Timeout while invoking/processing.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static timeout(message = "Lambda request timed out", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       LambdaError,
@@ -76,7 +96,12 @@ export class LambdaError extends AwsError {
     );
   }
 
-  /** Validation error from Lambda API. */
+  /**
+   * Validation error from Lambda API.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static validation(message = "Lambda validation error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       LambdaError,
@@ -89,7 +114,12 @@ export class LambdaError extends AwsError {
     );
   }
 
-  /** Lambda service unavailable. */
+  /**
+   * Lambda service unavailable.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static serviceUnavailable(
     message = "Lambda service unavailable",
     options: AppErrorOptions = {},
@@ -105,7 +135,12 @@ export class LambdaError extends AwsError {
     );
   }
 
-  /** Internal error returned by Lambda. */
+  /**
+   * Internal error returned by Lambda.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static internal(message = "Lambda internal error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       LambdaError,

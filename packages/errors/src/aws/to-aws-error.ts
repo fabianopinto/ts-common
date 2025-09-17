@@ -33,12 +33,12 @@ import { StsError } from "./sts.js";
  * found, applies cross-cutting fallbacks (e.g., throttling, timeout, auth) and
  * finally an HTTP-status-based fallback.
  *
- * @param err - The unknown error thrown by an AWS SDK call.
- * @param options - Optional mapping options.
- * @param options.service - Optional service hint; accepts `CanonicalService` or alias.
- * @param options.context - Additional context merged into the error.
- * @param options.message - Optional message override.
- * @returns A mapped `AwsError` or service-specific subclass instance.
+ * @param err - The unknown error thrown by an AWS SDK call
+ * @param options - Optional mapping options
+ * @param options.service - Optional service hint; accepts `CanonicalService` or alias
+ * @param options.context - Additional context merged into the error
+ * @param options.message - Optional message override
+ * @returns A mapped `AwsError` or service-specific subclass instance
  */
 export function toAwsError(
   err: unknown,
