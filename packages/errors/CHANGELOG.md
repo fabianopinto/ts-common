@@ -1,5 +1,11 @@
 # @fabianopinto/errors
 
+## 0.3.0
+
+### Minor Changes
+
+- 13cfdee: Modularized AWS error handling with standardized codes, improved JSDoc documentation, added conversion helpers and tests, and applied consistent formatting and cleanup across the codebase.
+
 ## 0.2.0
 
 ### Minor Changes
