@@ -14,15 +14,20 @@ export class SecretsManagerError extends AwsError {
   /**
    * Creates an instance of SecretsManagerError.
    *
-   * @param message - The error message.
-   * @param options - Additional error options and context.
+   * @param message - Error message
+   * @param options - Additional error options and context
    */
   public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);
     this.name = "SecretsManagerError";
   }
 
-  /** Secret was not found. */
+  /**
+   * Secret was not found.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static secretNotFound(message = "Secret not found", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       SecretsManagerError,
@@ -35,7 +40,12 @@ export class SecretsManagerError extends AwsError {
     );
   }
 
-  /** Decryption failure for secret value. */
+  /**
+   * Decryption failure for secret value.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static decryptionFailure(
     message = "Secret decryption failure",
     options: AppErrorOptions = {},
@@ -51,7 +61,12 @@ export class SecretsManagerError extends AwsError {
     );
   }
 
-  /** Throttled Secrets Manager operation. */
+  /**
+   * Throttled Secrets Manager operation.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static throttling(message = "Secrets Manager throttling", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       SecretsManagerError,
@@ -64,7 +79,12 @@ export class SecretsManagerError extends AwsError {
     );
   }
 
-  /** Access denied by IAM/KMS policies. */
+  /**
+   * Access denied by IAM/KMS policies.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static accessDenied(
     message = "Secrets Manager access denied",
     options: AppErrorOptions = {},
@@ -80,7 +100,12 @@ export class SecretsManagerError extends AwsError {
     );
   }
 
-  /** Validation error in Secrets Manager API. */
+  /**
+   * Validation error in Secrets Manager API.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static validation(
     message = "Secrets Manager validation error",
     options: AppErrorOptions = {},
@@ -96,7 +121,12 @@ export class SecretsManagerError extends AwsError {
     );
   }
 
-  /** Internal error in Secrets Manager service. */
+  /**
+   * Internal error in Secrets Manager service.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static internal(
     message = "Secrets Manager internal error",
     options: AppErrorOptions = {},

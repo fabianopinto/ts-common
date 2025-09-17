@@ -9,7 +9,12 @@ import { AppError, type AppErrorOptions } from "../base.js";
 
 export type { AppErrorOptions, ErrorContext } from "../base.js";
 
-/** Base error for AWS service-related issues. */
+/**
+ * Base error for AWS service-related issues.
+ *
+ * @param message - Error message
+ * @param options - The error options
+ */
 export class AwsError extends AppError {
   public constructor(message: string, options: AppErrorOptions = {}) {
     const { isOperational, ...rest } = options;
@@ -17,7 +22,12 @@ export class AwsError extends AppError {
     this.name = "AwsError";
   }
 
-  /** Authentication/authorization failure (e.g., invalid credentials, expired tokens). */
+  /**
+   * Authentication/authorization failure (e.g., invalid credentials, expired tokens).
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static authentication(
     message = "AWS authentication failed",
     options: AppErrorOptions = {},
@@ -33,7 +43,12 @@ export class AwsError extends AppError {
     );
   }
 
-  /** Access denied/forbidden error (e.g., IAM or KMS access denied). */
+  /**
+   * Access denied/forbidden error (e.g., IAM or KMS access denied).
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static accessDenied(message = "AWS access denied", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       AwsError,
@@ -46,7 +61,12 @@ export class AwsError extends AppError {
     );
   }
 
-  /** Throttling error (TooManyRequests / ProvisionedThroughputExceededException). */
+  /**
+   * Throttling error (TooManyRequests / ProvisionedThroughputExceededException).
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static throttling(message = "AWS throttling error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       AwsError,
@@ -59,7 +79,12 @@ export class AwsError extends AppError {
     );
   }
 
-  /** Timeout connecting to or waiting for AWS service. */
+  /**
+   * Timeout connecting to or waiting for AWS service.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static timeout(message = "AWS request timed out", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       AwsError,
@@ -72,7 +97,12 @@ export class AwsError extends AppError {
     );
   }
 
-  /** Resource not found (e.g., ParameterNotFound, NoSuchKey). */
+  /**
+   * Resource not found (e.g., ParameterNotFound, NoSuchKey).
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static notFound(message = "AWS resource not found", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       AwsError,
@@ -85,7 +115,12 @@ export class AwsError extends AppError {
     );
   }
 
-  /** Conflict/conditional check failed. */
+  /**
+   * Conflict/conditional check failed.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static conflict(message = "AWS resource conflict", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       AwsError,
@@ -98,7 +133,12 @@ export class AwsError extends AppError {
     );
   }
 
-  /** Validation/bad request error from AWS APIs. */
+  /**
+   * Validation/bad request error from AWS APIs.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static validation(message = "AWS validation error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       AwsError,
@@ -111,7 +151,12 @@ export class AwsError extends AppError {
     );
   }
 
-  /** AWS service unavailable or transient outage. */
+  /**
+   * AWS service unavailable or transient outage.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static serviceUnavailable(
     message = "AWS service unavailable",
     options: AppErrorOptions = {},
@@ -127,7 +172,12 @@ export class AwsError extends AppError {
     );
   }
 
-  /** Internal error returned by AWS service. */
+  /**
+   * Internal error returned by AWS service.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static internal(message = "AWS internal error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       AwsError,
@@ -150,10 +200,10 @@ export type AwsErrorCtor<E extends AwsError> = new (
 /**
  * Factory to create service errors with consistent defaults and overrides.
  *
- * @param Ctor - The service error class constructor.
- * @param message - The error message.
- * @param defaults - Default AppErrorOptions (e.g., `code`, `status`).
- * @param options - Optional overrides/extra context. `isOperational` defaults to true.
+ * @param Ctor - The service error class constructor
+ * @param message - Error message
+ * @param defaults - Default AppErrorOptions (e.g., `code`, `status`)
+ * @param options - Optional overrides/extra context. `isOperational` defaults to true
  */
 export function makeAwsServiceError<E extends AwsError>(
   Ctor: AwsErrorCtor<E>,

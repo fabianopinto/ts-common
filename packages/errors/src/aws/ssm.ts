@@ -13,15 +13,20 @@ export class SsmError extends AwsError {
   /**
    * Creates an instance of SsmError.
    *
-   * @param message - The error message.
-   * @param options - Additional error options and context.
+   * @param message - Error message
+   * @param options - Additional error options and context
    */
   public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);
     this.name = "SsmError";
   }
 
-  /** Parameter not found error (e.g., SSM ParameterNotFound). */
+  /**
+   * Parameter not found error (e.g., SSM ParameterNotFound).
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static parameterNotFound(
     message = "SSM parameter not found",
     options: AppErrorOptions = {},
@@ -37,7 +42,12 @@ export class SsmError extends AwsError {
     );
   }
 
-  /** Throttling error for SSM operations. */
+  /**
+   * Throttling error for SSM operations.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static throttling(message = "SSM throttling error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       SsmError,
@@ -50,7 +60,12 @@ export class SsmError extends AwsError {
     );
   }
 
-  /** Access denied for SSM operations. */
+  /**
+   * Access denied for SSM operations.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static accessDenied(message = "SSM access denied", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       SsmError,

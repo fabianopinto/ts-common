@@ -14,15 +14,20 @@ export class CloudWatchLogsError extends AwsError {
   /**
    * Creates an instance of CloudWatchLogsError.
    *
-   * @param message - The error message.
-   * @param options - Additional error options and context.
+   * @param message - Error message
+   * @param options - Additional error options and context
    */
   public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);
     this.name = "CloudWatchLogsError";
   }
 
-  /** Log group not found. */
+  /**
+   * Log group not found.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static logGroupNotFound(message = "Log group not found", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       CloudWatchLogsError,
@@ -35,7 +40,12 @@ export class CloudWatchLogsError extends AwsError {
     );
   }
 
-  /** Log stream not found. */
+  /**
+   * Log stream not found.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static logStreamNotFound(message = "Log stream not found", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       CloudWatchLogsError,
@@ -48,7 +58,12 @@ export class CloudWatchLogsError extends AwsError {
     );
   }
 
-  /** Throttled CloudWatch Logs operation. */
+  /**
+   * Throttled CloudWatch Logs operation.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static throttling(message = "CloudWatch Logs throttling", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       CloudWatchLogsError,
@@ -61,7 +76,12 @@ export class CloudWatchLogsError extends AwsError {
     );
   }
 
-  /** Access denied by IAM policies. */
+  /**
+   * Access denied by IAM policies.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static accessDenied(
     message = "CloudWatch Logs access denied",
     options: AppErrorOptions = {},
@@ -77,7 +97,12 @@ export class CloudWatchLogsError extends AwsError {
     );
   }
 
-  /** Validation errors in CloudWatch Logs API. */
+  /**
+   * Validation errors in CloudWatch Logs API.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static validation(
     message = "CloudWatch Logs validation error",
     options: AppErrorOptions = {},
@@ -93,7 +118,12 @@ export class CloudWatchLogsError extends AwsError {
     );
   }
 
-  /** CloudWatch Logs service unavailable. */
+  /**
+   * CloudWatch Logs service unavailable.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static serviceUnavailable(
     message = "CloudWatch Logs service unavailable",
     options: AppErrorOptions = {},

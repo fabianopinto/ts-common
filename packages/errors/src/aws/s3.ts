@@ -13,15 +13,20 @@ export class S3Error extends AwsError {
   /**
    * Creates an instance of S3Error.
    *
-   * @param message - The error message.
-   * @param options - Additional error options and context.
+   * @param message - Error message
+   * @param options - Additional error options and context
    */
   public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);
     this.name = "S3Error";
   }
 
-  /** Bucket was not found. */
+  /**
+   * Bucket was not found.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static bucketNotFound(message = "S3 bucket not found", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       S3Error,
@@ -34,7 +39,12 @@ export class S3Error extends AwsError {
     );
   }
 
-  /** Object (key) was not found. */
+  /**
+   * Object (key) was not found.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static objectNotFound(message = "S3 object not found", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       S3Error,
@@ -47,7 +57,12 @@ export class S3Error extends AwsError {
     );
   }
 
-  /** Access denied by S3/IAM/KMS policies. */
+  /**
+   * Access denied by S3/IAM/KMS policies.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static accessDenied(message = "S3 access denied", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       S3Error,
@@ -60,7 +75,12 @@ export class S3Error extends AwsError {
     );
   }
 
-  /** Throttling/SlowDown from S3. */
+  /**
+   * Throttling/SlowDown from S3.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static throttling(message = "S3 throttling", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       S3Error,
@@ -73,7 +93,12 @@ export class S3Error extends AwsError {
     );
   }
 
-  /** Invalid request/argument, precondition failed, etc. */
+  /**
+   * Invalid request/argument, precondition failed, etc.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static validation(message = "S3 validation error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       S3Error,
@@ -86,7 +111,12 @@ export class S3Error extends AwsError {
     );
   }
 
-  /** Network or service timeout. */
+  /**
+   * Network or service timeout.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static timeout(message = "S3 request timed out", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       S3Error,
@@ -99,7 +129,12 @@ export class S3Error extends AwsError {
     );
   }
 
-  /** Internal error returned by S3 service. */
+  /**
+   * Internal error returned by S3 service.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static internal(message = "S3 internal error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       S3Error,

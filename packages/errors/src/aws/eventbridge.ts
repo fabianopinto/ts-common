@@ -13,15 +13,20 @@ export class EventBridgeError extends AwsError {
   /**
    * Creates an instance of EventBridgeError.
    *
-   * @param message - The error message.
-   * @param options - Additional error options and context.
+   * @param message - Error message
+   * @param options - Additional error options and context
    */
   public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);
     this.name = "EventBridgeError";
   }
 
-  /** Event bus not found. */
+  /**
+   * Event bus not found.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static busNotFound(message = "Event bus not found", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       EventBridgeError,
@@ -34,7 +39,12 @@ export class EventBridgeError extends AwsError {
     );
   }
 
-  /** Rule not found. */
+  /**
+   * Rule not found.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static ruleNotFound(message = "Event rule not found", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       EventBridgeError,
@@ -47,7 +57,12 @@ export class EventBridgeError extends AwsError {
     );
   }
 
-  /** Throttled EventBridge operation. */
+  /**
+   * Throttled EventBridge operation.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static throttling(message = "EventBridge throttling", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       EventBridgeError,
@@ -60,7 +75,12 @@ export class EventBridgeError extends AwsError {
     );
   }
 
-  /** Access denied by IAM policies. */
+  /**
+   * Access denied by IAM policies.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static accessDenied(message = "EventBridge access denied", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       EventBridgeError,
@@ -73,7 +93,12 @@ export class EventBridgeError extends AwsError {
     );
   }
 
-  /** Validation error in EventBridge API. */
+  /**
+   * Validation error in EventBridge API.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static validation(
     message = "EventBridge validation error",
     options: AppErrorOptions = {},

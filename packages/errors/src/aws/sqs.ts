@@ -13,15 +13,20 @@ export class SqsError extends AwsError {
   /**
    * Creates an instance of SqsError.
    *
-   * @param message - The error message.
-   * @param options - Additional error options and context.
+   * @param message - Error message
+   * @param options - Additional error options and context
    */
   public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);
     this.name = "SqsError";
   }
 
-  /** Queue not found. */
+  /**
+   * Queue not found.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static queueNotFound(message = "SQS queue not found", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       SqsError,
@@ -34,7 +39,12 @@ export class SqsError extends AwsError {
     );
   }
 
-  /** Message too large. */
+  /**
+   * Message too large.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static messageTooLarge(message = "SQS message too large", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       SqsError,
@@ -47,7 +57,12 @@ export class SqsError extends AwsError {
     );
   }
 
-  /** Throttling. */
+  /**
+   * Throttling.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static throttling(message = "SQS throttling", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       SqsError,
@@ -60,7 +75,12 @@ export class SqsError extends AwsError {
     );
   }
 
-  /** Access denied by IAM/KMS policies. */
+  /**
+   * Access denied by IAM/KMS policies.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static accessDenied(message = "SQS access denied", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       SqsError,
@@ -73,7 +93,12 @@ export class SqsError extends AwsError {
     );
   }
 
-  /** Validation error from SQS API. */
+  /**
+   * Validation error from SQS API.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static validation(message = "SQS validation error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       SqsError,
@@ -86,7 +111,12 @@ export class SqsError extends AwsError {
     );
   }
 
-  /** Timeout while calling SQS. */
+  /**
+   * Timeout while calling SQS.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static timeout(message = "SQS request timed out", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       SqsError,
@@ -99,7 +129,12 @@ export class SqsError extends AwsError {
     );
   }
 
-  /** Internal error in SQS service. */
+  /**
+   * Internal error in SQS service.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static internal(message = "SQS internal error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       SqsError,

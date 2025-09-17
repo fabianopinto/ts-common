@@ -13,15 +13,20 @@ export class StsError extends AwsError {
   /**
    * Creates an instance of StsError.
    *
-   * @param message - The error message.
-   * @param options - Additional error options and context.
+   * @param message - Error message
+   * @param options - Additional error options and context
    */
   public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);
     this.name = "StsError";
   }
 
-  /** Authentication failure (ExpiredToken/InvalidClientTokenId/etc.). */
+  /**
+   * Authentication failure (ExpiredToken/InvalidClientTokenId/etc.).
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static authentication(
     message = "STS authentication failed",
     options: AppErrorOptions = {},
@@ -37,7 +42,12 @@ export class StsError extends AwsError {
     );
   }
 
-  /** Access denied. */
+  /**
+   * Access denied.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static accessDenied(message = "STS access denied", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       StsError,
@@ -50,7 +60,12 @@ export class StsError extends AwsError {
     );
   }
 
-  /** General throttling on STS operations. */
+  /**
+   * General throttling on STS operations.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static throttling(message = "STS throttling", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       StsError,
@@ -63,7 +78,12 @@ export class StsError extends AwsError {
     );
   }
 
-  /** Validation error in STS API. */
+  /**
+   * Validation error in STS API.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static validation(message = "STS validation error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       StsError,
@@ -76,7 +96,12 @@ export class StsError extends AwsError {
     );
   }
 
-  /** Timeout while calling STS. */
+  /**
+   * Timeout while calling STS.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static timeout(message = "STS request timed out", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       StsError,
@@ -89,7 +114,12 @@ export class StsError extends AwsError {
     );
   }
 
-  /** Internal error in STS service. */
+  /**
+   * Internal error in STS service.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static internal(message = "STS internal error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       StsError,

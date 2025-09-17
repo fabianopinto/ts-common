@@ -13,15 +13,20 @@ export class SnsError extends AwsError {
   /**
    * Creates an instance of SnsError.
    *
-   * @param message - The error message.
-   * @param options - Additional error options and context.
+   * @param message - Error message
+   * @param options - Additional error options and context
    */
   public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);
     this.name = "SnsError";
   }
 
-  /** Topic not found. */
+  /**
+   * Topic not found.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static topicNotFound(message = "SNS topic not found", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       SnsError,
@@ -34,7 +39,12 @@ export class SnsError extends AwsError {
     );
   }
 
-  /** Throttling. */
+  /**
+   * Throttling.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static throttling(message = "SNS throttling", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       SnsError,
@@ -47,7 +57,12 @@ export class SnsError extends AwsError {
     );
   }
 
-  /** Access denied by IAM/KMS policies. */
+  /**
+   * Access denied by IAM/KMS policies.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static accessDenied(message = "SNS access denied", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       SnsError,
@@ -60,7 +75,12 @@ export class SnsError extends AwsError {
     );
   }
 
-  /** Validation error from SNS API. */
+  /**
+   * Validation error from SNS API.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static validation(message = "SNS validation error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       SnsError,
@@ -73,7 +93,12 @@ export class SnsError extends AwsError {
     );
   }
 
-  /** Internal error in SNS service. */
+  /**
+   * Internal error in SNS service.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
   public static internal(message = "SNS internal error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
       SnsError,
