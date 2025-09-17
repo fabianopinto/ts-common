@@ -254,7 +254,11 @@ describe("BaseError additional coverage", () => {
 describe("AppError additional coverage", () => {
   it("withContext should not mutate original instance or its context", () => {
     const initialContext: ErrorContext = { a: 1 };
-    const original = new AppError("msg", { context: initialContext, status: 418, code: "I_AM_A_TEAPOT" });
+    const original = new AppError("msg", {
+      context: initialContext,
+      status: 418,
+      code: "I_AM_A_TEAPOT",
+    });
     const extra = { b: 2 };
     const next = original.withContext(extra);
 
@@ -271,7 +275,12 @@ describe("AppError additional coverage", () => {
   });
 
   it("AppError.from(AppError) should preserve status, code, and isOperational when rewrapping", () => {
-    const original = new AppError("orig", { status: 503, code: "SVC_UNAVAILABLE", isOperational: true, context: { k: 1 } });
+    const original = new AppError("orig", {
+      status: 503,
+      code: "SVC_UNAVAILABLE",
+      isOperational: true,
+      context: { k: 1 },
+    });
     const wrapped = AppError.from(original, "new msg", { x: 2 });
 
     expect(wrapped).not.toBe(original);

@@ -138,7 +138,12 @@ describe("ConfigurationError", () => {
     });
 
     it("should wrap AppError preserving details", () => {
-      const cause = new AppError("app", { code: "X", status: 418, isOperational: true, context: { k: 1 } });
+      const cause = new AppError("app", {
+        code: "X",
+        status: 418,
+        isOperational: true,
+        context: { k: 1 },
+      });
       const out = ConfigurationError.from(cause, "cfg");
       expect(out.message).toBe("cfg");
       expect(out.code).toBe("X");
@@ -227,7 +232,11 @@ describe("ConfigurationError", () => {
       const out = ConfigurationError.notFound("db.url");
       expect(out.code).toBe(ERR_CONFIG_MISSING);
       expect(out.status).toBe(404);
-      expect(out.context).toMatchObject({ path: "db.url", domain: "config", component: "configuration" });
+      expect(out.context).toMatchObject({
+        path: "db.url",
+        domain: "config",
+        component: "configuration",
+      });
     });
 
     it("invalid() should set status 400 and be non-operational", () => {
@@ -242,18 +251,28 @@ describe("ConfigurationError", () => {
       expect(out.code).toBe(ERR_CONFIG_MISSING);
       expect(out.status).toBe(500);
       expect(out.isOperational).toBe(false);
-      expect(out.context).toMatchObject({ source: "getConfig", domain: "config", component: "configuration" });
+      expect(out.context).toMatchObject({
+        source: "getConfig",
+        domain: "config",
+        component: "configuration",
+      });
     });
 
     it("referenceResolution() should annotate reason when provided", () => {
       const out = ConfigurationError.referenceResolution("no env var");
       expect(out.code).toBe(ERR_CONFIG_PARSE);
       expect(out.status).toBe(400);
-      expect(out.context).toMatchObject({ reason: "no env var", domain: "config", component: "configuration" });
+      expect(out.context).toMatchObject({
+        reason: "no env var",
+        domain: "config",
+        component: "configuration",
+      });
     });
 
     it("referenceResolution() should omit reason when undefined", () => {
-      const out = ConfigurationError.referenceResolution(undefined, undefined, { context: { x: 1 } });
+      const out = ConfigurationError.referenceResolution(undefined, undefined, {
+        context: { x: 1 },
+      });
       expect(out.code).toBe(ERR_CONFIG_PARSE);
       expect(out.status).toBe(400);
       // Should NOT have a reason key
@@ -307,14 +326,23 @@ describe("ConfigurationError", () => {
     });
 
     it("uninitialized() allows extra context and remains non-operational", () => {
-      const out = ConfigurationError.uninitialized("bootstrap", undefined, { context: { region: "eu" } });
+      const out = ConfigurationError.uninitialized("bootstrap", undefined, {
+        context: { region: "eu" },
+      });
       const json = out.toJSON();
       expect(json).toMatchObject({ code: ERR_CONFIG_MISSING, status: 500, isOperational: false });
-      expect(json.context).toMatchObject({ source: "bootstrap", component: "configuration", domain: "config", region: "eu" });
+      expect(json.context).toMatchObject({
+        source: "bootstrap",
+        component: "configuration",
+        domain: "config",
+        region: "eu",
+      });
     });
 
     it("uninitialized() should omit source when undefined", () => {
-      const out = ConfigurationError.uninitialized(undefined, undefined, { context: { env: "dev" } });
+      const out = ConfigurationError.uninitialized(undefined, undefined, {
+        context: { env: "dev" },
+      });
       const ctx = out.context ?? {};
       expect(out.code).toBe(ERR_CONFIG_MISSING);
       expect(out.status).toBe(500);

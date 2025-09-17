@@ -38,7 +38,11 @@ describe("DatabaseError toJSON", () => {
 
 describe("DatabaseError.withContext", () => {
   it("should merge context and preserve properties", () => {
-    const base = new DatabaseError("db", { code: DatabaseErrorCodes.TIMEOUT, status: 504, context: { a: 1 } });
+    const base = new DatabaseError("db", {
+      code: DatabaseErrorCodes.TIMEOUT,
+      status: 504,
+      context: { a: 1 },
+    });
     const next = base.withContext({ b: 2 });
     expect(next).not.toBe(base);
     expect(next.message).toBe("db");

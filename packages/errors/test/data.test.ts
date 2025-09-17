@@ -132,7 +132,12 @@ describe("DataError.from", () => {
   });
 
   it("wraps AppError preserving fields and setting cause", () => {
-    const app = new AppError("app boom", { code: "X", status: 503, isOperational: false, context: { s: 1 } });
+    const app = new AppError("app boom", {
+      code: "X",
+      status: 503,
+      isOperational: false,
+      context: { s: 1 },
+    });
     const out = DataError.from(app, undefined, { t: 2 });
     expect(out).toBeInstanceOf(DataError);
     expect(out.message).toBe("app boom");
@@ -512,7 +517,12 @@ describe("TransformationError helpers", () => {
 
 describe("Factory helpers and withContext nullish coalescing edge cases", () => {
   it("DataError.validation respects falsy status 0 and empty string code (but defaults isOperational true)", () => {
-    const err = DataError.validation("m", { code: "", status: 0, isOperational: false, context: { a: 1 } });
+    const err = DataError.validation("m", {
+      code: "",
+      status: 0,
+      isOperational: false,
+      context: { a: 1 },
+    });
     expect(err.code).toBe("");
     expect(err.status).toBe(0);
     expect(err.isOperational).toBe(true);
@@ -520,7 +530,12 @@ describe("Factory helpers and withContext nullish coalescing edge cases", () => 
   });
 
   it("DataError.transformation respects falsy status 0 and empty string code (but defaults isOperational true)", () => {
-    const err = DataError.transformation("boom", { code: "", status: 0, isOperational: false, context: { s: 1 } });
+    const err = DataError.transformation("boom", {
+      code: "",
+      status: 0,
+      isOperational: false,
+      context: { s: 1 },
+    });
     expect(err.code).toBe("");
     expect(err.status).toBe(0);
     expect(err.isOperational).toBe(true);

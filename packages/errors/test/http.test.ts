@@ -318,7 +318,12 @@ describe("HttpError", () => {
   describe("toJSON shape", () => {
     it("serializes BAD_REQUEST with context and cause", () => {
       const cause = new Error("invalid");
-      const err = new HttpError("bad", { code: ErrorCode.BAD_REQUEST, context: { field: "q" }, status: 400, cause });
+      const err = new HttpError("bad", {
+        code: ErrorCode.BAD_REQUEST,
+        context: { field: "q" },
+        status: 400,
+        cause,
+      });
       const json = err.toJSON();
       expect(json).toMatchObject({
         name: "HttpError",
