@@ -6,7 +6,13 @@
  * `AwsErrorCodes.SecretsManager.*`.
  */
 
-import { type AppErrorOptions, AwsError, makeAwsServiceError } from "./base.js";
+import {
+  type AppErrorOptions,
+  AwsError,
+  type ErrorContext,
+  fromAwsError,
+  makeAwsServiceError,
+} from "./base.js";
 import { AwsErrorCodes } from "./codes.js";
 
 /** An error for AWS Secrets Manager service-related issues. */
@@ -20,6 +26,24 @@ export class SecretsManagerError extends AwsError {
   public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);
     this.name = "SecretsManagerError";
+  }
+
+  /**
+   * Create a SecretsManagerError from an unknown input.
+   *
+   * @param err - Error to convert
+   * @param message - Error message
+   * @param context - Optional context to merge
+   * @returns A SecretsManagerError instance
+   */
+  public static from(err: unknown, message?: string, context?: ErrorContext): SecretsManagerError {
+    return fromAwsError(
+      SecretsManagerError,
+      err,
+      { code: AwsErrorCodes.SecretsManager.INTERNAL_ERROR, status: 500 },
+      message,
+      context,
+    );
   }
 
   /**

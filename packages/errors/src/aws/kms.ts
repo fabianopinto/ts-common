@@ -5,7 +5,13 @@
  * helpers that standardize `code` and HTTP `status` using `AwsErrorCodes.KMS.*`.
  */
 
-import { type AppErrorOptions, AwsError, makeAwsServiceError } from "./base.js";
+import {
+  type AppErrorOptions,
+  AwsError,
+  type ErrorContext,
+  fromAwsError,
+  makeAwsServiceError,
+} from "./base.js";
 import { AwsErrorCodes } from "./codes.js";
 
 /** An error for AWS KMS service-related issues. */
@@ -19,6 +25,24 @@ export class KmsError extends AwsError {
   public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);
     this.name = "KmsError";
+  }
+
+  /**
+   * Create a KmsError from an unknown input.
+   *
+   * @param err - Error to convert
+   * @param message - Error message
+   * @param context - Optional context to merge
+   * @returns A KmsError instance
+   */
+  public static from(err: unknown, message?: string, context?: ErrorContext): KmsError {
+    return fromAwsError(
+      KmsError,
+      err,
+      { code: AwsErrorCodes.KMS.INTERNAL_ERROR, status: 500 },
+      message,
+      context,
+    );
   }
 
   /**

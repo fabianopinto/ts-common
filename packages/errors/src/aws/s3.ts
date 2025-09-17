@@ -5,7 +5,13 @@
  * that standardize `code` and HTTP `status` using `AwsErrorCodes.S3.*`.
  */
 
-import { type AppErrorOptions, AwsError, makeAwsServiceError } from "./base.js";
+import {
+  type AppErrorOptions,
+  AwsError,
+  type ErrorContext,
+  fromAwsError,
+  makeAwsServiceError,
+} from "./base.js";
 import { AwsErrorCodes } from "./codes.js";
 
 /** An error for AWS S3 service-related issues. */
@@ -19,6 +25,24 @@ export class S3Error extends AwsError {
   public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);
     this.name = "S3Error";
+  }
+
+  /**
+   * Create an S3Error from an unknown input.
+   *
+   * @param err - Error to convert
+   * @param message - Error message
+   * @param context - Optional context to merge
+   * @returns An S3Error instance
+   */
+  public static from(err: unknown, message?: string, context?: ErrorContext): S3Error {
+    return fromAwsError(
+      S3Error,
+      err,
+      { code: AwsErrorCodes.S3.INTERNAL_ERROR, status: 500 },
+      message,
+      context,
+    );
   }
 
   /**

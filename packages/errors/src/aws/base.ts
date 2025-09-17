@@ -218,3 +218,60 @@ export function makeAwsServiceError<E extends AwsError>(
     isOperational: isOperational ?? true,
   });
 }
+
+/**
+ * Create a service-specific AwsError from an unknown input, preserving structure and context.
+ *
+ * @param Ctor - The service error class constructor
+ * @param err - Unknown error-like value
+ * @param message - Error message override
+ * @param context - Optional context to merge
+ * @param fallback - Fallback defaults for `code` and `status`
+ */
+export function fromAwsError<E extends AwsError>(
+  Ctor: AwsErrorCtor<E>,
+  err: unknown,
+  fallback: { code: string; status: number },
+  message?: string,
+  context?: Record<string, unknown>,
+): E {
+  if (err instanceof Ctor) {
+    return message || context
+      ? new Ctor(message ?? err.message, {
+          code: (err as unknown as { code?: string }).code ?? fallback.code,
+          status: (err as unknown as { status?: number }).status ?? fallback.status,
+          cause: (err as unknown as { cause?: unknown }).cause,
+          isOperational: (err as unknown as { isOperational?: boolean }).isOperational ?? true,
+          context: {
+            ...((err as unknown as { context?: Record<string, unknown> }).context ?? {}),
+            ...(context ?? {}),
+          },
+        })
+      : err;
+  }
+  if (err instanceof AppError) {
+    return new Ctor(message ?? err.message, {
+      code: (err as unknown as { code?: string }).code ?? fallback.code,
+      status: (err as unknown as { status?: number }).status ?? fallback.status,
+      cause: err,
+      isOperational: (err as unknown as { isOperational?: boolean }).isOperational ?? true,
+      context: { ...(err.context ?? {}), ...(context ?? {}) },
+    });
+  }
+  if (err instanceof Error) {
+    return new Ctor(message ?? err.message, {
+      code: fallback.code,
+      status: fallback.status,
+      cause: err,
+      isOperational: true,
+      context,
+    });
+  }
+  return new Ctor(message ?? "AWS service error", {
+    code: fallback.code,
+    status: fallback.status,
+    isOperational: true,
+    cause: err,
+    context,
+  });
+}

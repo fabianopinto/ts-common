@@ -6,7 +6,13 @@
  * `AwsErrorCodes.CloudWatchLogs.*`.
  */
 
-import { type AppErrorOptions, AwsError, makeAwsServiceError } from "./base.js";
+import {
+  type AppErrorOptions,
+  AwsError,
+  type ErrorContext,
+  fromAwsError,
+  makeAwsServiceError,
+} from "./base.js";
 import { AwsErrorCodes } from "./codes.js";
 
 /** An error for AWS CloudWatch Logs service-related issues. */
@@ -20,6 +26,24 @@ export class CloudWatchLogsError extends AwsError {
   public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);
     this.name = "CloudWatchLogsError";
+  }
+
+  /**
+   * Create a CloudWatchLogsError from an unknown input.
+   *
+   * @param err - Error to convert
+   * @param message - Error message
+   * @param context - Optional context to merge
+   * @returns A CloudWatchLogsError instance
+   */
+  public static from(err: unknown, message?: string, context?: ErrorContext): CloudWatchLogsError {
+    return fromAwsError(
+      CloudWatchLogsError,
+      err,
+      { code: AwsErrorCodes.CloudWatchLogs.SERVICE_UNAVAILABLE, status: 503 },
+      message,
+      context,
+    );
   }
 
   /**

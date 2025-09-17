@@ -5,7 +5,13 @@
  * helpers that standardize `code` and HTTP `status` using `AwsErrorCodes.SNS.*`.
  */
 
-import { type AppErrorOptions, AwsError, makeAwsServiceError } from "./base.js";
+import {
+  type AppErrorOptions,
+  AwsError,
+  type ErrorContext,
+  fromAwsError,
+  makeAwsServiceError,
+} from "./base.js";
 import { AwsErrorCodes } from "./codes.js";
 
 /** An error for Amazon SNS service-related issues. */
@@ -19,6 +25,24 @@ export class SnsError extends AwsError {
   public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);
     this.name = "SnsError";
+  }
+
+  /**
+   * Create an SnsError from an unknown input.
+   *
+   * @param err - Error to convert
+   * @param message - Error message
+   * @param context - Optional context to merge
+   * @returns An SnsError instance
+   */
+  public static from(err: unknown, message?: string, context?: ErrorContext): SnsError {
+    return fromAwsError(
+      SnsError,
+      err,
+      { code: AwsErrorCodes.SNS.INTERNAL_ERROR, status: 500 },
+      message,
+      context,
+    );
   }
 
   /**

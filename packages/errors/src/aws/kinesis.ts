@@ -5,7 +5,13 @@
  * helpers that standardize `code` and HTTP `status` using `AwsErrorCodes.Kinesis.*`.
  */
 
-import { type AppErrorOptions, AwsError, makeAwsServiceError } from "./base.js";
+import {
+  type AppErrorOptions,
+  AwsError,
+  type ErrorContext,
+  fromAwsError,
+  makeAwsServiceError,
+} from "./base.js";
 import { AwsErrorCodes } from "./codes.js";
 
 /** An error for AWS Kinesis service-related issues. */
@@ -19,6 +25,24 @@ export class KinesisError extends AwsError {
   public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);
     this.name = "KinesisError";
+  }
+
+  /**
+   * Create a KinesisError from an unknown input.
+   *
+   * @param err - Error to convert
+   * @param message - Error message
+   * @param context - Optional context to merge
+   * @returns A KinesisError instance
+   */
+  public static from(err: unknown, message?: string, context?: ErrorContext): KinesisError {
+    return fromAwsError(
+      KinesisError,
+      err,
+      { code: AwsErrorCodes.Kinesis.INTERNAL_ERROR, status: 500 },
+      message,
+      context,
+    );
   }
 
   /**

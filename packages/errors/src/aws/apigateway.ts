@@ -5,7 +5,13 @@
  * helpers that standardize `code` and HTTP `status` using `AwsErrorCodes.ApiGateway.*`.
  */
 
-import { type AppErrorOptions, AwsError, makeAwsServiceError } from "./base.js";
+import {
+  type AppErrorOptions,
+  AwsError,
+  type ErrorContext,
+  fromAwsError,
+  makeAwsServiceError,
+} from "./base.js";
 import { AwsErrorCodes } from "./codes.js";
 
 /** An error for Amazon API Gateway service-related issues. */
@@ -19,6 +25,24 @@ export class ApiGatewayError extends AwsError {
   public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);
     this.name = "ApiGatewayError";
+  }
+
+  /**
+   * Create an ApiGatewayError from an unknown input.
+   *
+   * @param err - Error to convert
+   * @param message - Error message
+   * @param context - Optional context to merge
+   * @returns An ApiGatewayError instance
+   */
+  public static from(err: unknown, message?: string, context?: ErrorContext): ApiGatewayError {
+    return fromAwsError(
+      ApiGatewayError,
+      err,
+      { code: AwsErrorCodes.ApiGateway.INTERNAL_ERROR, status: 500 },
+      message,
+      context,
+    );
   }
 
   /**
