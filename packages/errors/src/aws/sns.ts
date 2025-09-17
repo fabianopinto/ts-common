@@ -1,0 +1,137 @@
+/**
+ * @fileoverview AWS SNS error types and helpers.
+ *
+ * Defines `SnsError`, a service-specific error class with factory-backed
+ * helpers that standardize `code` and HTTP `status` using `AwsErrorCodes.SNS.*`.
+ */
+
+import {
+  type AppErrorOptions,
+  AwsError,
+  type ErrorContext,
+  fromAwsError,
+  makeAwsServiceError,
+} from "./base.js";
+import { AwsErrorCodes } from "./codes.js";
+
+/** An error for Amazon SNS service-related issues. */
+export class SnsError extends AwsError {
+  /**
+   * Creates an instance of SnsError.
+   *
+   * @param message - Error message
+   * @param options - Additional error options and context
+   */
+  public constructor(message: string, options: AppErrorOptions = {}) {
+    super(message, options);
+    this.name = "SnsError";
+  }
+
+  /**
+   * Create an SnsError from an unknown input.
+   *
+   * @param err - Error to convert
+   * @param message - Error message
+   * @param context - Optional context to merge
+   * @returns An SnsError instance
+   */
+  public static from(err: unknown, message?: string, context?: ErrorContext): SnsError {
+    return fromAwsError(
+      SnsError,
+      err,
+      { code: AwsErrorCodes.SNS.INTERNAL_ERROR, status: 500 },
+      message,
+      context,
+    );
+  }
+
+  /**
+   * Topic not found.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
+  public static topicNotFound(message = "SNS topic not found", options: AppErrorOptions = {}) {
+    return makeAwsServiceError(
+      SnsError,
+      message,
+      {
+        code: options.code ?? AwsErrorCodes.SNS.TOPIC_NOT_FOUND,
+        status: options.status ?? 404,
+      },
+      options,
+    );
+  }
+
+  /**
+   * Throttling.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
+  public static throttling(message = "SNS throttling", options: AppErrorOptions = {}) {
+    return makeAwsServiceError(
+      SnsError,
+      message,
+      {
+        code: options.code ?? AwsErrorCodes.SNS.THROTTLING,
+        status: options.status ?? 429,
+      },
+      options,
+    );
+  }
+
+  /**
+   * Access denied by IAM/KMS policies.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
+  public static accessDenied(message = "SNS access denied", options: AppErrorOptions = {}) {
+    return makeAwsServiceError(
+      SnsError,
+      message,
+      {
+        code: options.code ?? AwsErrorCodes.SNS.ACCESS_DENIED,
+        status: options.status ?? 403,
+      },
+      options,
+    );
+  }
+
+  /**
+   * Validation error from SNS API.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
+  public static validation(message = "SNS validation error", options: AppErrorOptions = {}) {
+    return makeAwsServiceError(
+      SnsError,
+      message,
+      {
+        code: options.code ?? AwsErrorCodes.SNS.VALIDATION_ERROR,
+        status: options.status ?? 400,
+      },
+      options,
+    );
+  }
+
+  /**
+   * Internal error in SNS service.
+   *
+   * @param message - Error message
+   * @param options - Additional error options
+   */
+  public static internal(message = "SNS internal error", options: AppErrorOptions = {}) {
+    return makeAwsServiceError(
+      SnsError,
+      message,
+      {
+        code: options.code ?? AwsErrorCodes.SNS.INTERNAL_ERROR,
+        status: options.status ?? 500,
+      },
+      options,
+    );
+  }
+}

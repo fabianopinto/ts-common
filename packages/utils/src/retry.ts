@@ -37,9 +37,9 @@ export interface RetryOptions {
   /**
    * Optional callback invoked on each attempt error before delaying.
    *
-   * @param error - The error that occurred.
-   * @param attempt - The current attempt number.
-   * @returns A promise that resolves when the callback is complete.
+   * @param error - The error that occurred
+   * @param attempt - The current attempt number
+   * @returns A promise that resolves when the callback is complete
    */
   onAttemptError?: (error: unknown, attempt: number) => void | Promise<void>;
   /** Optional AbortSignal to cancel retries and abort the operation. */
@@ -48,9 +48,9 @@ export interface RetryOptions {
    * Predicate to decide whether an error should be retried.
    * Return false to stop retrying and rethrow immediately.
    *
-   * @param error - The error that occurred.
-   * @param attempt - The current attempt number.
-   * @returns True if the error should be retried, false otherwise.
+   * @param error - The error that occurred
+   * @param attempt - The current attempt number
+   * @returns True if the error should be retried, false otherwise
    */
   shouldRetry?: (error: unknown, attempt: number) => boolean | Promise<boolean>;
 }
@@ -77,10 +77,10 @@ export class RetryExhaustedError extends Error {
   /**
    * Creates a new RetryExhaustedError.
    *
-   * @param message - The error message.
-   * @param attempts - The number of attempts performed.
-   * @param options - The resolved retry options used.
-   * @param cause - The original cause of the error (if any).
+   * @param message - Error message
+   * @param attempts - The number of attempts performed
+   * @param options - The resolved retry options used
+   * @param cause - The original cause of the error (if any)
    */
   public constructor(
     message: string,
@@ -113,8 +113,8 @@ const DEFAULTS: Omit<ResolvedRetryOptions, "maxDelayMs"> & {
 /**
  * Sleep for a specified duration.
  *
- * @param ms - The duration in milliseconds to sleep.
- * @returns A promise that resolves after the specified duration.
+ * @param ms - The duration in milliseconds to sleep
+ * @returns A promise that resolves after the specified duration
  */
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, Math.max(0, ms)));
@@ -123,10 +123,10 @@ function sleep(ms: number): Promise<void> {
 /**
  * Calculate the next delay based on the retry options.
  *
- * @param base - The base delay in milliseconds.
- * @param attempt - The current attempt number.
- * @param opts - The resolved retry options.
- * @returns The next delay in milliseconds.
+ * @param base - The base delay in milliseconds
+ * @param attempt - The current attempt number
+ * @param opts - The resolved retry options
+ * @returns The next delay in milliseconds
  */
 function nextDelay(base: number, attempt: number, opts: ResolvedRetryOptions): number {
   const { backoff, jitterRatio } = opts;
