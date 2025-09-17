@@ -1,5 +1,6 @@
 /**
- * @fileoverview Barrel exports for AWS error modules.
+ * @packageDocumentation
+ * Barrel exports for AWS error modules.
  *
  * Re-exports base types, service-specific error classes, and the `toAwsError`
  * mapper to provide a single import surface for AWS-related errors.
