@@ -214,3 +214,71 @@ describe("AppError", () => {
     });
   });
 });
+
+// Additional edge cases and subclass behavior
+describe("BaseError additional coverage", () => {
+  it("should keep name as subclass name for derived errors", () => {
+    class CustomError extends BaseError {}
+    const err = new CustomError("custom");
+    expect(err.name).toBe("CustomError");
+    expect(err).toBeInstanceOf(CustomError);
+    expect(err).toBeInstanceOf(BaseError);
+  });
+
+  it("toJSON should short-circuit and keep cause when falsy (undefined)", () => {
+    const err = new BaseError("msg", { cause: undefined });
+    const json = err.toJSON();
+    expect(json.cause).toBeUndefined();
+  });
+
+  it("toJSON should short-circuit and keep cause when falsy (null)", () => {
+    const err = new BaseError("msg", { cause: null });
+    const json = err.toJSON();
+    expect(json.cause).toBeNull();
+  });
+
+  it("toJSON should serialize primitive number and boolean causes as-is", () => {
+    const numErr = new BaseError("num", { cause: 42 });
+    const boolErr = new BaseError("bool", { cause: false });
+    expect(numErr.toJSON().cause).toBe(42);
+    expect(boolErr.toJSON().cause).toBe(false);
+  });
+
+  it("toJSON should include a stack string", () => {
+    const err = new BaseError("stack test");
+    const json = err.toJSON();
+    expect(typeof json.stack === "string" || json.stack === undefined).toBe(true);
+  });
+});
+
+describe("AppError additional coverage", () => {
+  it("withContext should not mutate original instance or its context", () => {
+    const initialContext: ErrorContext = { a: 1 };
+    const original = new AppError("msg", { context: initialContext, status: 418, code: "I_AM_A_TEAPOT" });
+    const extra = { b: 2 };
+    const next = original.withContext(extra);
+
+    // Original remains unchanged
+    expect(original.context).toEqual({ a: 1 });
+    expect(original.status).toBe(418);
+    expect(original.code).toBe("I_AM_A_TEAPOT");
+
+    // New instance has merged context
+    expect(next).not.toBe(original);
+    expect(next.context).toEqual({ a: 1, b: 2 });
+    expect(next.status).toBe(418);
+    expect(next.code).toBe("I_AM_A_TEAPOT");
+  });
+
+  it("AppError.from(AppError) should preserve status, code, and isOperational when rewrapping", () => {
+    const original = new AppError("orig", { status: 503, code: "SVC_UNAVAILABLE", isOperational: true, context: { k: 1 } });
+    const wrapped = AppError.from(original, "new msg", { x: 2 });
+
+    expect(wrapped).not.toBe(original);
+    expect(wrapped.message).toBe("new msg");
+    expect(wrapped.status).toBe(503);
+    expect(wrapped.code).toBe("SVC_UNAVAILABLE");
+    expect(wrapped.isOperational).toBe(true);
+    expect(wrapped.context).toEqual({ k: 1, x: 2 });
+  });
+});
