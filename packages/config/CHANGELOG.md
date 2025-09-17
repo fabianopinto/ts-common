@@ -1,5 +1,14 @@
 # @fabianopinto/config
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies [13cfdee]
+  - @fabianopinto/errors@0.3.0
+  - @fabianopinto/logger@0.2.1
+  - @fabianopinto/utils@0.2.1
+
 ## 0.2.0
 
 ### Minor Changes
