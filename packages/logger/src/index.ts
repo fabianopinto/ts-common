@@ -51,9 +51,9 @@ const VALID_LEVELS: readonly LogLevel[] = [
 /**
  * Normalizes an unknown value to a valid Pino level, falling back when invalid.
  *
- * @param value - The incoming level value, typically from env or options.
- * @param fallback - The default level to use when value is invalid.
- * @returns A valid Pino level.
+ * @param value - The incoming level value, typically from env or options
+ * @param fallback - The default level to use when value is invalid
+ * @returns A valid Pino level
  */
 function normalizeLevel(value: unknown, fallback: LogLevel): LogLevel {
   if (typeof value === "string" && (VALID_LEVELS as readonly string[]).includes(value)) {

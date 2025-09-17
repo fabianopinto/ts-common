@@ -14,8 +14,8 @@ export class DataError extends AppError {
   /**
    * Creates an instance of DataError.
    *
-   * @param message - The error message.
-   * @param options - The error options.
+   * @param message - Error message
+   * @param options - Error options
    */
   public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, { ...options, isOperational: true });
@@ -30,8 +30,8 @@ export class ValidationError extends DataError {
   /**
    * Creates an instance of ValidationError.
    *
-   * @param message - The error message.
-   * @param options - The error options.
+   * @param message - Error message
+   * @param options - Error options
    */
   public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);
@@ -46,8 +46,8 @@ export class TransformationError extends DataError {
   /**
    * Creates an instance of TransformationError.
    *
-   * @param message - The error message.
-   * @param options - The error options.
+   * @param message - Error message
+   * @param options - Error options
    */
   public constructor(message: string, options: AppErrorOptions = {}) {
     super(message, options);

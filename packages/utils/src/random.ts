@@ -17,10 +17,10 @@ import { randomBytes, randomInt as nodeRandomInt, randomUUID as nodeRandomUUID }
  * This function uses rejection sampling to avoid the modulo bias that can occur
  * when generating random numbers within a range using the modulo operator.
  *
- * @param min - The minimum value of the range (inclusive).
- * @param max - The maximum value of the range (inclusive).
- * @returns A random integer in the range [min, max].
- * @throws {RangeError} If min > max or the range is invalid.
+ * @param min - The minimum value of the range (inclusive)
+ * @param max - The maximum value of the range (inclusive)
+ * @returns A random integer in the range [min, max]
+ * @throws {RangeError} If min > max or the range is invalid
  */
 function randomIntRejection(min: number, max: number): number {
   const range = BigInt(max) - BigInt(min) + 1n;
@@ -45,7 +45,7 @@ export const RandomUtils = {
   /**
    * Generate a RFC 4122 v4 UUID.
    *
-   * @returns A random UUID string.
+   * @returns A random UUID string
    */
   uuid(): string {
     if (typeof nodeRandomUUID === "function") {
@@ -73,10 +73,10 @@ export const RandomUtils = {
    *
    * Uses Node's CSPRNG and applies rejection sampling when needed to avoid modulo bias.
    *
-   * @param min - The minimum value of the range (inclusive).
-   * @param max - The maximum value of the range (inclusive).
-   * @returns A random integer in the range [min, max].
-   * @throws {RangeError} If min > max or the range is invalid.
+   * @param min - The minimum value of the range (inclusive)
+   * @param max - The maximum value of the range (inclusive)
+   * @returns A random integer in the range [min, max]
+   * @throws {RangeError} If min > max or the range is invalid
    */
   randomInt(min: number, max: number): number {
     if (!Number.isFinite(min) || !Number.isFinite(max))
@@ -96,7 +96,7 @@ export const RandomUtils = {
    *
    * @param length - Desired output length
    * @param charset - Characters to sample from (default: alphanumeric)
-   * @returns A random string of the specified length.
+   * @returns A random string of the specified length
    */
   randomString(
     length: number,
@@ -130,9 +130,9 @@ export const RandomUtils = {
   /**
    * Pick a single random element from a non-empty array.
    *
-   * @param arr - The array to pick from.
-   * @returns A random element from the array.
-   * @throws {RangeError} If the array is empty.
+   * @param arr - The array to pick from
+   * @returns A random element from the array
+   * @throws {RangeError} If the array is empty
    */
   pickOne<T>(arr: T[]): T {
     if (arr.length === 0) throw new RangeError("array must be non-empty");
@@ -143,8 +143,8 @@ export const RandomUtils = {
   /**
    * Return a new array with elements shuffled using Fisher–Yates.
    *
-   * @param arr - The array to shuffle.
-   * @returns A new array with elements shuffled.
+   * @param arr - The array to shuffle
+   * @returns A new array with elements shuffled
    */
   shuffle<T>(arr: T[]): T[] {
     const copy = arr.slice();

@@ -5,9 +5,7 @@
 
 import { AppError, AppErrorOptions, ErrorContext } from "./base.js";
 
-/**
- * A collection of standard HTTP error codes.
- */
+/** A collection of standard HTTP error codes. */
 export enum ErrorCode {
   /** 400 Bad Request */
   BAD_REQUEST = "BAD_REQUEST",
@@ -60,8 +58,8 @@ export class HttpError extends AppError {
   /**
    * Creates an instance of HttpError.
    *
-   * @param message - The error message.
-   * @param options - The error options, including a mandatory `code`.
+   * @param message - Error message
+   * @param options - Error options, including a mandatory `code`
    */
   public constructor(message: string, options: HttpErrorOptions) {
     super(message, {
@@ -75,9 +73,9 @@ export class HttpError extends AppError {
   /**
    * Creates a `BAD_REQUEST` error.
    *
-   * @param message - The error message.
-   * @param context - Optional context for the error.
-   * @returns A new `HttpError` instance.
+   * @param message - Error message
+   * @param context - Optional context for the error
+   * @returns A new `HttpError` instance
    */
   public static badRequest(message: string, context?: ErrorContext) {
     return new HttpError(message, { code: ErrorCode.BAD_REQUEST, context });
@@ -86,9 +84,9 @@ export class HttpError extends AppError {
   /**
    * Creates a `NOT_FOUND` error.
    *
-   * @param message - The error message.
-   * @param context - Optional context for the error.
-   * @returns A new `HttpError` instance.
+   * @param message - Error message
+   * @param context - Optional context for the error
+   * @returns A new `HttpError` instance
    */
   public static notFound(message: string, context?: ErrorContext) {
     return new HttpError(message, { code: ErrorCode.NOT_FOUND, context });
@@ -97,9 +95,9 @@ export class HttpError extends AppError {
   /**
    * Creates an `UNAUTHORIZED` error.
    *
-   * @param message - The error message.
-   * @param context - Optional context for the error.
-   * @returns A new `HttpError` instance.
+   * @param message - Error message
+   * @param context - Optional context for the error
+   * @returns A new `HttpError` instance
    */
   public static unauthorized(message: string, context?: ErrorContext) {
     return new HttpError(message, { code: ErrorCode.UNAUTHORIZED, context });
@@ -108,9 +106,9 @@ export class HttpError extends AppError {
   /**
    * Creates a `FORBIDDEN` error.
    *
-   * @param message - The error message.
-   * @param context - Optional context for the error.
-   * @returns A new `HttpError` instance.
+   * @param message - Error message
+   * @param context - Optional context for the error
+   * @returns A new `HttpError` instance
    */
   public static forbidden(message: string, context?: ErrorContext) {
     return new HttpError(message, { code: ErrorCode.FORBIDDEN, context });
@@ -119,9 +117,9 @@ export class HttpError extends AppError {
   /**
    * Creates a `CONFLICT` error.
    *
-   * @param message - The error message.
-   * @param context - Optional context for the error.
-   * @returns A new `HttpError` instance.
+   * @param message - Error message
+   * @param context - Optional context for the error
+   * @returns A new `HttpError` instance
    */
   public static conflict(message: string, context?: ErrorContext) {
     return new HttpError(message, { code: ErrorCode.CONFLICT, context });
@@ -130,9 +128,9 @@ export class HttpError extends AppError {
   /**
    * Creates an `UNPROCESSABLE_ENTITY` error.
    *
-   * @param message - The error message.
-   * @param context - Optional context for the error.
-   * @returns A new `HttpError` instance.
+   * @param message - Error message
+   * @param context - Optional context for the error
+   * @returns A new `HttpError` instance
    */
   public static unprocessableEntity(message: string, context?: ErrorContext) {
     return new HttpError(message, { code: ErrorCode.UNPROCESSABLE_ENTITY, context });
@@ -141,9 +139,9 @@ export class HttpError extends AppError {
   /**
    * Creates a `TOO_MANY_REQUESTS` error.
    *
-   * @param message - The error message.
-   * @param context - Optional context for the error.
-   * @returns A new `HttpError` instance.
+   * @param message - Error message
+   * @param context - Optional context for the error
+   * @returns A new `HttpError` instance
    */
   public static tooManyRequests(message: string, context?: ErrorContext) {
     return new HttpError(message, { code: ErrorCode.TOO_MANY_REQUESTS, context });
@@ -152,10 +150,10 @@ export class HttpError extends AppError {
   /**
    * Creates an `INTERNAL_SERVER_ERROR`.
    *
-   * @param message - The error message.
-   * @param cause - The original error or cause.
-   * @param context - Optional context for the error.
-   * @returns A new `HttpError` instance.
+   * @param message - Error message
+   * @param cause - The original error or cause
+   * @param context - Optional context for the error
+   * @returns A new `HttpError` instance
    */
   public static internalServerError(message: string, cause?: unknown, context?: ErrorContext) {
     return new HttpError(message, { code: ErrorCode.INTERNAL_SERVER_ERROR, cause, context });
