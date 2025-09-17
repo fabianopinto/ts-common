@@ -44,3 +44,4 @@ pnpm-debug.log*
 # Misc
 *.swp
 *.swo
+.npmrc
