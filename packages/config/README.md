@@ -100,7 +100,7 @@ const {
   - `static initialize(data: ConfigObject, options?: ConfigurationOptions): Configuration`
   - `static getInstance(): Configuration`
   - `has(path: string): boolean`
-  - `getValue<T = unknown>(path: string): Promise<T | undefined>`
+  - `getValue<T = unknown>(path: string, options?: GetValueOptions): Promise<T | undefined>`
 - [`ConfigurationFactory`](./src/factory.ts)
   - `new ConfigurationFactory(options?: ConfigurationFactoryOptions)`
   - `addObject(obj: ConfigObject): this`
@@ -113,11 +113,11 @@ const {
 - [`DefaultConfigurationProvider`](./src/provider.ts)
   - Implements `ConfigurationProvider` by delegating to `Configuration.getInstance()`
 - [`resolvers`](./src/resolvers.ts)
-  - `resolveSSM(ssmPath: string, logger?: Logger): Promise<string>`
+  - `resolveSSM(ssmPath: string, logger?: Logger, opts?: { withDecryption?: boolean }): Promise<string>`
   - `resolveS3(s3Path: string, logger?: Logger): Promise<string>`
   - `isExternalRef(value: unknown): value is string`
 - [`types`](./src/types.ts)
-  - `ConfigValue`, `ConfigObject`, `ConfigurationOptions`, `ConfigurationProvider`
+  - `ConfigValue`, `ConfigObject`, `ConfigurationOptions`, `ResolutionOptions`, `GetValueOptions`, `ConfigurationProvider`
 
 ## Usage
 
@@ -156,7 +156,7 @@ Configuration.initialize(
       welcome: "s3://my-bucket/messages/welcome.txt",
     },
   },
-  { resolveExternal: true }, // default is true
+  { resolve: { external: true } }, // default is external=true
 );
 
 const cfg = Configuration.getInstance();
@@ -167,7 +167,15 @@ const welcomeMsg = await cfg.getValue<string>("templates.welcome"); // resolved 
 - Resolution uses `RetryUtils.retryAsync` under the hood for resilience.
 - Debug logs are emitted when `logger.isLevelEnabled("debug")` is true.
 
-To disable resolution (use raw values), set `resolveExternal: false` when initializing.
+To disable resolution (use raw values), you can either:
+
+- Set at instance level: `Configuration.initialize(data, { resolve: { external: false } })`
+- Or per call: `cfg.getValue(path, { resolve: false })`
+
+You can also control S3/SSM independently and SSM decryption:
+
+- Instance level: `resolve: { s3: false }`, `resolve: { ssm: false }`, `resolve: { ssmDecryption: false }`
+- Per call: `cfg.getValue(path, { resolve: { s3: true, ssm: false } })`, or `cfg.getValue(path, { ssmDecryption: false })`
 
 ### Factory usage (objects, JSON files, and S3 JSON)
 
@@ -213,12 +221,12 @@ classDiagram
   class Configuration {
     -readonly data: ConfigObject
     -readonly logger: Logger
-    -readonly resolveExternal: boolean
+    -readonly resolveOptions: ResolutionOptions
     +static initialize(data: ConfigObject, options?: ConfigurationOptions): Configuration
     +static getInstance(): Configuration
     +has(path: string): boolean
-    +getValue(path: string): Promise<unknown | undefined>
-    -maybeResolve(value: ConfigValue): Promise<ConfigValue>
+    +getValue(path: string, options?: GetValueOptions): Promise<unknown | undefined>
+    -maybeResolve(value: ConfigValue, eff?: ResolutionOptions): Promise<ConfigValue>
   }
 
   class ConfigurationFactory {
@@ -236,12 +244,12 @@ classDiagram
   class ConfigurationProvider {
     <<interface>>
     +has(path: string): boolean
-    +getValue(path: string): Promise<unknown | undefined>
+    +getValue(path: string, options?: GetValueOptions): Promise<unknown | undefined>
   }
 
   class DefaultConfigurationProvider {
     +has(path: string): boolean
-    +getValue(path: string): Promise<unknown | undefined>
+    +getValue(path: string, options?: GetValueOptions): Promise<unknown | undefined>
   }
 
   ConfigurationFactory --> Configuration
@@ -267,7 +275,7 @@ sequenceDiagram
   Factory-->>Factory: deepMerge(objects) arrays replaced by RHS
   App->>Factory: build()
   Factory->>Logger: options.logger ?? baseLogger.child({ module: "config" })
-  Factory->>Config: Configuration.initialize(mergedData, { logger, resolveExternal })
+  Factory->>Config: Configuration.initialize(mergedData, { logger, resolve: { external } })
   Config-->>Config: store singleton instance
 
   Note over App: Option B — Static helpers
@@ -278,7 +286,7 @@ sequenceDiagram
 
   Note over Provider: Access at call sites
   Provider->>Config: Configuration.getInstance()
-  Provider->>Config: has(path) / getValue(path)
+  Provider->>Config: has(path) / getValue(path, options?)
   Config-->>Provider: value (resolved if enabled)
 ```
 
@@ -359,7 +367,7 @@ await Configuration.getInstance().getValue("secrets.token");
 
 This package resolves `ssm://` and `s3://` references out of the box. To support additional schemes (for example, `vault://`), you can preprocess your configuration and disable built-in resolution, or compose at read-time.
 
-Option A — preprocess then initialize with `resolveExternal: false`:
+Option A — preprocess then initialize with `resolve: { external: false }`:
 
 ```ts
 import { Configuration } from "@fabianopinto/config";
@@ -385,7 +393,7 @@ const raw = {
 };
 
 const pre = await resolveCustomRefs(raw);
-Configuration.initialize(pre as any, { resolveExternal: true /* keep SSM/S3 */ });
+Configuration.initialize(pre as any, { resolve: { external: true } /* keep SSM/S3 */ });
 ```
 
 Option B — wrap calls to `getValue` and intercept your custom schemes first:
