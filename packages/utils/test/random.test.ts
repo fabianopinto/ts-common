@@ -1,5 +1,5 @@
 /**
- * @fileoverview Unit tests for RandomUtils in @fabianopinto/utils
+ * @fileoverview Unit tests for RandomUtils in @t68/utils
  */
 
 import { describe, it, expect, vi } from "vitest";

@@ -1,4 +1,4 @@
-# @fabianopinto/config
+# @t68/config
 
 Composable, immutable configuration for Node/TypeScript apps with type-safe access, dot-notation paths, and automatic resolution of external references (AWS SSM and S3). ESM-first with CJS compatibility.
 
@@ -6,13 +6,13 @@ Composable, immutable configuration for Node/TypeScript apps with type-safe acce
 - Composable `ConfigurationFactory` (merge objects and JSON files)
 - Dot-notation `getValue()` with optional auto-resolution of `ssm://` and `s3://` references
 - Pluggable provider abstraction: `ConfigurationProvider` and `DefaultConfigurationProvider`
-- Structured logging via `@fabianopinto/logger` and robust retries via `@fabianopinto/utils`
+- Structured logging via `@t68/logger` and robust retries via `@t68/utils`
 
 This package is part of the ts-common monorepo (see the [root README](../../README.md)) and integrates naturally with:
 
-- [@fabianopinto/errors](../errors/README.md) for structured error handling
-- [@fabianopinto/logger](../logger/README.md) for structured logging
-- [@fabianopinto/utils](../utils/README.md) for retry, object, and other helpers
+- [@t68/errors](../errors/README.md) for structured error handling
+- [@t68/logger](../logger/README.md) for structured logging
+- [@t68/utils](../utils/README.md) for retry, object, and other helpers
 
 ## Table of contents
 
@@ -33,7 +33,7 @@ This package is part of the ts-common monorepo (see the [root README](../../READ
 
 ```bash
 # Core package (requires pino as a peer)
-pnpm add @fabianopinto/config pino
+pnpm add @t68/config pino
 
 # Optional peers (only if you enable external reference resolution for ssm:// or s3://)
 pnpm add @aws-sdk/client-ssm @aws-sdk/client-s3
@@ -41,12 +41,12 @@ pnpm add @aws-sdk/client-ssm @aws-sdk/client-s3
 pnpm add -D pino-pretty
 
 # or
-npm i @fabianopinto/config pino
+npm i @t68/config pino
 npm i @aws-sdk/client-ssm @aws-sdk/client-s3 # optional
 npm i -D pino-pretty # optional
 
 # or
-yarn add @fabianopinto/config pino
+yarn add @t68/config pino
 yarn add @aws-sdk/client-ssm @aws-sdk/client-s3 # optional
 yarn add -D pino-pretty # optional
 ```
@@ -63,7 +63,7 @@ Notes:
 
 ### Transitive peer dependencies
 
-This package integrates with `@fabianopinto/logger`, which declares the following peer dependencies in your application:
+This package integrates with `@t68/logger`, which declares the following peer dependencies in your application:
 
 - `pino` — required peer dependency for logging.
 - `pino-pretty` — optional peer dependency (used only for pretty printing in non-production environments).
@@ -84,14 +84,14 @@ import {
   type ConfigurationProvider,
   type ConfigurationOptions,
   type ConfigObject,
-} from "@fabianopinto/config";
+} from "@t68/config";
 
 // CJS
 const {
   Configuration,
   ConfigurationFactory,
   DefaultConfigurationProvider,
-} = require("@fabianopinto/config");
+} = require("@t68/config");
 ```
 
 ## API
@@ -126,7 +126,7 @@ const {
 ### Initialize and read values
 
 ```ts
-import { Configuration } from "@fabianopinto/config";
+import { Configuration } from "@t68/config";
 
 // Minimal configuration
 Configuration.initialize({
@@ -147,7 +147,7 @@ const endpoint = await cfg.getValue<string>("service.endpoint");
 ### Resolve external references (SSM/S3)
 
 ```ts
-import { Configuration } from "@fabianopinto/config";
+import { Configuration } from "@t68/config";
 
 Configuration.initialize(
   {
@@ -185,7 +185,7 @@ You can also control S3/SSM independently and SSM decryption:
 To validate credentials and references upfront, preload the entire configuration tree at startup. This walks the tree and resolves all external references using the current instance-level flags, surfacing errors early.
 
 ```ts
-import { Configuration } from "@fabianopinto/config";
+import { Configuration } from "@t68/config";
 
 Configuration.initialize(data, { resolve: { external: true } });
 await Configuration.getInstance().preload();
@@ -204,7 +204,7 @@ During a single `getValue()` invocation, repeated external reference strings (e.
 ### Factory usage (objects, JSON files, and S3 JSON)
 
 ```ts
-import { ConfigurationFactory } from "@fabianopinto/config";
+import { ConfigurationFactory } from "@t68/config";
 
 // Compose from multiple sources (later sources override earlier ones)
 const cfg = await ConfigurationFactory.buildFromFiles(["./config/base.json", "./config/prod.json"]);
@@ -228,7 +228,7 @@ const cfg3 = await ConfigurationFactory.buildFromS3([
 ### Provider usage (DI-friendly)
 
 ```ts
-import { DefaultConfigurationProvider } from "@fabianopinto/config";
+import { DefaultConfigurationProvider } from "@t68/config";
 
 const provider = new DefaultConfigurationProvider();
 if (provider.has("service.endpoint")) {
@@ -290,7 +290,7 @@ sequenceDiagram
   participant App as Application
   participant Factory as ConfigurationFactory
   participant FS as FS (JSON)
-  participant Logger as @fabianopinto/logger
+  participant Logger as @t68/logger
   participant Config as Configuration
   participant Provider as ConfigurationProvider
 
@@ -345,8 +345,8 @@ You can implement your own provider to adapt `Configuration` to your DI containe
 
 ```ts
 // my-config-provider.ts
-import type { ConfigurationProvider } from "@fabianopinto/config";
-import { Configuration } from "@fabianopinto/config";
+import type { ConfigurationProvider } from "@t68/config";
+import { Configuration } from "@t68/config";
 
 export class MyConfigurationProvider implements ConfigurationProvider {
   constructor(private readonly prefix?: string) {}
@@ -371,11 +371,11 @@ if (provider.has("endpoint")) {
 
 ### Injecting a custom logger
 
-Provide your own logger (for example, a child of `@fabianopinto/logger`) to control verbosity and context.
+Provide your own logger (for example, a child of `@t68/logger`) to control verbosity and context.
 
 ```ts
-import { Configuration } from "@fabianopinto/config";
-import { logger } from "@fabianopinto/logger";
+import { Configuration } from "@t68/config";
+import { logger } from "@t68/logger";
 
 const cfgLogger = logger.child({ module: "config", app: "users" });
 cfgLogger.setLevel("debug");
@@ -396,7 +396,7 @@ This package resolves `ssm://` and `s3://` references out of the box. To support
 Option A — preprocess then initialize with `resolve: { external: false }`:
 
 ```ts
-import { Configuration } from "@fabianopinto/config";
+import { Configuration } from "@t68/config";
 
 async function resolveCustomRefs(obj: unknown): Promise<unknown> {
   if (Array.isArray(obj)) return Promise.all(obj.map(resolveCustomRefs));
@@ -425,7 +425,7 @@ Configuration.initialize(pre as any, { resolve: { external: true } /* keep SSM/S
 Option B — wrap calls to `getValue` and intercept your custom schemes first:
 
 ```ts
-import { Configuration } from "@fabianopinto/config";
+import { Configuration } from "@t68/config";
 
 async function getConfigValue<T = unknown>(path: string): Promise<T | undefined> {
   const val = await Configuration.getInstance().getValue<T | string>(path);

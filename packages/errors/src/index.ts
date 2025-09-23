@@ -1,6 +1,6 @@
 /**
  * @packageDocumentation
- * Entry point for the `@fabianopinto/errors` package. Re-exports error classes and types
+ * Entry point for the `@t68/errors` package. Re-exports error classes and types
  * from the submodules to provide a single import surface for consumers.
  */
 

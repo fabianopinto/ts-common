@@ -4,7 +4,7 @@ import { baseConfig } from "../../tsup.config";
 export default defineConfig({
   ...baseConfig,
   entry: ["src/index.ts"],
-  external: ["pino", "pino-pretty", "@fabianopinto/errors"],
+  external: ["pino", "pino-pretty", "@t68/errors"],
   dts: {
     resolve: true,
     compilerOptions: {

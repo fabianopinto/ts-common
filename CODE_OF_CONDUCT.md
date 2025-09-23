@@ -30,7 +30,7 @@ acceptable behavior.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported by contacting project maintainers at: security@fabianopinto.dev.
+reported by contacting project maintainers at: security@t68.dev.
 All complaints will be reviewed and investigated promptly and fairly.
 
 ## Attribution

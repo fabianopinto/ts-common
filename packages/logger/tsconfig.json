@@ -5,8 +5,8 @@
     "composite": true,
     "baseUrl": ".",
     "paths": {
-      "@fabianopinto/errors": ["../errors/dist/index.d.ts"],
-      "@fabianopinto/errors/*": ["../errors/dist/*"]
+      "@t68/errors": ["../errors/dist/index.d.ts"],
+      "@t68/errors/*": ["../errors/dist/*"]
     }
   },
   "include": ["src/**/*"],

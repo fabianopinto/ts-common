@@ -12,7 +12,7 @@
  * - Uses the shared `logger` for safe failure logging (warn level)
  */
 
-import { logger } from "@fabianopinto/logger";
+import { logger } from "@t68/logger";
 
 /**
  * Options for partial masking

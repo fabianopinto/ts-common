@@ -1,10 +1,10 @@
 /**
- * @fileoverview Unit tests for EnvUtils in @fabianopinto/utils
+ * @fileoverview Unit tests for EnvUtils in @t68/utils
  */
 
 import { describe, it, expect } from "vitest";
 import { EnvUtils } from "../src/env";
-import { ConfigurationError } from "@fabianopinto/errors";
+import { ConfigurationError } from "@t68/errors";
 
 function withPatchedEnv<T>(vars: Record<string, string | undefined>, fn: () => T): T {
   const old: Record<string, string | undefined> = {};

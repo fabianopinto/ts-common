@@ -1,6 +1,6 @@
 /**
  * @packageDocumentation
- * Entry point for the `@fabianopinto/config` package.
+ * Entry point for the `@t68/config` package.
  *
  * This barrel re-exports the public API: configuration types, factory, provider,
  * resolvers, and the `Configuration` class. Prefer importing from this module

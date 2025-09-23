@@ -15,10 +15,10 @@ pnpm build
 ## Workspace structure
 
 - Packages live under `packages/`
-  - `@fabianopinto/errors`
-  - `@fabianopinto/config`
-  - `@fabianopinto/logger`
-  - `@fabianopinto/utils`
+  - `@t68/errors`
+  - `@t68/config`
+  - `@t68/logger`
+  - `@t68/utils`
 
 ## Development
 
@@ -32,8 +32,8 @@ pnpm build
 Per-package examples:
 
 ```bash
-pnpm --filter @fabianopinto/utils test
-pnpm --filter @fabianopinto/logger build
+pnpm --filter @t68/utils test
+pnpm --filter @t68/logger build
 pnpm --filter ./packages/errors dev
 ```
 

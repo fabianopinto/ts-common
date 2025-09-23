@@ -1,5 +1,5 @@
 /**
- * @fileoverview Unit tests for DateUtils in @fabianopinto/utils
+ * @fileoverview Unit tests for DateUtils in @t68/utils
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";

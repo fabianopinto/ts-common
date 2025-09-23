@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  '@fabianopinto/*': workspace:*
+  '@t68/*': workspace:*
 
 importers:
 
@@ -59,13 +59,13 @@ importers:
 
   packages/config:
     dependencies:
-      '@fabianopinto/errors':
+      '@t68/errors':
         specifier: workspace:*
         version: link:../errors
-      '@fabianopinto/logger':
+      '@t68/logger':
         specifier: workspace:*
         version: link:../logger
-      '@fabianopinto/utils':
+      '@t68/utils':
         specifier: workspace:*
         version: link:../utils
     devDependencies:
@@ -80,7 +80,7 @@ importers:
 
   packages/logger:
     dependencies:
-      '@fabianopinto/errors':
+      '@t68/errors':
         specifier: workspace:*
         version: link:../errors
     devDependencies:
@@ -93,10 +93,10 @@ importers:
 
   packages/utils:
     dependencies:
-      '@fabianopinto/errors':
+      '@t68/errors':
         specifier: workspace:*
         version: link:../errors
-      '@fabianopinto/logger':
+      '@t68/logger':
         specifier: workspace:*
         version: link:../logger
 

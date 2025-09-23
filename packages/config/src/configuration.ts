@@ -9,9 +9,9 @@
  * can be overridden per call with {@link GetValueOptions} in {@link Configuration.getValue}.
  */
 
-import { ConfigurationError } from "@fabianopinto/errors";
-import { type Logger, logger as baseLogger } from "@fabianopinto/logger";
-import { ObjectUtils } from "@fabianopinto/utils";
+import { ConfigurationError } from "@t68/errors";
+import { type Logger, logger as baseLogger } from "@t68/logger";
+import { ObjectUtils } from "@t68/utils";
 
 import { isExternalRef, resolveS3, resolveSSM } from "./resolvers.js";
 import type {

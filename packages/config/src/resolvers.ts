@@ -2,12 +2,12 @@
  * @fileoverview External reference resolvers for configuration values.
  *
  * Supports AWS Systems Manager Parameter Store (ssm://) and S3 objects (s3://),
- * with retry/backoff via `RetryUtils` and structured logging via `@fabianopinto/logger`.
+ * with retry/backoff via `RetryUtils` and structured logging via `@t68/logger`.
  */
 
-import { ConfigurationError } from "@fabianopinto/errors";
-import { type Logger, logger as defaultLogger } from "@fabianopinto/logger";
-import { RetryUtils } from "@fabianopinto/utils";
+import { ConfigurationError } from "@t68/errors";
+import { type Logger, logger as defaultLogger } from "@t68/logger";
+import { RetryUtils } from "@t68/utils";
 
 /**
  * Resolve an AWS SSM parameter value.

@@ -1,4 +1,4 @@
-# @fabianopinto/utils
+# @t68/utils
 
 A collection of focused, well-tested utilities for everyday Node/TypeScript development. ESM-first with CJS compatibility.
 
@@ -14,8 +14,8 @@ A collection of focused, well-tested utilities for everyday Node/TypeScript deve
 
 This package is part of the ts-common monorepo (see the [root README](../../README.md)) and integrates naturally with:
 
-- [@fabianopinto/errors](../errors/README.md) for structured error handling
-- [@fabianopinto/logger](../logger/README.md) for structured logging
+- [@t68/errors](../errors/README.md) for structured error handling
+- [@t68/logger](../logger/README.md) for structured logging
 
 ## Table of contents
 
@@ -36,11 +36,11 @@ This package is part of the ts-common monorepo (see the [root README](../../READ
 ## Install
 
 ```bash
-pnpm add @fabianopinto/utils
+pnpm add @t68/utils
 # or
-npm i @fabianopinto/utils
+npm i @t68/utils
 # or
-yarn add @fabianopinto/utils
+yarn add @t68/utils
 ```
 
 ## Import
@@ -57,7 +57,7 @@ import {
   RetryUtils,
   StringUtils,
   UrlUtils,
-} from "@fabianopinto/utils";
+} from "@t68/utils";
 
 // CJS
 const {
@@ -70,7 +70,7 @@ const {
   RetryUtils,
   StringUtils,
   UrlUtils,
-} = require("@fabianopinto/utils");
+} = require("@t68/utils");
 ```
 
 ## API
@@ -155,7 +155,7 @@ Note: See `dist/index.d.ts` for the complete, strongly-typed API surface.
 ### Environment parsing
 
 ```ts
-import { EnvUtils } from "@fabianopinto/utils";
+import { EnvUtils } from "@t68/utils";
 
 const PORT = EnvUtils.getNumberEnv("PORT", 3000);
 const DEBUG = EnvUtils.getBoolEnv("DEBUG", false);
@@ -165,7 +165,7 @@ const API_KEY = EnvUtils.requireEnv("API_KEY");
 ### Retry with backoff and abort signal
 
 ```ts
-import { RetryUtils } from "@fabianopinto/utils";
+import { RetryUtils } from "@t68/utils";
 
 const controller = new AbortController();
 
@@ -205,12 +205,12 @@ flowchart TD
 
 ## Retry + Errors + Logger integration
 
-`RetryUtils` is designed to work seamlessly with `@fabianopinto/errors` and `@fabianopinto/logger` for end-to-end observability.
+`RetryUtils` is designed to work seamlessly with `@t68/errors` and `@t68/logger` for end-to-end observability.
 
 ```ts
-import { RetryUtils } from "@fabianopinto/utils";
-import { AppError } from "@fabianopinto/errors";
-import { logger } from "@fabianopinto/logger";
+import { RetryUtils } from "@t68/utils";
+import { AppError } from "@t68/errors";
+import { logger } from "@t68/logger";
 
 async function getUser(id: string) {
   try {
@@ -237,7 +237,7 @@ logger.info({ result }, "user loaded");
 ### Obfuscation and redaction
 
 ```ts
-import { ObfuscationUtils } from "@fabianopinto/utils";
+import { ObfuscationUtils } from "@t68/utils";
 
 // Obfuscate auth header while preserving scheme
 const headers = ObfuscationUtils.obfuscateHeaders({ Authorization: "Bearer abcdef123456" });
@@ -247,7 +247,7 @@ const headers = ObfuscationUtils.obfuscateHeaders({ Authorization: "Bearer abcde
 ### URL helpers
 
 ```ts
-import { UrlUtils } from "@fabianopinto/utils";
+import { UrlUtils } from "@t68/utils";
 
 const full = UrlUtils.join("https://api.example.com", "v1/users");
 const withQuery = UrlUtils.withQuery(full, { limit: 10, q: "john" });
@@ -256,7 +256,7 @@ const withQuery = UrlUtils.withQuery(full, { limit: 10, q: "john" });
 ### Object helpers
 
 ```ts
-import { ObjectUtils } from "@fabianopinto/utils";
+import { ObjectUtils } from "@t68/utils";
 
 const input = { id: 1, name: "Jane", password: "secret" };
 const safe = ObjectUtils.omit(input, ["password"]);
@@ -279,8 +279,8 @@ ObjectUtils.deepGet(obj, "mixed.arr.1.y"); // => 2
 These utilities pair well with structured errors and logging:
 
 ```ts
-import { AppError } from "@fabianopinto/errors";
-import { logger } from "@fabianopinto/logger";
+import { AppError } from "@t68/errors";
+import { logger } from "@t68/logger";
 
 try {
   // ... your code

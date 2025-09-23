@@ -1,8 +1,8 @@
-# @fabianopinto/errors
+# @t68/errors
 
 Robust application errors with cause, structured context, consistent codes/status, and focused specializations (HTTP, data, infra, AWS). ESM-first with CJS compatibility.
 
-This package is part of the ts-common monorepo (see the [root README](../../README.md)) and integrates with `@fabianopinto/logger` for structured logging.
+This package is part of the ts-common monorepo (see the [root README](../../README.md)) and integrates with `@t68/logger` for structured logging.
 
 ## Table of Contents
 
@@ -27,7 +27,7 @@ This package is part of the ts-common monorepo (see the [root README](../../READ
 
 - Exposes `BaseError` and `AppError` with `cause`, `context`, `code`, `status`, and `isOperational`.
 - Specializations: `HttpError` (+ `ErrorCode`), `ConfigurationError`, `DatabaseError`, `ThirdPartyServiceError`, `DataError`, `ValidationError`, `TransformationError`, `AwsError`, `S3Error`, `DynamoDbError`, `LambdaError`, `SqsError`, `SnsError`.
-- Safe JSON serialization of error trees via `toJSON()` (works well with `@fabianopinto/logger`).
+- Safe JSON serialization of error trees via `toJSON()` (works well with `@t68/logger`).
 - Ergonomic composition: `AppError.from(err)`, `error.withContext(extra)`.
 
 ## Requirements
@@ -38,11 +38,11 @@ This package is part of the ts-common monorepo (see the [root README](../../READ
 ## Install
 
 ```bash
-pnpm add @fabianopinto/errors
+pnpm add @t68/errors
 # or
-npm i @fabianopinto/errors
+npm i @t68/errors
 # or
-yarn add @fabianopinto/errors
+yarn add @t68/errors
 ```
 
 ## Recommended patterns
@@ -60,7 +60,7 @@ Use these patterns to keep error handling consistent, minimal, and expressive.
 1. Normalize unknowns at boundaries
 
 ```ts
-import { AppError } from "@fabianopinto/errors";
+import { AppError } from "@t68/errors";
 
 export async function handler() {
   try {
@@ -75,7 +75,7 @@ export async function handler() {
 2. Prefer HTTP factories and from-unknown helpers
 
 ```ts
-import { HttpError } from "@fabianopinto/errors";
+import { HttpError } from "@t68/errors";
 
 // Simple factories
 throw HttpError.notFound("User not found", { userId });
@@ -92,7 +92,7 @@ try {
 3. Use guards instead of manual if/throw
 
 ```ts
-import { ConfigurationError, ValidationError, HttpError } from "@fabianopinto/errors";
+import { ConfigurationError, ValidationError, HttpError } from "@t68/errors";
 
 // Configuration
 const dbUrl = ConfigurationError.require(process.env.DB_URL, "DB_URL is required");
@@ -119,7 +119,7 @@ try {
 5. Prefer service-specific helpers for AWS/DB/3P
 
 ```ts
-import { S3Error, DynamoDbError, ThirdPartyServiceError } from "@fabianopinto/errors";
+import { S3Error, DynamoDbError, ThirdPartyServiceError } from "@t68/errors";
 
 // AWS S3
 throw S3Error.objectNotFound("Avatar not found", { context: { bucket, key } });
@@ -138,7 +138,7 @@ throw ThirdPartyServiceError.timeout("Partner API timed out", { context: { partn
 - Map domain -> HTTP response in an API handler
 
 ```ts
-import { AppError, HttpError } from "@fabianopinto/errors";
+import { AppError, HttpError } from "@t68/errors";
 
 export function toHttp(err: unknown) {
   const e = AppError.from(err);
@@ -164,7 +164,7 @@ try {
 - Validate request, return 422 vs 400
 
 ```ts
-import { HttpError } from "@fabianopinto/errors";
+import { HttpError } from "@t68/errors";
 
 if (!isValid(input)) throw HttpError.unprocessableEntity("Invalid payload", { field: "name" });
 ```
@@ -191,10 +191,10 @@ if (!isValid(input)) throw HttpError.unprocessableEntity("Invalid payload", { fi
 
 ```ts
 // ESM
-import { AppError, HttpError, ErrorCode } from "@fabianopinto/errors";
+import { AppError, HttpError, ErrorCode } from "@t68/errors";
 
 // CJS
-const { AppError, HttpError, ErrorCode } = require("@fabianopinto/errors");
+const { AppError, HttpError, ErrorCode } = require("@t68/errors");
 ```
 
 ## Core concepts
@@ -280,8 +280,8 @@ graph TD
 - Log errors with the `error` key so the serializer formats them (AppError -> toJSON).
 
 ```ts
-import { logger } from "@fabianopinto/logger";
-import { AppError } from "@fabianopinto/errors";
+import { logger } from "@t68/logger";
+import { AppError } from "@t68/errors";
 
 function handleError(err: unknown) {
   const appErr = AppError.from(err);

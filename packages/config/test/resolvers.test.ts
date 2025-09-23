@@ -3,7 +3,7 @@ import { Readable } from "node:stream";
 import { isExternalRef, resolveSSM, resolveS3 } from "../src/resolvers";
 
 // Mock RetryUtils to avoid retries and to simply execute the provided function
-vi.mock("@fabianopinto/utils", () => ({
+vi.mock("@t68/utils", () => ({
   RetryUtils: {
     retryAsync: vi.fn(async <T>(op: () => Promise<T>) => op()),
   },

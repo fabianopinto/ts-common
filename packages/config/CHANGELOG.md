@@ -1,13 +1,13 @@
-# @fabianopinto/config
+# @t68/config
 
 ## 0.2.1
 
 ### Patch Changes
 
 - Updated dependencies [13cfdee]
-  - @fabianopinto/errors@0.3.0
-  - @fabianopinto/logger@0.2.1
-  - @fabianopinto/utils@0.2.1
+  - @t68/errors@0.3.0
+  - @t68/logger@0.2.1
+  - @t68/utils@0.2.1
 
 ## 0.2.0
 
@@ -18,9 +18,9 @@
 ### Patch Changes
 
 - Updated dependencies [0edb0e4]
-  - @fabianopinto/errors@0.2.0
-  - @fabianopinto/logger@0.2.0
-  - @fabianopinto/utils@0.2.0
+  - @t68/errors@0.2.0
+  - @t68/logger@0.2.0
+  - @t68/utils@0.2.0
 
 ## 0.3.0
 
@@ -33,6 +33,6 @@
 - 28421be: Initial full release of all modules under the 0.x version range. APIs are functional but still evolving—future improvements and refinements are expected.
 - Updated dependencies [28421be]
 - Updated dependencies [4bee2e3]
-  - @fabianopinto/errors@0.3.0
-  - @fabianopinto/logger@0.3.0
-  - @fabianopinto/utils@0.3.0
+  - @t68/errors@0.3.0
+  - @t68/logger@0.3.0
+  - @t68/utils@0.3.0

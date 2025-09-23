@@ -9,7 +9,7 @@
  * - Inspired by the Python `tenacity` library.
  */
 
-import { logger } from "@fabianopinto/logger";
+import { logger } from "@t68/logger";
 
 /**
  * Backoff strategies used to compute per-attempt delays between retries.

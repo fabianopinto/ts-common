@@ -15,7 +15,7 @@
  * - Error serialization
  */
 
-import { AppError } from "@fabianopinto/errors";
+import { AppError } from "@t68/errors";
 import { createRequire } from "module";
 import pino from "pino";
 
@@ -30,7 +30,7 @@ const require = createRequire(import.meta.url);
  * Valid values: "fatal" | "error" | "warn" | "info" | "debug" | "trace"
  *
  * @example
- * import { logger, type Level } from "@fabianopinto/logger";
+ * import { logger, type Level } from "@t68/logger";
  * const level: Level = "info";
  * logger.setLevel(level);
  */

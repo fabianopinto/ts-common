@@ -1,10 +1,10 @@
 /**
- * @fileoverview Unit tests for ObfuscationUtils in @fabianopinto/utils
+ * @fileoverview Unit tests for ObfuscationUtils in @t68/utils
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
-vi.mock("@fabianopinto/logger", () => {
+vi.mock("@t68/logger", () => {
   const levels: Record<string, boolean> = {
     trace: false,
     debug: false,
@@ -22,7 +22,7 @@ vi.mock("@fabianopinto/logger", () => {
 });
 
 import { ObfuscationUtils } from "../src/obfuscation";
-import { logger } from "@fabianopinto/logger";
+import { logger } from "@t68/logger";
 
 describe("ObfuscationUtils", () => {
   beforeEach(() => {

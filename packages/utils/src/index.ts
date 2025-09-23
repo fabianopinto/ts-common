@@ -1,6 +1,6 @@
 /**
  * @packageDocumentation
- * Aggregated exports for the `@fabianopinto/utils` package.
+ * Aggregated exports for the `@t68/utils` package.
  *
  * This barrel exposes tree-shakeable utilities grouped by domain:
  * - `DateUtils` for date/time helpers

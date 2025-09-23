@@ -1,11 +1,11 @@
 /**
- * @fileoverview Unit tests for RetryUtils in @fabianopinto/utils
+ * @fileoverview Unit tests for RetryUtils in @t68/utils
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import type { Mock } from "vitest";
 
-vi.mock("@fabianopinto/logger", () => {
+vi.mock("@t68/logger", () => {
   // Enable debug to exercise short-circuit/logging branches
   const levels: Record<string, boolean> = {
     trace: false,
@@ -25,7 +25,7 @@ vi.mock("@fabianopinto/logger", () => {
 });
 
 import { RetryUtils, RetryExhaustedError } from "../src/retry";
-import { logger } from "@fabianopinto/logger";
+import { logger } from "@t68/logger";
 
 describe("RetryUtils.retryAsync", () => {
   beforeEach(() => {

@@ -4,7 +4,7 @@
  * Includes `ConfigValue`, `ConfigObject`, provider and options interfaces.
  */
 
-import type { Logger } from "@fabianopinto/logger";
+import type { Logger } from "@t68/logger";
 
 /**
  * Represents any configuration value supported by this system.

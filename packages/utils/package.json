@@ -1,5 +1,5 @@
 {
-  "name": "@fabianopinto/utils",
+  "name": "@t68/utils",
   "version": "0.2.1",
   "private": false,
   "license": "ISC",
@@ -42,7 +42,7 @@
   },
   "homepage": "https://github.com/fabianopinto/ts-common#readme",
   "dependencies": {
-    "@fabianopinto/errors": "workspace:*",
-    "@fabianopinto/logger": "workspace:*"
+    "@t68/errors": "workspace:*",
+    "@t68/logger": "workspace:*"
   }
 }

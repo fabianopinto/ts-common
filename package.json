@@ -24,7 +24,7 @@
   },
   "pnpm": {
     "overrides": {
-      "@fabianopinto/*": "workspace:*"
+      "@t68/*": "workspace:*"
     }
   },
   "devDependencies": {

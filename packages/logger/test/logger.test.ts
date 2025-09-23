@@ -1,10 +1,10 @@
 /**
- * @fileoverview Unit tests for @fabianopinto/logger
+ * @fileoverview Unit tests for @t68/logger
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { BaseLogger } from "../src/index";
-import { AppError } from "@fabianopinto/errors";
+import { AppError } from "@t68/errors";
 
 function withPatchedEnv<T>(vars: Record<string, string | undefined>, fn: () => T): T {
   const old: Record<string, string | undefined> = {};

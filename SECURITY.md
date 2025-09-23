@@ -6,7 +6,7 @@ We maintain the latest minor of each package. Older versions may receive securit
 
 ## Reporting a Vulnerability
 
-Please email security@fabianopinto.dev with the following:
+Please email security@t68.dev with the following:
 
 - A detailed description of the issue
 - Steps to reproduce and/or proof of concept

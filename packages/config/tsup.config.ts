@@ -5,9 +5,9 @@ export default defineConfig({
   ...baseConfig,
   entry: ["src/index.ts"],
   external: [
-    "@fabianopinto/errors",
-    "@fabianopinto/logger",
-    "@fabianopinto/utils",
+    "@t68/errors",
+    "@t68/logger",
+    "@t68/utils",
     "@aws-sdk/client-ssm",
     "@aws-sdk/client-s3",
   ],

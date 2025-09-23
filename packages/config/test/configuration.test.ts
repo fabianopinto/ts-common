@@ -84,7 +84,7 @@ describe("Configuration", () => {
         return this;
       }),
     };
-    vi.doMock("@fabianopinto/logger", () => ({
+    vi.doMock("@t68/logger", () => ({
       logger: base,
     }));
     const mod = await import("../src/configuration");

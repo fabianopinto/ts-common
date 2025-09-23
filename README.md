@@ -8,19 +8,19 @@
 
 A TypeScript monorepo of reusable packages:
 
-- [@fabianopinto/errors](./packages/errors/README.md) — AppError with cause and context
-- [@fabianopinto/config](./packages/config/README.md) — Composable, immutable configuration with SSM/S3 resolution
-- [@fabianopinto/logger](./packages/logger/README.md) — Pino-based logger with clean interface
-- [@fabianopinto/utils](./packages/utils/README.md) — string, date, and object helpers
+- [@t68/errors](./packages/errors/README.md) — AppError with cause and context
+- [@t68/config](./packages/config/README.md) — Composable, immutable configuration with SSM/S3 resolution
+- [@t68/logger](./packages/logger/README.md) — Pino-based logger with clean interface
+- [@t68/utils](./packages/utils/README.md) — string, date, and object helpers
 
 ## Architecture
 
 ```mermaid
 graph TD
-  errors["@fabianopinto/errors"]
-  config["@fabianopinto/config"]
-  logger["@fabianopinto/logger"]
-  utils["@fabianopinto/utils"]
+  errors["@t68/errors"]
+  config["@t68/config"]
+  logger["@t68/logger"]
+  utils["@t68/utils"]
 
   %% Internal package dependencies (direction: dependent --> dependency)
   logger --> errors
@@ -62,8 +62,8 @@ pnpm build
 ### Example usage
 
 ```ts
-import { Configuration } from "@fabianopinto/config";
-import { logger } from "@fabianopinto/logger";
+import { Configuration } from "@t68/config";
+import { logger } from "@t68/logger";
 
 // Initialize configuration (from object or using ConfigurationFactory to load JSON files)
 Configuration.initialize({

@@ -1,4 +1,4 @@
-# @fabianopinto/errors
+# @t68/errors
 
 ## 0.3.0
 

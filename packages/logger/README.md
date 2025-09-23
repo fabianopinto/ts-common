@@ -1,4 +1,4 @@
-# @fabianopinto/logger
+# @t68/logger
 
 Pino-based logger with a clean interface and first-class error serialization.
 
@@ -8,20 +8,20 @@ Pino-based logger with a clean interface and first-class error serialization.
 - Error-aware: pass `Error`/`AppError` directly or via `{ error }`, serialized safely
 - ESM-first with CJS compatibility
 
-This package is part of the ts-common monorepo (see the [root README](../../README.md)) and integrates with the [@fabianopinto/errors](../errors/README.md) module for structured error serialization.
+This package is part of the ts-common monorepo (see the [root README](../../README.md)) and integrates with the [@t68/errors](../errors/README.md) module for structured error serialization.
 
 ## Install
 
 ```bash
 # Required peer: pino
-pnpm add @fabianopinto/logger pino
+pnpm add @t68/logger pino
 # Optional (for pretty printing in local/dev): pino-pretty
 pnpm add -D pino-pretty
 
 # or
-npm i @fabianopinto/logger pino && npm i -D pino-pretty
+npm i @t68/logger pino && npm i -D pino-pretty
 # or
-yarn add @fabianopinto/logger pino && yarn add -D pino-pretty
+yarn add @t68/logger pino && yarn add -D pino-pretty
 ```
 
 ### Peer dependencies
@@ -40,10 +40,10 @@ Notes:
 
 ```ts
 // ESM
-import { logger, BaseLogger, type Level } from "@fabianopinto/logger";
+import { logger, BaseLogger, type Level } from "@t68/logger";
 
 // CJS
-const { logger, BaseLogger } = require("@fabianopinto/logger");
+const { logger, BaseLogger } = require("@t68/logger");
 // Level is a type-only import in ESM; for CJS, use JSDoc typedefs if needed
 ```
 
@@ -68,7 +68,7 @@ const { logger, BaseLogger } = require("@fabianopinto/logger");
 ### Basic logging
 
 ```ts
-import { logger } from "@fabianopinto/logger";
+import { logger } from "@t68/logger";
 
 logger.info("Service started");
 logger.debug({ feature: "auth" }, "Feature enabled");
@@ -97,10 +97,10 @@ logger.setLevel("warn"); // suppress info/debug
 logger.warn("Threshold approaching");
 ```
 
-### Error serialization (with @fabianopinto/errors)
+### Error serialization (with @t68/errors)
 
 ```ts
-import { AppError } from "@fabianopinto/errors";
+import { AppError } from "@t68/errors";
 
 try {
   throw new AppError("Invalid input", { code: "BAD_INPUT", status: 400, context: { id: 1 } });

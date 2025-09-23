@@ -4,7 +4,7 @@
  * Provides helpers for parsing environment variables.
  */
 
-import { ConfigurationError } from "@fabianopinto/errors";
+import { ConfigurationError } from "@t68/errors";
 
 export const EnvUtils = {
   /**

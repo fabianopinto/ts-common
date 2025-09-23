@@ -1,5 +1,5 @@
 {
-  "name": "@fabianopinto/config",
+  "name": "@t68/config",
   "version": "0.2.1",
   "private": false,
   "license": "ISC",
@@ -42,9 +42,9 @@
   },
   "homepage": "https://github.com/fabianopinto/ts-common#readme",
   "dependencies": {
-    "@fabianopinto/errors": "workspace:*",
-    "@fabianopinto/logger": "workspace:*",
-    "@fabianopinto/utils": "workspace:*"
+    "@t68/errors": "workspace:*",
+    "@t68/logger": "workspace:*",
+    "@t68/utils": "workspace:*"
   },
   "peerDependencies": {
     "@aws-sdk/client-s3": "^3.887.0",

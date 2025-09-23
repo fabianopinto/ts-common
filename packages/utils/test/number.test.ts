@@ -1,5 +1,5 @@
 /**
- * @fileoverview Unit tests for NumberUtils in @fabianopinto/utils
+ * @fileoverview Unit tests for NumberUtils in @t68/utils
  */
 
 import { describe, it, expect } from "vitest";
