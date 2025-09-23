@@ -23,6 +23,37 @@ describe("Configuration", () => {
     // Reset the private singleton by re-initializing with an empty config in each test that needs it
   });
 
+  it("supports per-call overrides: disable resolution and disable SSM decryption", async () => {
+    const logger = makeTestLogger();
+    const ssmSpy = vi.spyOn(Resolvers, "resolveSSM").mockResolvedValue("decrypted-secret");
+    const s3Spy = vi.spyOn(Resolvers, "resolveS3").mockResolvedValue("s3-data");
+
+    Configuration.initialize(
+      {
+        a: "ssm://param/secure",
+        b: "s3://bucket/key",
+      },
+      { logger, resolve: { external: true } },
+    );
+
+    const inst = Configuration.getInstance();
+    // Per-call: disable all resolution
+    await expect(inst.getValue("a", { resolve: false })).resolves.toBe("ssm://param/secure");
+    await expect(inst.getValue("b", { resolve: false })).resolves.toBe("s3://bucket/key");
+
+    // Per-call: keep resolution but disable SSM decryption
+    ssmSpy.mockResolvedValueOnce("plaintext-secret");
+    await expect(inst.getValue("a", { resolve: true, ssmDecryption: false })).resolves.toBe(
+      "plaintext-secret",
+    );
+
+    // Trigger S3 resolution with per-call enable to ensure resolver is invoked
+    await expect(inst.getValue("b", { resolve: true })).resolves.toBe("s3-data");
+
+    expect(ssmSpy).toHaveBeenCalled();
+    expect(s3Spy).toHaveBeenCalled();
+  });
+
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -81,7 +112,7 @@ describe("Configuration", () => {
     expect(val).toBeUndefined();
   });
 
-  it("getValue resolves external refs when resolveExternal=true (default)", async () => {
+  it("getValue resolves external refs with default resolve options (external=true)", async () => {
     const logger = makeTestLogger();
     // Mock resolvers to control behavior
     const ssmSpy = vi.spyOn(Resolvers, "resolveSSM").mockResolvedValue("secret-value");
@@ -107,14 +138,14 @@ describe("Configuration", () => {
     expect(s3Spy).toHaveBeenCalled();
   });
 
-  it("getValue does not resolve external refs when resolveExternal=false (short-circuit)", async () => {
+  it("getValue does not resolve external refs when resolve.external=false (short-circuit)", async () => {
     const logger = makeTestLogger();
     const ssmSpy = vi.spyOn(Resolvers, "resolveSSM");
     const s3Spy = vi.spyOn(Resolvers, "resolveS3");
 
     Configuration.initialize(
       { a: "ssm://param/name", b: "s3://b/k" },
-      { logger, resolveExternal: false },
+      { logger, resolve: { external: false } },
     );
 
     const inst = Configuration.getInstance();
