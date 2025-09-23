@@ -101,6 +101,8 @@ const {
   - `static getInstance(): Configuration`
   - `has(path: string): boolean`
   - `getValue<T = unknown>(path: string, options?: GetValueOptions): Promise<T | undefined>`
+  - `getRaw<T = unknown>(path: string): Promise<T | undefined>`
+  - `preload(): Promise<void>`
 - [`ConfigurationFactory`](./src/factory.ts)
   - `new ConfigurationFactory(options?: ConfigurationFactoryOptions)`
   - `addObject(obj: ConfigObject): this`
@@ -117,7 +119,7 @@ const {
   - `resolveS3(s3Path: string, logger?: Logger): Promise<string>`
   - `isExternalRef(value: unknown): value is string`
 - [`types`](./src/types.ts)
-  - `ConfigValue`, `ConfigObject`, `ConfigurationOptions`, `ResolutionOptions`, `GetValueOptions`, `ConfigurationProvider`
+  - `ConfigValue`, `ConfigObject`, `ConfigurationOptions`, `ResolutionOptions`, `ResolutionFlagsOverride`, `GetValueOptions`, `ConfigurationProvider`
 
 ## Usage
 
@@ -171,11 +173,33 @@ To disable resolution (use raw values), you can either:
 
 - Set at instance level: `Configuration.initialize(data, { resolve: { external: false } })`
 - Or per call: `cfg.getValue(path, { resolve: false })`
+- Or use the ergonomic alias: `cfg.getRaw(path)`
 
 You can also control S3/SSM independently and SSM decryption:
 
 - Instance level: `resolve: { s3: false }`, `resolve: { ssm: false }`, `resolve: { ssmDecryption: false }`
-- Per call: `cfg.getValue(path, { resolve: { s3: true, ssm: false } })`, or `cfg.getValue(path, { ssmDecryption: false })`
+- Per call (via `ResolutionFlagsOverride`): `cfg.getValue(path, { resolve: { s3: true, ssm: false } })`, or `cfg.getValue(path, { ssmDecryption: false })`
+
+#### Preload at startup (fail fast)
+
+To validate credentials and references upfront, preload the entire configuration tree at startup. This walks the tree and resolves all external references using the current instance-level flags, surfacing errors early.
+
+```ts
+import { Configuration } from "@fabianopinto/config";
+
+Configuration.initialize(data, { resolve: { external: true } });
+await Configuration.getInstance().preload();
+// If this completes, SSM/S3 refs are resolvable with current credentials/options
+```
+
+Notes:
+
+- Preloading does not mutate your configuration; it only triggers resolution side effects to verify access and correctness.
+- Resolution during a single `getValue()` call is memoized per call (see below), avoiding duplicate fetches when the same ref string appears multiple times.
+
+#### Per-call memoization of external refs
+
+During a single `getValue()` invocation, repeated external reference strings (e.g., the same `ssm://...` in multiple places within a nested structure) are deduplicated via a tiny per-call cache. This reduces network calls and speeds up resolution.
 
 ### Factory usage (objects, JSON files, and S3 JSON)
 
@@ -226,7 +250,9 @@ classDiagram
     +static getInstance(): Configuration
     +has(path: string): boolean
     +getValue(path: string, options?: GetValueOptions): Promise<unknown | undefined>
-    -maybeResolve(value: ConfigValue, eff?: ResolutionOptions): Promise<ConfigValue>
+    +getRaw(path: string): Promise<unknown | undefined>
+    +preload(): Promise<void>
+    -maybeResolve(value: ConfigValue, eff?: ResolutionOptions, cache?): Promise<ConfigValue>
   }
 
   class ConfigurationFactory {
