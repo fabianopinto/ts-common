@@ -1,9 +1,14 @@
 /**
  * @fileoverview ConfigurationFactory: composable builder for immutable `Configuration` instances.
  *
- * Supports aggregating configuration from JSON files and in-memory objects, applies a
- * predictable deep-merge strategy (objects merged recursively, arrays replaced), and
- * initializes the global configuration instance.
+ * Aggregates configuration from JSON files, S3 JSON objects, and in-memory objects.
+ * Applies a predictable deep-merge strategy (objects merged recursively, arrays replaced) and
+ * initializes the global configuration singleton.
+ *
+ * Notes:
+ * - Loading and parsing S3 JSON via {@link addS3} is configuration composition and always allowed.
+ *   Resolution options (e.g., disabling s3 external resolution) apply when reading final values
+ *   via {@link Configuration.getValue}, not during factory composition.
  */
 
 import { readFile } from "node:fs/promises";
@@ -21,25 +26,32 @@ import type { ConfigObject, ConfigurationOptions } from "./types.js";
  * Options for the ConfigurationFactory.
  */
 export interface ConfigurationFactoryOptions extends ConfigurationOptions {
-  /** Optional logger used during factory operations */
+  /** Optional logger used during factory operations. */
   logger?: Logger;
 }
 
 /**
- * ConfigurationFactory accumulates configuration from multiple sources and builds an immutable Configuration.
+ * ConfigurationFactory accumulates configuration from multiple sources and builds an
+ * immutable Configuration.
  *
  * Typical usage:
  * - Add one or more JSON files with {@link addFile}
  * - Add in-memory objects with {@link addObject}
  * - Call {@link build} to initialize the global {@link Configuration}
  *
- * Static helpers {@link buildFromFiles} and {@link buildFromObject} provide convenient single-call flows.
+ * Static helpers {@link buildFromFiles} and {@link buildFromObject} provide convenient
+ * single-call flows.
  */
 export class ConfigurationFactory {
   private data: ConfigObject = {};
   private readonly options?: ConfigurationFactoryOptions;
   private readonly logger: Logger;
 
+  /**
+   * Create a new ConfigurationFactory.
+   *
+   * @param {ConfigurationFactoryOptions} [options] - Optional factory behavior options (logger, resolution toggle)
+   */
   constructor(options?: ConfigurationFactoryOptions) {
     this.options = options;
     this.logger = (options?.logger ?? baseLogger).child({ module: "config-factory" });
@@ -48,9 +60,9 @@ export class ConfigurationFactory {
   /**
    * Build and initialize Configuration from one or more JSON files.
    *
-   * @param filePaths - Array of JSON file paths to read and merge (later files override earlier)
-   * @param options - Factory behavior options (logger, resolution toggle)
-   * @returns The initialized global {@link Configuration}
+   * @param {string[]} filePaths - Array of JSON file paths to read and merge (later files override earlier)
+   * @param {ConfigurationFactoryOptions} [options] - Factory behavior options (logger, resolution toggle)
+   * @returns {Promise<Configuration>} The initialized global {@link Configuration}
    */
   public static async buildFromFiles(
     filePaths: string[],
@@ -66,9 +78,9 @@ export class ConfigurationFactory {
   /**
    * Build and initialize Configuration directly from an object.
    *
-   * @param obj - Plain configuration object to merge
-   * @param options - Factory behavior options (logger, resolution toggle)
-   * @returns The initialized global {@link Configuration}
+   * @param {ConfigObject} obj - Plain configuration object to merge
+   * @param {ConfigurationFactoryOptions} [options] - Factory behavior options (logger, resolution toggle)
+   * @returns {Configuration} The initialized global {@link Configuration}
    */
   public static buildFromObject(
     obj: ConfigObject,
@@ -94,8 +106,9 @@ export class ConfigurationFactory {
    *
    * Later merges override earlier keys. Throws {@link ConfigurationError} on read/parse failures.
    *
-   * @param filePath - Path to a JSON file
-   * @returns This factory for chaining
+   * @param {string} filePath - Path to a JSON file
+   * @returns {Promise<this>} This factory for chaining
+   * @throws {ConfigurationError} When the file is not found or has no string value
    */
   public async addFile(filePath: string): Promise<this> {
     try {
@@ -117,8 +130,13 @@ export class ConfigurationFactory {
   /**
    * Add configuration from an S3 JSON object (s3://bucket/key). The content is parsed and merged.
    *
-   * @param s3Path - S3 object URL (s3://bucket/key)
-   * @returns This factory for chaining
+   * This composition step is independent from runtime resolution toggles. Disabling s3 resolution
+   * in {@link ConfigurationOptions.resolve} only affects how final values are resolved in
+   * {@link Configuration.getValue}, not whether this method can fetch JSON from S3.
+   *
+   * @param {string} s3Path - S3 object URL (s3://bucket/key)
+   * @returns {Promise<this>} This factory for chaining
+   * @throws {ConfigurationError} When the S3 path is invalid or the body is empty
    */
   public async addS3(s3Path: string): Promise<this> {
     try {
@@ -139,7 +157,7 @@ export class ConfigurationFactory {
   /**
    * Build and initialize the global Configuration instance.
    *
-   * @returns The created global {@link Configuration}
+   * @returns {Configuration} The created global {@link Configuration}
    */
   public build(): Configuration {
     this.logger.info("Building configuration instance");

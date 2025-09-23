@@ -31,10 +31,15 @@ export interface ConfigurationOptions {
   /** Optional base logger (defaults to a child of the package logger). */
   logger?: Logger;
   /**
-   * If true, attempts to resolve external references (ssm://, s3://) when values are accessed.
-   * Defaults to true.
+   * Granular resolution options controlling how external references are handled when
+   * retrieving values. If omitted, sensible defaults are used (all enabled).
+   * - external: master switch for resolving any external refs (default: true)
+   * - s3: enable resolving s3:// refs (default: true)
+   * - ssm: enable resolving ssm:// refs (default: true)
+   * - ssmDecryption: when resolving SSM parameters, request decryption (default: true)
    */
-  resolveExternal?: boolean;
+  resolve?: ResolutionOptions;
+}
 
 /**
  * Granular resolution options used by {@link ConfigurationOptions}.
@@ -76,13 +81,21 @@ export interface GetValueOptions {
  * (e.g., SSM parameters and S3 objects).
  */
 export interface ConfigurationProvider {
-  /** Returns true if the given dot-notation path exists (without resolving external references). */
+  /**
+   * Returns true if the given dot-notation path exists (without resolving external references).
+   *
+   * @param {string} path - Dot-notation path, e.g. "service.endpoint"
+   * @returns {boolean} True when the path resolves to a value in the configuration
+   */
   has(path: string): boolean;
   /**
    * Retrieve a value by dot-notation path. Returns undefined if not found.
    * External references may be resolved depending on implementation.
    *
-   * @typeParam T - Expected value type at the provided path
+   * @template T - Expected value type at the provided path
+   * @param {string} path - Dot-notation path, e.g. "service.endpoint"
+   * @param {GetValueOptions} [options] - Optional options for value retrieval
+   * @returns {Promise<T | undefined>} The resolved value or undefined when not present
    */
   getValue<T = unknown>(path: string, options?: GetValueOptions): Promise<T | undefined>;
 }
