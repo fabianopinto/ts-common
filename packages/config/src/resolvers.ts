@@ -80,7 +80,7 @@ export async function resolveSSM(
  * @param {string} s3Path - Object reference in the form `s3://<bucket>/<key>`
  * @param {Logger} [logger] - Optional logger instance for diagnostics
  * @returns {Promise<string>} Object body as a UTF-8 string
- * @throws {Error} When the S3 path is invalid or the body is empty
+ * @throws {ConfigurationError} When the S3 path is invalid or the body is empty
  *
  * @example
  * const text = await resolveS3("s3://my-bucket/config.json");
@@ -94,7 +94,7 @@ export async function resolveS3(s3Path: string, logger: Logger = defaultLogger):
     .slice(1)
     .join("/");
   if (!bucket || !key) {
-    throw new Error(`Invalid S3 path: ${s3Path}`);
+    throw new ConfigurationError(`Invalid S3 path: ${s3Path}`);
   }
   try {
     const { S3Client, GetObjectCommand } = await import("@aws-sdk/client-s3");
@@ -112,7 +112,7 @@ export async function resolveS3(s3Path: string, logger: Logger = defaultLogger):
           transformToString?: (encoding?: string) => Promise<string>;
         }
       | NodeJS.ReadableStream;
-    if (!body) throw new Error(`Empty body for s3://${bucket}/${key}`);
+    if (!body) throw new ConfigurationError(`Empty body for s3://${bucket}/${key}`);
     // Body can be a stream or Uint8Array depending on runtime
     if (
       typeof (body as { transformToString?: (enc?: string) => Promise<string> })
