@@ -35,6 +35,37 @@ export interface ConfigurationOptions {
    * Defaults to true.
    */
   resolveExternal?: boolean;
+
+/**
+ * Granular resolution options used by {@link ConfigurationOptions}.
+ */
+export interface ResolutionOptions {
+  /** Master switch for resolving any external references. Default: true */
+  external?: boolean;
+  /** Enable resolving s3:// references. Default: true */
+  s3?: boolean;
+  /** Enable resolving ssm:// references. Default: true */
+  ssm?: boolean;
+  /** Enable SSM decryption when fetching parameters. Default: true */
+  ssmDecryption?: boolean;
+}
+
+/**
+ * Per-call options for retrieving a configuration value.
+ * These options override the instance-level resolution behavior.
+ */
+export interface GetValueOptions {
+  /**
+   * Resolution override. If boolean, toggles all external resolution on/off for this call.
+   * If object, selectively overrides external/s3/ssm flags for this call. Instance-level
+   * defaults from {@link ConfigurationOptions.resolve} are used for any unset fields.
+   */
+  resolve?: boolean | Pick<ResolutionOptions, "external" | "s3" | "ssm">;
+  /**
+   * Override for SSM decryption behavior for this getValue call.
+   * If omitted, the instance-level {@link ResolutionOptions.ssmDecryption} default applies (true).
+   */
+  ssmDecryption?: boolean;
 }
 
 /**
@@ -53,5 +84,5 @@ export interface ConfigurationProvider {
    *
    * @typeParam T - Expected value type at the provided path
    */
-  getValue<T = unknown>(path: string): Promise<T | undefined>;
+  getValue<T = unknown>(path: string, options?: GetValueOptions): Promise<T | undefined>;
 }

@@ -4,7 +4,7 @@
  */
 
 import { Configuration } from "./configuration.js";
-import type { ConfigurationProvider } from "./types.js";
+import type { ConfigurationProvider, GetValueOptions } from "./types.js";
 
 /**
  * Default ConfigurationProvider implementation that bridges to the global Configuration instance.
@@ -26,7 +26,10 @@ export class DefaultConfigurationProvider implements ConfigurationProvider {
    * @typeParam T - Expected value type
    * @param path - Dot-notation path, e.g. "service.endpoint"
    */
-  public async getValue<T = unknown>(path: string): Promise<T | undefined> {
-    return Configuration.getInstance().getValue<T>(path);
+  public async getValue<T = unknown>(
+    path: string,
+    options?: GetValueOptions,
+  ): Promise<T | undefined> {
+    return Configuration.getInstance().getValue<T>(path, options);
   }
 }

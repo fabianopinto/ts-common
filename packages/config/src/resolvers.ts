@@ -5,6 +5,7 @@
  * with retry/backoff via `RetryUtils` and structured logging via `@fabianopinto/logger`.
  */
 
+import { ConfigurationError } from "@fabianopinto/errors";
 import { type Logger, logger as defaultLogger } from "@fabianopinto/logger";
 import { RetryUtils } from "@fabianopinto/utils";
 
@@ -18,7 +19,11 @@ import { RetryUtils } from "@fabianopinto/utils";
  * @param logger - Optional logger instance for diagnostics
  * @returns The string parameter value
  */
-export async function resolveSSM(ssmPath: string, logger: Logger = defaultLogger): Promise<string> {
+export async function resolveSSM(
+  ssmPath: string,
+  logger: Logger = defaultLogger,
+  opts?: { withDecryption?: boolean },
+): Promise<string> {
   // ssmPath expected format: ssm://<parameterName>
   const name = ssmPath.replace(/^ssm:\/\//, "");
   try {
@@ -28,12 +33,22 @@ export async function resolveSSM(ssmPath: string, logger: Logger = defaultLogger
       logger.debug({ ssmPath, name }, "Resolving SSM parameter");
     }
     const res = await RetryUtils.retryAsync(
-      () => client.send(new GetParameterCommand({ Name: name, WithDecryption: true })),
+      () =>
+        client.send(
+          new GetParameterCommand({
+            Name: name,
+            WithDecryption: opts?.withDecryption ?? true,
+          }),
+        ),
       { retries: 3, delayMs: 200, backoff: "exponential-jitter", maxDelayMs: 5000 },
     );
     const value = res.Parameter?.Value;
     if (typeof value !== "string") {
-      throw new Error(`Parameter '${name}' not found or has no string value`);
+      throw new ConfigurationError(`Parameter '${name}' not found or has no string value`, {
+        code: "CONFIG_SSM_PARAMETER_NOT_FOUND_OR_NO_STRING_VALUE",
+        context: { ssmPath, name },
+        isOperational: false,
+      });
     }
     if (logger.isLevelEnabled("debug")) {
       logger.debug({ ssmPath, name }, "Resolved SSM parameter");

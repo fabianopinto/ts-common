@@ -16,6 +16,7 @@ import type {
   ConfigurationOptions,
   ConfigurationProvider,
   ConfigValue,
+  GetValueOptions,
 } from "./types.js";
 
 /**
@@ -26,7 +27,7 @@ export class Configuration implements ConfigurationProvider {
   private static instance: Configuration | undefined;
   private readonly data: Readonly<ConfigObject>;
   private readonly logger: Logger;
-  private readonly resolveExternal: boolean;
+  private readonly resolveOptions: Required<NonNullable<ConfigurationOptions["resolve"]>>;
 
   /**
    * @param data - Plain configuration object (hierarchical)
@@ -34,7 +35,13 @@ export class Configuration implements ConfigurationProvider {
    */
   private constructor(data: ConfigObject, options?: ConfigurationOptions) {
     this.logger = (options?.logger ?? baseLogger).child({ module: "config" });
-    this.resolveExternal = options?.resolveExternal ?? true;
+    const ropts = options?.resolve ?? {};
+    this.resolveOptions = {
+      external: ropts.external ?? true,
+      s3: ropts.s3 ?? true,
+      ssm: ropts.ssm ?? true,
+      ssmDecryption: ropts.ssmDecryption ?? true,
+    };
     this.data = ObjectUtils.deepFreeze(structuredClone(data)) as Readonly<ConfigObject>;
   }
 
@@ -86,10 +93,25 @@ export class Configuration implements ConfigurationProvider {
    * @param path - Dot-notation path, e.g. "service.endpoint"
    * @returns The resolved value or undefined when not present
    */
-  public async getValue<T = unknown>(path: string): Promise<T | undefined> {
+  public async getValue<T = unknown>(
+    path: string,
+    options?: GetValueOptions,
+  ): Promise<T | undefined> {
     const value = ObjectUtils.deepGet<ConfigValue | undefined>(this.data, path);
     if (value === undefined) return undefined;
-    return (await this.maybeResolve(value)) as T;
+
+    // Compute effective resolution options for this call
+    const eff = { ...this.resolveOptions };
+    if (typeof options?.resolve === "boolean") {
+      eff.external = options.resolve;
+    } else if (typeof options?.resolve === "object" && options.resolve) {
+      if (options.resolve.external !== undefined) eff.external = options.resolve.external;
+      if (options.resolve.s3 !== undefined) eff.s3 = options.resolve.s3;
+      if (options.resolve.ssm !== undefined) eff.ssm = options.resolve.ssm;
+    }
+    if (options?.ssmDecryption !== undefined) eff.ssmDecryption = options.ssmDecryption;
+
+    return (await this.maybeResolve(value, eff)) as T;
   }
 
   /**
@@ -99,24 +121,30 @@ export class Configuration implements ConfigurationProvider {
    * @returns The resolved value
    */
   /** Resolve external references if enabled. For arrays and objects, resolve recursively. */
-  private async maybeResolve(value: ConfigValue): Promise<ConfigValue> {
-    if (!this.resolveExternal) return value;
+  private async maybeResolve(
+    value: ConfigValue,
+    eff: typeof this.resolveOptions = this.resolveOptions,
+  ): Promise<ConfigValue> {
+    if (!eff.external) return value;
 
     if (isExternalRef(value)) {
-      if (value.startsWith("ssm://")) return await resolveSSM(value, this.logger);
-      if (value.startsWith("s3://")) return await resolveS3(value, this.logger);
+      if (value.startsWith("ssm://") && eff.ssm)
+        return await resolveSSM(value, this.logger, {
+          withDecryption: eff.ssmDecryption,
+        });
+      if (value.startsWith("s3://") && eff.s3) return await resolveS3(value, this.logger);
     }
 
     if (Array.isArray(value)) {
       const out = [] as ConfigValue[];
-      for (const item of value) out.push(await this.maybeResolve(item));
+      for (const item of value) out.push(await this.maybeResolve(item, eff));
       return out;
     }
 
     if (value && typeof value === "object") {
       const result: Record<string, ConfigValue> = {};
       for (const [k, v] of Object.entries(value)) {
-        result[k] = await this.maybeResolve(v as ConfigValue);
+        result[k] = await this.maybeResolve(v as ConfigValue, eff);
       }
       return result as ConfigObject;
     }
