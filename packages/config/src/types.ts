@@ -56,16 +56,21 @@ export interface ResolutionOptions {
 }
 
 /**
+ * Per-call override flags for resolution. Reuses a subset of {@link ResolutionOptions}.
+ */
+export type ResolutionFlagsOverride = Pick<ResolutionOptions, "external" | "s3" | "ssm">;
+
+/**
  * Per-call options for retrieving a configuration value.
  * These options override the instance-level resolution behavior.
  */
 export interface GetValueOptions {
   /**
    * Resolution override. If boolean, toggles all external resolution on/off for this call.
-   * If object, selectively overrides external/s3/ssm flags for this call. Instance-level
+   * If object, selectively override flags via {@link ResolutionFlagsOverride}. Instance-level
    * defaults from {@link ConfigurationOptions.resolve} are used for any unset fields.
    */
-  resolve?: boolean | Pick<ResolutionOptions, "external" | "s3" | "ssm">;
+  resolve?: boolean | ResolutionFlagsOverride;
   /**
    * Override for SSM decryption behavior for this getValue call.
    * If omitted, the instance-level {@link ResolutionOptions.ssmDecryption} default applies (true).
