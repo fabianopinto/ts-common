@@ -144,7 +144,36 @@ export class Configuration implements ConfigurationProvider {
     }
     if (options?.ssmDecryption !== undefined) eff.ssmDecryption = options.ssmDecryption;
 
-    return (await this.maybeResolve(value, eff)) as T;
+    // Per-call memoization cache to avoid duplicate fetches of the same external ref
+    const cache = new Map<string, Promise<ConfigValue>>();
+
+    return (await this.maybeResolve(value, eff, cache)) as T;
+  }
+
+  /**
+   * Retrieve a configuration value without resolving external references.
+   * This is a shorthand for {@link Configuration.getValue} with `{ resolve: false }`.
+   *
+   * @template T - Expected return type for the value
+   * @param {string} path - Dot-notation path, e.g. "service.endpoint"
+   * @returns {Promise<T | undefined>} The raw value or undefined when not present
+   */
+  public async getRaw<T = unknown>(path: string): Promise<T | undefined> {
+    return this.getValue<T>(path, { resolve: false });
+  }
+
+  /**
+   * Preload and validate all external references by walking the entire configuration tree.
+   * Uses the current instance-level resolution options. Intended to help apps fail fast
+   * at startup when credentials are missing or references are invalid.
+   *
+   * Note: The configuration remains immutable; this method only triggers resolution
+   * side-effects and discards the result.
+   */
+  public async preload(): Promise<void> {
+    // Use a per-call cache to deduplicate identical references during the walk
+    const cache = new Map<string, Promise<ConfigValue>>();
+    await this.maybeResolve(this.data as unknown as ConfigValue, this.resolveOptions, cache);
   }
 
   /**
@@ -154,32 +183,47 @@ export class Configuration implements ConfigurationProvider {
    *
    * @param {ConfigValue} value - Value to resolve (may be an external reference)
    * @param {typeof this.resolveOptions} [eff] - Effective resolution options
+   * @param {Map<string, Promise<ConfigValue>>} [cache] - Per-call memoization cache
    * @returns {Promise<ConfigValue>} The resolved value
    */
   private async maybeResolve(
     value: ConfigValue,
     eff: typeof this.resolveOptions = this.resolveOptions,
+    cache?: Map<string, Promise<ConfigValue>>,
   ): Promise<ConfigValue> {
     if (!eff.external) return value;
 
     if (isExternalRef(value)) {
-      if (value.startsWith("ssm://") && eff.ssm)
-        return await resolveSSM(value, this.logger, {
+      // Use per-call cache to deduplicate identical reference fetches
+      if (cache) {
+        const existing = cache.get(value);
+        if (existing) return await existing;
+      }
+
+      if (value.startsWith("ssm://") && eff.ssm) {
+        const p = resolveSSM(value, this.logger, {
           withDecryption: eff.ssmDecryption,
-        });
-      if (value.startsWith("s3://") && eff.s3) return await resolveS3(value, this.logger);
+        }) as Promise<ConfigValue>;
+        cache?.set(value, p);
+        return await p;
+      }
+      if (value.startsWith("s3://") && eff.s3) {
+        const p = resolveS3(value, this.logger) as Promise<ConfigValue>;
+        cache?.set(value, p);
+        return await p;
+      }
     }
 
     if (Array.isArray(value)) {
       const out = [] as ConfigValue[];
-      for (const item of value) out.push(await this.maybeResolve(item, eff));
+      for (const item of value) out.push(await this.maybeResolve(item, eff, cache));
       return out;
     }
 
     if (value && typeof value === "object") {
       const result: Record<string, ConfigValue> = {};
       for (const [k, v] of Object.entries(value)) {
-        result[k] = await this.maybeResolve(v as ConfigValue, eff);
+        result[k] = await this.maybeResolve(v as ConfigValue, eff, cache);
       }
       return result as ConfigObject;
     }
