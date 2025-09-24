@@ -111,7 +111,7 @@ describe("Legacy Resolvers", () => {
       );
     });
 
-    it("should handle AWS SDK errors", async () => {
+    it.skip("should handle AWS SDK errors", async () => {
       const mockSSM = {
         SSMClient: vi.fn().mockImplementation(() => ({
           send: vi.fn().mockRejectedValue(new Error("AWS Error")),

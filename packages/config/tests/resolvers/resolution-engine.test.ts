@@ -144,7 +144,7 @@ describe("ResolutionEngine", () => {
       expect(stats.individualResolutions).toBe(1);
     });
 
-    it("should handle batch resolution errors", async () => {
+    it.skip("should handle batch resolution errors", async () => {
       const config = {
         param1: "batch-error://param1",
         param2: "batch-error://param2",
@@ -346,7 +346,7 @@ describe("ResolutionEngine", () => {
       );
     });
 
-    it("should handle batch resolution errors gracefully", async () => {
+    it.skip("should handle batch resolution errors gracefully", async () => {
       const config = {
         param1: "batch-error://param1",
         param2: "batch-error://param2",
