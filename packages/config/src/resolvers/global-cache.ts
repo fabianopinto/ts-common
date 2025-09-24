@@ -445,6 +445,7 @@ export class GlobalCache {
    */
   public getStats(): Readonly<CacheStats> {
     this.updateEfficiencyScore();
+    this.updateAvgResolutionCost();
     this.stats.memoryPressure = this.getMemoryPressureLevel();
     this.stats.circuitBreakerState = this.circuitBreakerState;
     return { ...this.stats };
@@ -517,7 +518,8 @@ export class GlobalCache {
       clearInterval(this.memoryMonitorTimer);
       this.memoryMonitorTimer = null;
     }
-    this.cache.clear();
+    // Use the public clear method to properly reset statistics
+    this.clear();
   }
 
   /**
@@ -789,6 +791,26 @@ export class GlobalCache {
   }
 
   /**
+   * Update average resolution cost based on current cache entries.
+   */
+  private updateAvgResolutionCost(): void {
+    if (this.cache.size === 0) {
+      this.stats.avgResolutionCostMs = 0;
+      return;
+    }
+
+    let totalCost = 0;
+    let entryCount = 0;
+
+    for (const entry of this.cache.values()) {
+      totalCost += entry.resolutionCostMs;
+      entryCount++;
+    }
+
+    this.stats.avgResolutionCostMs = entryCount > 0 ? totalCost / entryCount : 0;
+  }
+
+  /**
    * Check if we should evict entries to make room for new entry.
    *
    * @param newEntrySizeBytes - Size of the new entry in bytes
@@ -799,37 +821,6 @@ export class GlobalCache {
       this.cache.size >= this.config.maxEntries ||
       this.stats.totalSizeBytes + newEntrySizeBytes > this.config.maxSizeBytes
     );
-  }
-
-  /**
-   * Evict least recently used entries to make room.
-   */
-  private evictEntries(requiredBytes: number): void {
-    if (!this.config.enableLru) return;
-
-    // Sort entries by last accessed time (LRU)
-    const entries = Array.from(this.cache.entries()).sort(
-      ([, a], [, b]) => a.lastAccessedAt - b.lastAccessedAt,
-    );
-
-    let freedBytes = 0;
-    let evicted = 0;
-
-    for (const [key, entry] of entries) {
-      if (
-        this.cache.size - evicted <= this.config.maxEntries / 2 &&
-        this.stats.totalSizeBytes - freedBytes + requiredBytes <= this.config.maxSizeBytes
-      ) {
-        break;
-      }
-
-      this.cache.delete(key);
-      this.updateStats(-1, -entry.sizeBytes, entry.protocol);
-      freedBytes += entry.sizeBytes;
-      evicted++;
-    }
-
-    this.stats.evicted += evicted;
   }
 
   /**

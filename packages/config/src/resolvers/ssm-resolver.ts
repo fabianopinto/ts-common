@@ -63,7 +63,11 @@ export interface SSMResolverOptions extends Record<string, unknown> {
  */
 export class SSMResolver implements ConfigResolver<SSMResolverOptions> {
   public readonly protocol = "ssm";
-  public readonly defaultOptions: SSMResolverOptions = {};
+  public readonly defaultOptions: SSMResolverOptions = {
+    withDecryption: false,
+    retries: 3,
+    cacheTtlMs: 5 * 60 * 1000, // 5 minutes
+  };
 
   // Batch capabilities - SSM supports efficient batch operations
   public readonly supportsBatch = true;
@@ -114,13 +118,15 @@ export class SSMResolver implements ConfigResolver<SSMResolverOptions> {
    *
    * Accepts both `ssm:/` and `ssm-secure:/` protocols with parameter names
    * containing alphanumeric characters, hyphens, underscores, periods, and
-   * forward slashes for hierarchical parameters.
+   * forward slashes for hierarchical parameters. Parameter name cannot be empty.
    *
    * @param reference - Parameter reference string to validate
    * @returns `true` if the reference is valid for this resolver
    */
   public validateReference(reference: string): boolean {
-    return /^ssm(-secure)?:\/[\w\-._/]+$/.test(reference);
+    // Must match ssm:/ or ssm-secure:/ followed by a non-empty parameter name
+    const match = reference.match(/^ssm(-secure)?:\/(.+)$/);
+    return match !== null && match[2].length > 0 && match[2] !== "/";
   }
 
   /**

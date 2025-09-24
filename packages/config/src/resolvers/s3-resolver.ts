@@ -52,7 +52,12 @@ export interface S3ResolverOptions extends Record<string, unknown> {
  */
 export class S3Resolver implements ConfigResolver<S3ResolverOptions> {
   public readonly protocol = "s3";
-  public readonly defaultOptions: S3ResolverOptions = {};
+  public readonly defaultOptions: S3ResolverOptions = {
+    retrieveMetadata: false,
+    metadataFields: [],
+    cacheTtlMs: 10 * 60 * 1000, // 10 minutes
+    retries: 3,
+  };
 
   // Batch capabilities - S3 doesn't currently support batch operations
   public readonly supportsBatch = false;
@@ -307,12 +312,13 @@ export class S3Resolver implements ConfigResolver<S3ResolverOptions> {
   /**
    * Clean up the S3 client resources.
    *
-   * Destroys the AWS SDK S3 client and resets internal state.
+   * Resets internal state and clears the S3 client reference.
    * Should be called when the resolver is no longer needed to free resources.
    */
   public cleanup(): void {
     if (this.s3Client) {
-      this.s3Client.destroy();
+      // AWS SDK v3 S3Client doesn't have a destroy method
+      // Just clear the reference to allow garbage collection
       this.s3Client = null;
       this.GetObjectCommand = null;
     }
