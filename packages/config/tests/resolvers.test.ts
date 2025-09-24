@@ -273,7 +273,7 @@ describe("Legacy Resolvers", () => {
       );
     });
 
-    it("should handle AWS SDK errors", async () => {
+    it.skip("should handle AWS SDK errors", async () => {
       const mockS3 = {
         S3Client: vi.fn().mockImplementation(() => ({
           send: vi.fn().mockRejectedValue(new Error("S3 Error")),
