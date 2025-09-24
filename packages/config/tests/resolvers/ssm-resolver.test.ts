@@ -233,13 +233,21 @@ describe("SSMResolver", () => {
       );
     });
 
-    it.skip("should handle AWS SDK errors", async () => {
+    it("should handle AWS SDK errors", async () => {
       const awsError = new Error("AccessDenied");
-      mockSSM.mockSend.mockRejectedValueOnce(awsError);
-
-      await expect(resolver.resolve("ssm:/forbidden", {}, logger)).rejects.toThrow(
-        ConfigurationError,
-      );
+      awsError.name = "AccessDenied";
+      
+      // Mock RetryUtils.retryAsync to avoid unhandled promise rejections
+      const { RetryUtils } = await import("@t68/utils");
+      const mockRetryAsync = vi.spyOn(RetryUtils, "retryAsync").mockRejectedValue(awsError);
+      
+      try {
+        await expect(resolver.resolve("ssm:/forbidden", {}, logger)).rejects.toThrow(
+          ConfigurationError,
+        );
+      } finally {
+        mockRetryAsync.mockRestore();
+      }
     });
 
     it("should log debug information when enabled", async () => {
@@ -400,26 +408,34 @@ describe("SSMResolver", () => {
       });
     });
 
-    it.skip("should handle complete batch failures", async () => {
+    it("should handle complete batch failures", async () => {
       const batchError = new Error("Batch operation failed");
-      mockSSM.mockSend.mockRejectedValueOnce(batchError);
+      batchError.name = "BatchOperationFailed";
+      
+      // Mock RetryUtils.retryAsync to avoid unhandled promise rejections
+      const { RetryUtils } = await import("@t68/utils");
+      const mockRetryAsync = vi.spyOn(RetryUtils, "retryAsync").mockRejectedValue(batchError);
 
       const requests = [
         { reference: "ssm:/param1", options: {} },
         { reference: "ssm:/param2", options: {} },
       ];
 
-      const results = await resolver.resolveBatch!(requests, logger);
+      try {
+        const results = await resolver.resolveBatch!(requests, logger);
 
-      expect(results).toHaveLength(2);
-      expect(results[0].reference).toBe("ssm:/param1");
-      expect(results[0].error).toBeInstanceOf(ConfigurationError);
-      expect(results[1].reference).toBe("ssm:/param2");
-      expect(results[1].error).toBeInstanceOf(ConfigurationError);
+        expect(results).toHaveLength(2);
+        expect(results[0].reference).toBe("ssm:/param1");
+        expect(results[0].error).toBeInstanceOf(ConfigurationError);
+        expect(results[1].reference).toBe("ssm:/param2");
+        expect(results[1].error).toBeInstanceOf(ConfigurationError);
+      } finally {
+        mockRetryAsync.mockRestore();
+      }
     });
   });
 
-  describe.skip("error handling", () => {
+  describe("error handling", () => {
     beforeEach(async () => {
       await resolver.initialize(logger);
     });
@@ -427,50 +443,79 @@ describe("SSMResolver", () => {
     it("should handle parameter not found errors", async () => {
       const notFoundError = new Error("ParameterNotFound");
       notFoundError.name = "ParameterNotFound";
-      mockSSM.mockSend.mockRejectedValueOnce(notFoundError);
+      
+      // Mock RetryUtils.retryAsync to avoid unhandled promise rejections
+      const { RetryUtils } = await import("@t68/utils");
+      const mockRetryAsync = vi.spyOn(RetryUtils, "retryAsync").mockRejectedValue(notFoundError);
 
-      await expect(resolver.resolve("ssm:/missing", {}, logger)).rejects.toThrow(
-        "Failed to resolve SSM parameter",
-      );
+      try {
+        await expect(resolver.resolve("ssm:/missing", {}, logger)).rejects.toThrow(
+          "Failed to resolve SSM parameter",
+        );
+      } finally {
+        mockRetryAsync.mockRestore();
+      }
     });
 
     it("should handle access denied errors", async () => {
       const accessError = new Error("AccessDenied");
       accessError.name = "AccessDenied";
-      mockSSM.mockSend.mockRejectedValueOnce(accessError);
+      
+      // Mock RetryUtils.retryAsync to avoid unhandled promise rejections
+      const { RetryUtils } = await import("@t68/utils");
+      const mockRetryAsync = vi.spyOn(RetryUtils, "retryAsync").mockRejectedValue(accessError);
 
-      await expect(resolver.resolve("ssm:/forbidden", {}, logger)).rejects.toThrow(
-        "Failed to resolve SSM parameter",
-      );
+      try {
+        await expect(resolver.resolve("ssm:/forbidden", {}, logger)).rejects.toThrow(
+          "Failed to resolve SSM parameter",
+        );
+      } finally {
+        mockRetryAsync.mockRestore();
+      }
     });
 
     it("should handle throttling errors", async () => {
       const throttleError = new Error("ThrottlingException");
       throttleError.name = "ThrottlingException";
-      mockSSM.mockSend.mockRejectedValueOnce(throttleError);
+      
+      // Mock RetryUtils.retryAsync to avoid unhandled promise rejections
+      const { RetryUtils } = await import("@t68/utils");
+      const mockRetryAsync = vi.spyOn(RetryUtils, "retryAsync").mockRejectedValue(throttleError);
 
-      await expect(resolver.resolve("ssm:/throttled", {}, logger)).rejects.toThrow(
-        "Failed to resolve SSM parameter",
-      );
+      try {
+        await expect(resolver.resolve("ssm:/throttled", {}, logger)).rejects.toThrow(
+          "Failed to resolve SSM parameter",
+        );
+      } finally {
+        mockRetryAsync.mockRestore();
+      }
     });
 
     it("should log errors appropriately", async () => {
       const error = new Error("Test error");
-      mockSSM.mockSend.mockRejectedValueOnce(error);
+      error.name = "TestError";
+      
+      // Mock RetryUtils.retryAsync to avoid unhandled promise rejections
+      const { RetryUtils } = await import("@t68/utils");
+      const mockRetryAsync = vi.spyOn(RetryUtils, "retryAsync").mockRejectedValue(error);
 
       try {
-        await resolver.resolve("ssm:/error-param", {}, logger);
-      } catch (e) {
-        // Expected to throw
-      }
+        try {
+          await resolver.resolve("ssm:/error-param", {}, logger);
+        } catch (e) {
+          // Expected to throw
+        }
 
-      expect(logger.error).toHaveBeenCalledWith(
-        expect.objectContaining({
-          reference: "ssm:/error-param",
-          parameterName: "error-param",
-        }),
-        "Failed to resolve SSM parameter",
-      );
+        expect(logger.error).toHaveBeenCalledWith(
+          expect.objectContaining({
+            reference: "ssm:/error-param",
+            parameterName: "error-param",
+          }),
+          "Failed to resolve SSM parameter",
+        );
+      } finally {
+        mockRetryAsync.mockRestore();
+      }
     });
   });
 
@@ -1042,7 +1087,7 @@ describe("SSMResolver", () => {
     });
   });
 
-  describe.skip("error context and details", () => {
+  describe("error context and details", () => {
     beforeEach(async () => {
       await resolver.initialize(logger);
     });
@@ -1050,32 +1095,47 @@ describe("SSMResolver", () => {
     it("should provide detailed error context for resolution failures", async () => {
       const awsError = new Error("Detailed AWS error");
       awsError.name = "DetailedError";
-      mockSSM.mockSend.mockRejectedValueOnce(awsError);
+      
+      // Mock RetryUtils.retryAsync to avoid unhandled promise rejections
+      const { RetryUtils } = await import("@t68/utils");
+      const mockRetryAsync = vi.spyOn(RetryUtils, "retryAsync").mockRejectedValue(awsError);
 
       try {
-        await resolver.resolve("ssm:/error-context", {}, logger);
-      } catch (error) {
-        expect(error).toBeInstanceOf(ConfigurationError);
-        expect((error as ConfigurationError).context).toEqual({
-          reference: "ssm:/error-context",
-          parameterName: "error-context",
-        });
+        try {
+          await resolver.resolve("ssm:/error-context", {}, logger);
+        } catch (error) {
+          expect(error).toBeInstanceOf(ConfigurationError);
+          expect((error as ConfigurationError).context).toEqual({
+            reference: "ssm:/error-context",
+            parameterName: "error-context",
+          });
+        }
+      } finally {
+        mockRetryAsync.mockRestore();
       }
     });
 
     it("should provide batch error context", async () => {
       const batchError = new Error("Batch processing error");
-      mockSSM.mockSend.mockRejectedValueOnce(batchError);
+      batchError.name = "BatchProcessingError";
+      
+      // Mock RetryUtils.retryAsync to avoid unhandled promise rejections
+      const { RetryUtils } = await import("@t68/utils");
+      const mockRetryAsync = vi.spyOn(RetryUtils, "retryAsync").mockRejectedValue(batchError);
 
-      const requests = [{ reference: "ssm:/batch-error", options: {} }];
-      const results = await resolver.resolveBatch!(requests, logger);
+      try {
+        const requests = [{ reference: "ssm:/batch-error", options: {} }];
+        const results = await resolver.resolveBatch!(requests, logger);
 
-      expect(results[0].error).toBeInstanceOf(ConfigurationError);
-      const error = results[0].error as ConfigurationError;
-      // When batch operation fails, the error context contains the parameter names from the batch
-      expect(error.context).toEqual({
-        parameterNames: ["batch-error"],
-      });
+        expect(results[0].error).toBeInstanceOf(ConfigurationError);
+        const error = results[0].error as ConfigurationError;
+        // When batch operation fails, the error context contains the parameter names from the batch
+        expect(error.context).toEqual({
+          parameterNames: ["batch-error"],
+        });
+      } finally {
+        mockRetryAsync.mockRestore();
+      }
     });
   });
 
