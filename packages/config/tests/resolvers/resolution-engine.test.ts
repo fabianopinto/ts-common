@@ -23,6 +23,16 @@ describe("ResolutionEngine", () => {
   });
 
   afterEach(() => {
+    // Reset the batch error resolver to default behavior to prevent cross-test contamination
+    try {
+      const batchErrorResolver = registry.getResolver("batch-error");
+      if (batchErrorResolver?.resolveBatch) {
+        vi.mocked(batchErrorResolver.resolveBatch).mockResolvedValue([]);
+      }
+    } catch (error) {
+      // Ignore errors during cleanup - registry might be mocked to throw
+    }
+
     // Clean up any pending promises to prevent unhandled rejections
     vi.clearAllMocks();
   });
@@ -150,6 +160,14 @@ describe("ResolutionEngine", () => {
     });
 
     it("should handle batch resolution errors", async () => {
+      // Configure the batch error resolver to throw for this test
+      const batchErrorResolver = registry.getResolver("batch-error");
+      if (batchErrorResolver?.resolveBatch) {
+        vi.mocked(batchErrorResolver.resolveBatch).mockRejectedValue(
+          new Error("Batch resolution failed"),
+        );
+      }
+
       const config = {
         param1: "batch-error://param1",
         param2: "batch-error://param2",
@@ -352,6 +370,14 @@ describe("ResolutionEngine", () => {
     });
 
     it("should handle batch resolution errors gracefully", async () => {
+      // Configure the batch error resolver to throw for this test
+      const batchErrorResolver = registry.getResolver("batch-error");
+      if (batchErrorResolver?.resolveBatch) {
+        vi.mocked(batchErrorResolver.resolveBatch).mockRejectedValue(
+          new Error("Batch resolution failed"),
+        );
+      }
+
       const config = {
         param1: "batch-error://param1",
         param2: "batch-error://param2",
@@ -533,11 +559,10 @@ function createMockRegistry(): ResolverRegistry {
   // Batch resolver (supports batching)
   resolvers.set("batch", createMockResolver("batch", true));
 
-  // Batch error resolver (supports batching but fails)
+  // Batch error resolver (supports batching but fails when called)
   const batchErrorResolver = createMockResolver("batch-error", true);
-  batchErrorResolver.resolveBatch!.mockImplementation(async () => {
-    throw new Error("Batch resolution failed");
-  });
+  // Don't set up the error by default - let individual tests configure it
+  batchErrorResolver.resolveBatch!.mockResolvedValue([]);
   resolvers.set("batch-error", batchErrorResolver);
 
   return {
