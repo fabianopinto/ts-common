@@ -1,7 +1,8 @@
 /**
  * @fileoverview Public types and interfaces for the configuration system.
  *
- * Includes `ConfigValue`, `ConfigObject`, provider and options interfaces.
+ * Includes `ConfigValue`, `ConfigObject`, provider and options interfaces
+ * with dynamic resolver support.
  */
 
 import type { Logger } from "@t68/logger";
@@ -27,44 +28,44 @@ export interface ConfigObject {
 }
 
 /**
+ * Dynamic resolution options for external references.
+ *
+ * Provides fine-grained control over which resolvers are enabled and their
+ * specific configuration. Supports both simple boolean toggles and detailed
+ * resolver-specific options.
+ */
+export interface ResolutionOptions {
+  /** Master switch for resolving any external references. Default: `true` */
+  external?: boolean;
+  /**
+   * Per-resolver configuration. Key is the protocol name, value can be:
+   * - `boolean`: Enable/disable the resolver with default options
+   * - `object`: Enable resolver with specific options
+   *
+   * @example
+   * ```typescript
+   * {
+   *   ssm: { withDecryption: false },  // SSM with custom options
+   *   s3: true,                        // S3 with default options
+   *   vault: false                     // Disable vault resolver
+   * }
+   * ```
+   */
+  resolvers?: Record<string, boolean | Record<string, unknown>>;
+}
+
+/**
  * Options for the `Configuration` instance.
  */
 export interface ConfigurationOptions {
   /** Optional base logger (defaults to a child of the package logger). */
   logger?: Logger;
   /**
-   * Granular resolution options controlling how external references are handled
-   * when retrieving values. If omitted, sensible defaults are used (all
-   * enabled).
-   * - `external`: master switch for resolving any external refs (default:
-   *   `true`)
-   * - `s3`: enable resolving `s3://` refs (default: `true`)
-   * - `ssm`: enable resolving `ssm://` refs (default: `true`)
-   * - `ssmDecryption`: when resolving SSM parameters, request decryption
-   *   (default: `true`)
+   * Resolution options controlling how external references are handled
+   * when retrieving values. If omitted, sensible defaults are used.
    */
   resolve?: ResolutionOptions;
 }
-
-/**
- * Granular resolution options used by `ConfigurationOptions`.
- */
-export interface ResolutionOptions {
-  /** Master switch for resolving any external references. Default: `true` */
-  external?: boolean;
-  /** Enable resolving `s3://` references. Default: `true` */
-  s3?: boolean;
-  /** Enable resolving `ssm://` references. Default: `true` */
-  ssm?: boolean;
-  /** Enable SSM decryption when fetching parameters. Default: `true` */
-  ssmDecryption?: boolean;
-}
-
-/**
- * Per-call override flags for resolution. Reuses a subset of
- * `ResolutionOptions`.
- */
-export type ResolutionFlagsOverride = Pick<ResolutionOptions, "external" | "s3" | "ssm">;
 
 /**
  * Per-call options for retrieving a configuration value.
@@ -72,18 +73,13 @@ export type ResolutionFlagsOverride = Pick<ResolutionOptions, "external" | "s3" 
  */
 export interface GetValueOptions {
   /**
-   * Resolution override. If boolean, toggles all external resolution on/off for
-   * this call. If object, selectively override flags via
-   * `ResolutionFlagsOverride`. Instance-level defaults from
-   * `ConfigurationOptions.resolve` are used for any unset fields.
+   * Resolution override for this specific call.
+   * - If `boolean`: Toggles all external resolution on/off
+   * - If `ResolutionOptions`: Selectively override resolution behavior
+   *
+   * Instance-level defaults are used for any unset fields.
    */
-  resolve?: boolean | ResolutionFlagsOverride;
-  /**
-   * Override for SSM decryption behavior for this `getValue` call.
-   * If omitted, the instance-level `ResolutionOptions.ssmDecryption` default
-   * applies (`true`).
-   */
-  ssmDecryption?: boolean;
+  resolve?: boolean | ResolutionOptions;
 }
 
 /**

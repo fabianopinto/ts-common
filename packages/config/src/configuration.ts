@@ -1,10 +1,10 @@
 /**
  * @fileoverview Configuration core: immutable global configuration with type-safe,
- * dot-notation access and automatic resolution of external references (AWS SSM and S3).
+ * dot-notation access and dynamic resolution of external references.
  *
  * Exposes the `Configuration` class that implements the `ConfigurationProvider`
- * contract. Instances are immutable and can only be created via the accompanying
- * factory.
+ * contract with a pluggable resolver registry. Instances are immutable and can
+ * only be created via the accompanying factory.
  *
  * Resolution behavior is controlled via `ConfigurationOptions.resolve` at instance
  * level and can be overridden per call with `GetValueOptions` in
@@ -15,7 +15,13 @@ import { ConfigurationError } from "@t68/errors";
 import { type Logger, logger as baseLogger } from "@t68/logger";
 import { ObjectUtils } from "@t68/utils";
 
-import { isExternalRef, resolveS3, resolveSSM } from "./resolvers.js";
+import {
+  DefaultResolverRegistry,
+  ResolutionEngine,
+  type ResolverRegistry,
+  S3Resolver,
+  SSMResolver,
+} from "./resolvers/index.js";
 import type {
   ConfigObject,
   ConfigurationOptions,
@@ -26,7 +32,8 @@ import type {
 
 /**
  * The global configuration store. Immutable after creation.
- * Provides dot-notation access and automatic resolution of SSM/S3 references.
+ * Provides dot-notation access and dynamic resolution of external references
+ * via a pluggable resolver registry.
  *
  * Use `Configuration.initialize` to create the singleton and
  * `Configuration.getInstance` to retrieve it.
@@ -36,9 +43,11 @@ export class Configuration implements ConfigurationProvider {
   private readonly data: Readonly<ConfigObject>;
   private readonly logger: Logger;
   private readonly resolveOptions: Required<NonNullable<ConfigurationOptions["resolve"]>>;
+  private readonly resolverRegistry: ResolverRegistry;
+  private readonly resolutionEngine: ResolutionEngine;
 
   /**
-   * Creates a new Configuration instance.
+   * Creates a new `Configuration` instance.
    *
    * @param data - Plain configuration object (hierarchical)
    * @param options - Behavior customization (logger, external resolution toggle)
@@ -48,11 +57,37 @@ export class Configuration implements ConfigurationProvider {
     const ropts = options?.resolve ?? {};
     this.resolveOptions = {
       external: ropts.external ?? true,
-      s3: ropts.s3 ?? true,
-      ssm: ropts.ssm ?? true,
-      ssmDecryption: ropts.ssmDecryption ?? true,
+      resolvers: ropts.resolvers ?? {
+        ssm: { withDecryption: false },
+        "ssm-secure": { withDecryption: true },
+        s3: true,
+      },
     };
+
+    // Initialize resolver registry with default resolvers
+    this.resolverRegistry = new DefaultResolverRegistry();
+
+    // Initialize resolution engine
+    this.resolutionEngine = new ResolutionEngine(this.resolverRegistry, this.logger);
+
     this.data = ObjectUtils.deepFreeze(structuredClone(data)) as Readonly<ConfigObject>;
+  }
+
+  /**
+   * Initialize default resolvers in the registry.
+   */
+  private async initializeResolvers(): Promise<void> {
+    try {
+      await this.resolverRegistry.register(new SSMResolver(), this.logger);
+      await this.resolverRegistry.register(new S3Resolver(), this.logger);
+    } catch (error) {
+      this.logger.error({ error }, "Failed to initialize resolvers");
+      throw new ConfigurationError("Failed to initialize configuration resolvers", {
+        code: "CONFIG_RESOLVER_INIT_ERROR",
+        cause: error as Error,
+        isOperational: false,
+      });
+    }
   }
 
   /**
@@ -63,8 +98,12 @@ export class Configuration implements ConfigurationProvider {
    * @param options - Behavior customization (logger, external resolution toggle)
    * @returns The created global configuration instance
    */
-  public static initialize(data: ConfigObject, options?: ConfigurationOptions): Configuration {
+  public static async initialize(
+    data: ConfigObject,
+    options?: ConfigurationOptions,
+  ): Promise<Configuration> {
     const cfg = new Configuration(data, options);
+    await cfg.initializeResolvers();
     Configuration.instance = cfg;
     cfg.logger.info("Configuration initialized");
     return cfg;
@@ -147,15 +186,16 @@ export class Configuration implements ConfigurationProvider {
       eff.external = options.resolve;
     } else if (typeof options?.resolve === "object" && options.resolve) {
       if (options.resolve.external !== undefined) eff.external = options.resolve.external;
-      if (options.resolve.s3 !== undefined) eff.s3 = options.resolve.s3;
-      if (options.resolve.ssm !== undefined) eff.ssm = options.resolve.ssm;
+      if (options.resolve.resolvers !== undefined) {
+        eff.resolvers = { ...eff.resolvers, ...options.resolve.resolvers };
+      }
     }
-    if (options?.ssmDecryption !== undefined) eff.ssmDecryption = options.ssmDecryption;
 
-    // Per-call memoization cache to avoid duplicate fetches of the same external ref
-    const cache = new Map<string, Promise<ConfigValue>>();
-
-    return (await this.maybeResolve(value, eff, cache)) as T;
+    // Use the resolution engine to resolve external references
+    return (await this.resolutionEngine.resolve(value, {
+      external: eff.external,
+      resolvers: eff.resolvers,
+    })) as T;
   }
 
   /**
@@ -180,64 +220,10 @@ export class Configuration implements ConfigurationProvider {
    * resolution side-effects and discards the result.
    */
   public async preload(): Promise<void> {
-    // Use a per-call cache to deduplicate identical references during the walk
-    const cache = new Map<string, Promise<ConfigValue>>();
-    await this.maybeResolve(this.data as unknown as ConfigValue, this.resolveOptions, cache);
-  }
-
-  /**
-   * Resolve external references if enabled. For arrays and objects, resolve
-   * recursively.
-   *
-   * The resolution options are defined by `ResolutionOptions`.
-   *
-   * @param value - Value to resolve (may be an external reference)
-   * @param eff - Effective resolution options
-   * @param cache - Per-call memoization cache
-   * @returns The resolved value
-   */
-  private async maybeResolve(
-    value: ConfigValue,
-    eff: typeof this.resolveOptions = this.resolveOptions,
-    cache?: Map<string, Promise<ConfigValue>>,
-  ): Promise<ConfigValue> {
-    if (!eff.external) return value;
-
-    if (isExternalRef(value)) {
-      // Use per-call cache to deduplicate identical reference fetches
-      if (cache) {
-        const existing = cache.get(value);
-        if (existing) return await existing;
-      }
-
-      if (value.startsWith("ssm://") && eff.ssm) {
-        const p = resolveSSM(value, this.logger, {
-          withDecryption: eff.ssmDecryption,
-        }) as Promise<ConfigValue>;
-        cache?.set(value, p);
-        return await p;
-      }
-      if (value.startsWith("s3://") && eff.s3) {
-        const p = resolveS3(value, this.logger) as Promise<ConfigValue>;
-        cache?.set(value, p);
-        return await p;
-      }
-    }
-
-    if (Array.isArray(value)) {
-      const out = [] as ConfigValue[];
-      for (const item of value) out.push(await this.maybeResolve(item, eff, cache));
-      return out;
-    }
-
-    if (value && typeof value === "object") {
-      const result: Record<string, ConfigValue> = {};
-      for (const [k, v] of Object.entries(value)) {
-        result[k] = await this.maybeResolve(v as ConfigValue, eff, cache);
-      }
-      return result as ConfigObject;
-    }
-
-    return value;
+    // Use the resolution engine to preload all external references
+    await this.resolutionEngine.resolve(this.data as unknown as ConfigValue, {
+      external: this.resolveOptions.external,
+      resolvers: this.resolveOptions.resolvers,
+    });
   }
 }

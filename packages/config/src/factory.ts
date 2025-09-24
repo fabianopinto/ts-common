@@ -83,12 +83,12 @@ export class ConfigurationFactory {
    *
    * @param obj - Plain configuration object to merge
    * @param options - Factory behavior options (logger, resolution toggle)
-   * @returns The initialized global `Configuration`
+   * @returns Promise that resolves to the initialized global `Configuration`
    */
-  public static buildFromObject(
+  public static async buildFromObject(
     obj: ConfigObject,
     options?: ConfigurationFactoryOptions,
-  ): Configuration {
+  ): Promise<Configuration> {
     const factory = new ConfigurationFactory(options);
     factory.addObject(obj);
     return factory.build();
@@ -169,9 +169,9 @@ export class ConfigurationFactory {
   /**
    * Build and initialize the global Configuration instance.
    *
-   * @returns The created global `Configuration`
+   * @returns Promise that resolves to the created global `Configuration`
    */
-  public build(): Configuration {
+  public async build(): Promise<Configuration> {
     this.logger.info("Building configuration instance");
     return Configuration.initialize(this.data, this.options);
   }
