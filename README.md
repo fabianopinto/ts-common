@@ -8,27 +8,27 @@
 
 A TypeScript monorepo of reusable packages:
 
-- [@t68/errors](./packages/errors/README.md) — AppError with cause and context
-- [@t68/config](./packages/config/README.md) — Composable, immutable configuration with SSM/S3 resolution
-- [@t68/logger](./packages/logger/README.md) — Pino-based logger with clean interface
+- [@t68/config](./packages/config/README.md) — High-performance configuration with intelligent SSM/S3 resolution and advanced caching
 - [@t68/utils](./packages/utils/README.md) — string, date, and object helpers
+- [@t68/logger](./packages/logger/README.md) — Pino-based logger with clean interface
+- [@t68/errors](./packages/errors/README.md) — AppError with cause and context
 
 ## Architecture
 
 ```mermaid
 graph TD
-  errors["@t68/errors"]
   config["@t68/config"]
-  logger["@t68/logger"]
   utils["@t68/utils"]
+  logger["@t68/logger"]
+  errors["@t68/errors"]
 
   %% Internal package dependencies (direction: dependent --> dependency)
   logger --> errors
-  utils --> errors
   utils --> logger
-  config --> errors
-  config --> utils
+  utils --> errors
   config --> logger
+  config --> utils
+  config --> errors
 ```
 
 ## Tech stack
@@ -48,10 +48,10 @@ pnpm build
 
 ## Packages
 
-- `packages/errors`
 - `packages/config`
-- `packages/logger`
 - `packages/utils`
+- `packages/logger`
+- `packages/errors`
 
 ## Development
 
@@ -71,7 +71,7 @@ Configuration.initialize({
   logging: { level: "info" },
 });
 
-// Retrieve values (external refs like ssm:// or s3:// are resolved when enabled)
+// Retrieve values (external refs like ssm:/, ssm-secure:/, or s3:// are resolved automatically)
 const cfg = Configuration.getInstance();
 const port = await cfg.getValue<number>("service.port");
 

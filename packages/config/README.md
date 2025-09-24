@@ -1,452 +1,435 @@
 # @t68/config
 
-Composable, immutable configuration for Node/TypeScript apps with type-safe access, dot-notation paths, and automatic resolution of external references (AWS SSM and S3). ESM-first with CJS compatibility.
+High-performance, immutable configuration system for Node.js/TypeScript applications with intelligent external reference resolution, advanced caching, and pluggable resolver architecture.
 
-- Immutable global configuration via `Configuration`
-- Composable `ConfigurationFactory` (merge objects and JSON files)
-- Dot-notation `getValue()` with optional auto-resolution of `ssm://` and `s3://` references
-- Pluggable provider abstraction: `ConfigurationProvider` and `DefaultConfigurationProvider`
-- Structured logging via `@t68/logger` and robust retries via `@t68/utils`
+## Key Features
 
-This package is part of the ts-common monorepo (see the [root README](../../README.md)) and integrates naturally with:
+- **🔒 Immutable Configuration**: Thread-safe global configuration with deep-freeze protection
+- **🔗 Smart Resolution**: Automatic resolution of `ssm:/`, `ssm-secure:/`, and `s3://` references
+- **⚡ High Performance**: Advanced caching with circuit breaker, memory pressure handling, and batch optimization
+- **🧩 Pluggable Architecture**: Extensible resolver system for custom protocols
+- **📊 Production Ready**: Comprehensive monitoring, statistics, and error handling
+- **🎯 Type Safe**: Full TypeScript support with strict mode compatibility
 
-- [@t68/errors](../errors/README.md) for structured error handling
+This package is part of the ts-common monorepo (see the [root README](../../README.md)) and integrates with:
+
+- [@t68/utils](../utils/README.md) for retry utilities and helpers
 - [@t68/logger](../logger/README.md) for structured logging
-- [@t68/utils](../utils/README.md) for retry, object, and other helpers
+- [@t68/errors](../errors/README.md) for structured error handling
 
-## Table of contents
+## Documentation
 
-- [Install](#install)
-- [Import](#import)
-- [API](#api)
-- [Usage](#usage)
-  - [Initialize and read values](#initialize-and-read-values)
-  - [Resolve external references (SSM/S3)](#resolve-external-references-ssms3)
-  - [Factory usage (objects and JSON files)](#factory-usage-objects-and-json-files)
-  - [Provider usage (DI-friendly)](#provider-usage-di-friendly)
-- [Diagrams](#diagrams)
-- [Type definitions](#type-definitions)
-- [Compatibility](#compatibility)
+- **[Architecture Guide](./ARCHITECTURE.md)** — Technical architecture, caching system, and production configuration
+- **[Performance Guide](./PERFORMANCE.md)** — Performance benchmarks, monitoring, and optimization strategies
+
+## Table of Contents
+
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Core Concepts](#core-concepts)
+- [External References](#external-references)
+- [Advanced Usage](#advanced-usage)
+- [Performance & Monitoring](#performance--monitoring)
+- [API Reference](#api-reference)
+- [Architecture](#architecture)
 - [License](#license)
 
-## Install
+## Installation
 
 ```bash
-# Core package (requires pino as a peer)
+# Core package with required peer dependencies
 pnpm add @t68/config pino
+# or
+npm install @t68/config pino
 
-# Optional peers (only if you enable external reference resolution for ssm:// or s3://)
+# Optional AWS SDK clients (only if using SSM/S3 references)
 pnpm add @aws-sdk/client-ssm @aws-sdk/client-s3
-# Optional (for pretty printing in local/dev): pino-pretty
+# or
+npm install @aws-sdk/client-ssm @aws-sdk/client-s3
+
+# Development dependencies
 pnpm add -D pino-pretty
-
 # or
-npm i @t68/config pino
-npm i @aws-sdk/client-ssm @aws-sdk/client-s3 # optional
-npm i -D pino-pretty # optional
-
-# or
-yarn add @t68/config pino
-yarn add @aws-sdk/client-ssm @aws-sdk/client-s3 # optional
-yarn add -D pino-pretty # optional
+npm install --save-dev pino-pretty
 ```
 
-### Peer dependencies
+### Peer Dependencies
 
-- `@aws-sdk/client-ssm` — optional peer dependency. Required only if you resolve `ssm://` parameters.
-- `@aws-sdk/client-s3` — optional peer dependency. Required only if you resolve `s3://` objects.
+- **`@aws-sdk/client-ssm`** — Optional, required only for `ssm:/` and `ssm-secure:/` references
+- **`@aws-sdk/client-s3`** — Optional, required only for `s3://` references
+- **`pino`** — Required for structured logging
+- **`pino-pretty`** — Optional, for pretty-printed logs in development
 
-Notes:
+## Quick Start
 
-- This package does not bundle AWS SDK v3 clients. If you use `resolveExternal: true` and your configuration contains `ssm://` or `s3://` references, install the corresponding clients in your application.
-- If these clients are missing at runtime and you attempt to resolve such references, module resolution will fail when the resolver is invoked.
-
-### Transitive peer dependencies
-
-This package integrates with `@t68/logger`, which declares the following peer dependencies in your application:
-
-- `pino` — required peer dependency for logging.
-- `pino-pretty` — optional peer dependency (used only for pretty printing in non-production environments).
-
-Notes:
-
-- If `pino` is not installed in your app, importing/using the logger will fail at runtime.
-- If `pino-pretty` is not installed and you enable pretty output, the logger falls back to JSON output.
-
-## Import
-
-```ts
-// ESM
-import {
-  Configuration,
-  ConfigurationFactory,
-  DefaultConfigurationProvider,
-  type ConfigurationProvider,
-  type ConfigurationOptions,
-  type ConfigObject,
-} from "@t68/config";
-
-// CJS
-const {
-  Configuration,
-  ConfigurationFactory,
-  DefaultConfigurationProvider,
-} = require("@t68/config");
-```
-
-## API
-
-- [`Configuration`](./src/configuration.ts)
-  - `static initialize(data: ConfigObject, options?: ConfigurationOptions): Configuration`
-  - `static getInstance(): Configuration`
-  - `has(path: string): boolean`
-  - `getValue<T = unknown>(path: string, options?: GetValueOptions): Promise<T | undefined>`
-  - `getRaw<T = unknown>(path: string): Promise<T | undefined>`
-  - `preload(): Promise<void>`
-- [`ConfigurationFactory`](./src/factory.ts)
-  - `new ConfigurationFactory(options?: ConfigurationFactoryOptions)`
-  - `addObject(obj: ConfigObject): this`
-  - `addFile(filePath: string): Promise<this>`
-  - `addS3(s3Path: string): Promise<this>`
-  - `build(): Configuration`
-  - `static buildFromObject(obj: ConfigObject, options?: ConfigurationFactoryOptions): Configuration`
-  - `static buildFromFiles(files: string[], options?: ConfigurationFactoryOptions): Promise<Configuration>`
-  - `static buildFromS3(s3Paths: string[], options?: ConfigurationFactoryOptions): Promise<Configuration>`
-- [`DefaultConfigurationProvider`](./src/provider.ts)
-  - Implements `ConfigurationProvider` by delegating to `Configuration.getInstance()`
-- [`resolvers`](./src/resolvers.ts)
-  - `resolveSSM(ssmPath: string, logger?: Logger, opts?: { withDecryption?: boolean }): Promise<string>`
-  - `resolveS3(s3Path: string, logger?: Logger): Promise<string>`
-  - `isExternalRef(value: unknown): value is string`
-- [`types`](./src/types.ts)
-  - `ConfigValue`, `ConfigObject`, `ConfigurationOptions`, `ResolutionOptions`, `ResolutionFlagsOverride`, `GetValueOptions`, `ConfigurationProvider`
-
-## Usage
-
-### Initialize and read values
-
-```ts
+```typescript
 import { Configuration } from "@t68/config";
 
-// Minimal configuration
+// Initialize with simple configuration
 Configuration.initialize({
   service: {
-    name: "users",
-    endpoint: "https://api.example.com",
+    name: "my-service",
+    port: 3000,
+    database: {
+      host: "localhost",
+      password: "ssm-secure:/prod/db/password", // Resolved automatically
+    },
   },
 });
 
-// Later in your code
-const cfg = Configuration.getInstance();
-const endpoint = await cfg.getValue<string>("service.endpoint");
+// Access configuration anywhere in your app
+const config = Configuration.getInstance();
+const port = await config.getValue<number>("service.port");
+const dbPassword = await config.getValue<string>("service.database.password");
 ```
 
-- `has(path)` checks existence without resolving external references.
-- `getValue(path)` resolves external references by default (can be disabled below).
+## Core Concepts
 
-### Resolve external references (SSM/S3)
+### Immutable Configuration
 
-```ts
-import { Configuration } from "@t68/config";
+Configuration is deeply frozen and immutable after initialization, ensuring thread safety and preventing accidental modifications.
 
-Configuration.initialize(
-  {
-    secrets: {
-      dbPassword: "ssm://prod/db/password",
+```typescript
+const config = Configuration.getInstance();
+// config.data is readonly and deeply frozen
+```
+
+### Dot-Notation Access
+
+Access nested configuration values using dot notation paths:
+
+```typescript
+const config = {
+  database: {
+    connection: {
+      host: "localhost",
+      port: 5432,
     },
-    templates: {
-      welcome: "s3://my-bucket/messages/welcome.txt",
-    },
-  },
-  { resolve: { external: true } }, // default is external=true
-);
-
-const cfg = Configuration.getInstance();
-const password = await cfg.getValue<string>("secrets.dbPassword"); // resolved via SSM
-const welcomeMsg = await cfg.getValue<string>("templates.welcome"); // resolved via S3
-```
-
-- Resolution uses `RetryUtils.retryAsync` under the hood for resilience.
-- Debug logs are emitted when `logger.isLevelEnabled("debug")` is true.
-
-To disable resolution (use raw values), you can either:
-
-- Set at instance level: `Configuration.initialize(data, { resolve: { external: false } })`
-- Or per call: `cfg.getValue(path, { resolve: false })`
-- Or use the ergonomic alias: `cfg.getRaw(path)`
-
-You can also control S3/SSM independently and SSM decryption:
-
-- Instance level: `resolve: { s3: false }`, `resolve: { ssm: false }`, `resolve: { ssmDecryption: false }`
-- Per call (via `ResolutionFlagsOverride`): `cfg.getValue(path, { resolve: { s3: true, ssm: false } })`, or `cfg.getValue(path, { ssmDecryption: false })`
-
-#### Preload at startup (fail fast)
-
-To validate credentials and references upfront, preload the entire configuration tree at startup. This walks the tree and resolves all external references using the current instance-level flags, surfacing errors early.
-
-```ts
-import { Configuration } from "@t68/config";
-
-Configuration.initialize(data, { resolve: { external: true } });
-await Configuration.getInstance().preload();
-// If this completes, SSM/S3 refs are resolvable with current credentials/options
-```
-
-Notes:
-
-- Preloading does not mutate your configuration; it only triggers resolution side effects to verify access and correctness.
-- Resolution during a single `getValue()` call is memoized per call (see below), avoiding duplicate fetches when the same ref string appears multiple times.
-
-#### Per-call memoization of external refs
-
-During a single `getValue()` invocation, repeated external reference strings (e.g., the same `ssm://...` in multiple places within a nested structure) are deduplicated via a tiny per-call cache. This reduces network calls and speeds up resolution.
-
-### Factory usage (objects, JSON files, and S3 JSON)
-
-```ts
-import { ConfigurationFactory } from "@t68/config";
-
-// Compose from multiple sources (later sources override earlier ones)
-const cfg = await ConfigurationFactory.buildFromFiles(["./config/base.json", "./config/prod.json"]);
-
-// Or programmatically
-const cfg2 = ConfigurationFactory.buildFromObject({
-  featureFlags: { newDashboard: true },
-});
-
-// Load from S3 JSON objects
-const cfg3 = await ConfigurationFactory.buildFromS3([
-  "s3://my-bucket/config/base.json",
-  "s3://my-bucket/config/prod.json",
-]);
-```
-
-- Objects are deep-merged; arrays on the right replace arrays on the left; `null` prunes keys/branches.
-- File read/parse errors are wrapped in `ConfigurationError` (`code: "CONFIG_READ_FILE_ERROR"`).
-- S3 read/parse errors are wrapped in `ConfigurationError` (`code: "CONFIG_READ_S3_ERROR"`).
-
-### Provider usage (DI-friendly)
-
-```ts
-import { DefaultConfigurationProvider } from "@t68/config";
-
-const provider = new DefaultConfigurationProvider();
-if (provider.has("service.endpoint")) {
-  const url = await provider.getValue<string>("service.endpoint");
-}
-```
-
-## Diagrams
-
-### Class diagram
-
-```mermaid
-classDiagram
-  class Configuration {
-    -readonly data: ConfigObject
-    -readonly logger: Logger
-    -readonly resolveOptions: ResolutionOptions
-    +static initialize(data: ConfigObject, options?: ConfigurationOptions): Configuration
-    +static getInstance(): Configuration
-    +has(path: string): boolean
-    +getValue(path: string, options?: GetValueOptions): Promise<unknown | undefined>
-    +getRaw(path: string): Promise<unknown | undefined>
-    +preload(): Promise<void>
-    -maybeResolve(value: ConfigValue, eff?: ResolutionOptions, cache?): Promise<ConfigValue>
-  }
-
-  class ConfigurationFactory {
-    -readonly options: ConfigurationFactoryOptions
-    -readonly store: ConfigObject
-    +addObject(obj: ConfigObject): this
-    +addFile(filePath: string): Promise<this>
-    +addS3(s3Path: string): Promise<this>
-    +build(): Configuration
-    +buildFromObject(obj: ConfigObject, options?): Configuration
-    +buildFromFiles(files: string[], options?): Promise<Configuration>
-    +buildFromS3(s3Paths: string[], options?): Promise<Configuration>
-  }
-
-  class ConfigurationProvider {
-    <<interface>>
-    +has(path: string): boolean
-    +getValue(path: string, options?: GetValueOptions): Promise<unknown | undefined>
-  }
-
-  class DefaultConfigurationProvider {
-    +has(path: string): boolean
-    +getValue(path: string, options?: GetValueOptions): Promise<unknown | undefined>
-  }
-
-  ConfigurationFactory --> Configuration
-  DefaultConfigurationProvider ..|> ConfigurationProvider
-```
-
-### Initialization sequence
-
-```mermaid
-sequenceDiagram
-  autonumber
-  participant App as Application
-  participant Factory as ConfigurationFactory
-  participant FS as FS (JSON)
-  participant Logger as @t68/logger
-  participant Config as Configuration
-  participant Provider as ConfigurationProvider
-
-  Note over App: Option A — Use ConfigurationFactory
-  App->>Factory: new ConfigurationFactory(options?)
-  App->>Factory: addObject(obj) / addFile(path) / addS3(s3://...)
-  Factory->>FS: readFile(path) and JSON.parse
-  Factory-->>Factory: deepMerge(objects) arrays replaced by RHS
-  App->>Factory: build()
-  Factory->>Logger: options.logger ?? baseLogger.child({ module: "config" })
-  Factory->>Config: Configuration.initialize(mergedData, { logger, resolve: { external } })
-  Config-->>Config: store singleton instance
-
-  Note over App: Option B — Static helpers
-  App->>Factory: buildFromObject(obj, options?)
-  App->>Factory: buildFromFiles([paths], options?)
-  App->>Factory: buildFromS3([s3://...], options?)
-  Factory->>Config: initialize(...)
-
-  Note over Provider: Access at call sites
-  Provider->>Config: Configuration.getInstance()
-  Provider->>Config: has(path) / getValue(path, options?)
-  Config-->>Provider: value (resolved if enabled)
-```
-
-### Resolution flow
-
-```mermaid
-flowchart TD
-  A["Configuration.getValue(path)"] --> B["deepGet(data, path)"]
-  B -->|undefined| Z[return undefined]
-  B --> C["maybeResolve(value)"]
-  C -->|not string / not array / not object| R[return value]
-  C -->|string external ref| D{scheme}
-  D -->|ssm| E[resolveSSM]
-  D -->|s3| F[resolveS3]
-  E --> G[RetryUtils.retryAsync]
-  F --> G
-  G --> H[resolved string]
-  H --> R
-  C -->|array| I[map maybeResolve over items]
-  I --> R
-  C -->|object| J[for each entry maybeResolve]
-  J --> R
-```
-
-## Advanced examples
-
-### Custom providers
-
-You can implement your own provider to adapt `Configuration` to your DI container, caching strategy, or multi-tenant needs.
-
-```ts
-// my-config-provider.ts
-import type { ConfigurationProvider } from "@t68/config";
-import { Configuration } from "@t68/config";
-
-export class MyConfigurationProvider implements ConfigurationProvider {
-  constructor(private readonly prefix?: string) {}
-
-  has(path: string): boolean {
-    const full = this.prefix ? `${this.prefix}.${path}` : path;
-    return Configuration.getInstance().has(full);
-  }
-
-  async getValue<T = unknown>(path: string): Promise<T | undefined> {
-    const full = this.prefix ? `${this.prefix}.${path}` : path;
-    return Configuration.getInstance().getValue<T>(full);
-  }
-}
-
-// usage
-const provider = new MyConfigurationProvider("serviceA");
-if (provider.has("endpoint")) {
-  const url = await provider.getValue<string>("endpoint");
-}
-```
-
-### Injecting a custom logger
-
-Provide your own logger (for example, a child of `@t68/logger`) to control verbosity and context.
-
-```ts
-import { Configuration } from "@t68/config";
-import { logger } from "@t68/logger";
-
-const cfgLogger = logger.child({ module: "config", app: "users" });
-cfgLogger.setLevel("debug");
-
-Configuration.initialize(
-  { secrets: { token: "ssm://prod/api/token" } },
-  { logger: cfgLogger, resolveExternal: true },
-);
-
-// When debug is enabled, resolution steps will be logged
-await Configuration.getInstance().getValue("secrets.token");
-```
-
-### Custom resolvers (extending beyond SSM/S3)
-
-This package resolves `ssm://` and `s3://` references out of the box. To support additional schemes (for example, `vault://`), you can preprocess your configuration and disable built-in resolution, or compose at read-time.
-
-Option A — preprocess then initialize with `resolve: { external: false }`:
-
-```ts
-import { Configuration } from "@t68/config";
-
-async function resolveCustomRefs(obj: unknown): Promise<unknown> {
-  if (Array.isArray(obj)) return Promise.all(obj.map(resolveCustomRefs));
-  if (obj && typeof obj === "object") {
-    const out: Record<string, unknown> = {};
-    for (const [k, v] of Object.entries(obj)) out[k] = await resolveCustomRefs(v);
-    return out;
-  }
-  if (typeof obj === "string" && obj.startsWith("vault://")) {
-    return await fetchFromVault(obj.substring("vault://".length));
-  }
-  return obj;
-}
-
-const raw = {
-  secrets: {
-    token: "vault://secret/data/api#token",
-    dbPass: "ssm://prod/db/password", // leave as-is if you want to keep built-ins
   },
 };
 
-const pre = await resolveCustomRefs(raw);
-Configuration.initialize(pre as any, { resolve: { external: true } /* keep SSM/S3 */ });
+const host = await cfg.getValue<string>("database.connection.host");
+const port = await cfg.getValue<number>("database.connection.port");
 ```
 
-Option B — wrap calls to `getValue` and intercept your custom schemes first:
+### Configuration Factory
 
-```ts
-import { Configuration } from "@t68/config";
+Build configuration from multiple sources with deep merging:
 
-async function getConfigValue<T = unknown>(path: string): Promise<T | undefined> {
-  const val = await Configuration.getInstance().getValue<T | string>(path);
-  if (typeof val === "string" && val.startsWith("vault://")) {
-    return (await fetchFromVault(val.substring("vault://".length))) as T;
+```typescript
+import { ConfigurationFactory } from "@t68/config";
+
+// Static methods for quick setup
+// From files (later files override earlier ones)
+const config = await ConfigurationFactory.buildFromFiles([
+  "./config/base.json",
+  "./config/production.json",
+]);
+
+// From objects
+const config2 = ConfigurationFactory.buildFromObject({
+  service: { name: "api" },
+  features: { newUI: true },
+});
+
+// From S3 objects
+const config3 = await ConfigurationFactory.buildFromS3([
+  "s3://config-bucket/base.json",
+  "s3://config-bucket/prod.json",
+]);
+
+// Builder pattern for complex scenarios
+const factory = new ConfigurationFactory({
+  resolve: { external: true },
+  logger: customLogger,
+});
+
+// Add multiple sources in sequence
+factory
+  .addObject({ 
+    environment: "production",
+    service: { name: "api-server" }
+  })
+  .addObject({
+    database: { host: "localhost", port: 5432 }
+  });
+
+// Add configuration files
+await factory.addFile("./config/base.json");
+await factory.addFile("./config/production.json");
+
+// Add S3 configuration
+await factory.addS3("s3://config-bucket/shared.json");
+
+// Build the final configuration
+const builtConfig = factory.build();
+```
+
+## External References
+
+The configuration system automatically resolves external references using a high-performance resolver architecture.
+
+### SSM Parameter Store
+
+```typescript
+// Regular parameters (no decryption by default)
+const config = {
+  database: {
+    host: "ssm:/prod/db/host",
+    port: "ssm:/prod/db/port",
+  },
+};
+
+// Secure parameters (decryption enabled by default)
+const secrets = {
+  database: {
+    password: "ssm-secure:/prod/db/password",
+    apiKey: "ssm-secure:/prod/api/key",
+  },
+};
+
+// Override protocol defaults
+const customConfig = {
+  // Force decryption for regular protocol
+  secret: "ssm:/prod/secret", // with { withDecryption: true }
+
+  // Disable decryption for secure protocol
+  encrypted: "ssm-secure:/prod/encrypted", // with { withDecryption: false }
+};
+```
+
+### S3 Objects
+
+```typescript
+const config = {
+  templates: {
+    welcome: "s3://templates-bucket/welcome.html",
+    terms: "s3://legal-bucket/terms.txt",
+  },
+
+  // Get S3 object metadata instead of content
+  metadata: "s3://bucket/file.json", // with { metadata: true }
+};
+```
+
+### Performance Optimizations
+
+The resolver system includes several performance optimizations:
+
+- **Batch Processing**: Multiple SSM parameters resolved in single API calls (up to 10 per batch)
+- **Intelligent Caching**: Advanced caching with TTL, priority-based eviction, and memory pressure handling
+- **Circuit Breaker**: Automatic failure detection and recovery
+- **Memory Management**: Adaptive cleanup and out-of-memory protection
+
+For detailed benchmarks and optimization strategies, see the **[Performance Guide](./PERFORMANCE.md)**.
+
+## Advanced Usage
+
+### Custom Resolution Options
+
+```typescript
+// Disable external resolution globally
+Configuration.initialize(data, {
+  resolve: { external: false },
+});
+
+// Per-call resolution control
+const rawValue = await config.getValue("path", { resolve: false });
+const resolved = await config.getValue("path", { resolve: true });
+
+// Protocol-specific options
+const ssmValue = await config.getValue("ssm:/param", {
+  withDecryption: true,
+  cacheTtlMs: 300000, // 5 minutes
+});
+```
+
+### Preloading and Validation
+
+```typescript
+// Validate all external references at startup
+Configuration.initialize(data);
+await Configuration.getInstance().preload();
+// Throws if any references are invalid or inaccessible
+```
+
+### Dependency Injection
+
+```typescript
+import { DefaultConfigurationProvider, type ConfigurationProvider } from "@t68/config";
+
+class MyService {
+  constructor(private config: ConfigurationProvider) {}
+
+  async start() {
+    const port = await this.config.getValue<number>("service.port");
+    // ...
   }
-  return val as T | undefined;
+}
+
+// Usage
+const provider = new DefaultConfigurationProvider();
+const service = new MyService(provider);
+```
+
+## Performance & Monitoring
+
+The configuration system provides comprehensive performance monitoring and optimization capabilities. For detailed performance tuning and benchmarks, see the **[Performance Guide](./PERFORMANCE.md)**.
+
+### Cache Statistics
+
+```typescript
+import { GlobalCache } from "@t68/config";
+
+const cache = GlobalCache.getInstance();
+const stats = cache.getStats();
+
+console.log(`Cache hit ratio: ${(stats.hitRatio * 100).toFixed(1)}%`);
+console.log(`Memory usage: ${(stats.totalSizeBytes / 1024 / 1024).toFixed(1)}MB`);
+console.log(`Total entries: ${stats.totalEntries}`);
+console.log(`Efficiency score: ${(stats.efficiencyScore * 100).toFixed(1)}%`);
+```
+
+### Memory Pressure Handling
+
+The cache automatically handles memory pressure with intelligent eviction:
+
+```typescript
+// Production cache configuration
+const cache = GlobalCache.getInstance({
+  maxSizeBytes: 512 * 1024 * 1024, // 512MB
+  maxEntries: 50000, // 50K entries
+  memoryPressureThreshold: 0.8, // 80% threshold
+  enableCircuitBreaker: true,
+  enablePriorityEviction: true,
+  minCacheSize: 1000, // Never below 1K entries
+});
+```
+
+### Circuit Breaker
+
+Automatic failure detection and recovery:
+
+- **CLOSED**: Normal operation
+- **OPEN**: Failing fast, cache operations disabled
+- **HALF_OPEN**: Testing recovery, limited operations
+
+## API Reference
+
+### Configuration
+
+```typescript
+class Configuration {
+  static initialize(data: ConfigObject, options?: ConfigurationOptions): Configuration;
+  static getInstance(): Configuration;
+
+  has(path: string): boolean;
+  getValue<T>(path: string, options?: GetValueOptions): Promise<T | undefined>;
+  getRaw<T>(path: string): Promise<T | undefined>;
+  preload(): Promise<void>;
 }
 ```
 
-Both approaches keep the core package focused while allowing you to introduce additional resolution strategies.
+### ConfigurationFactory
 
-## Type definitions
+```typescript
+class ConfigurationFactory {
+  constructor(options?: ConfigurationFactoryOptions);
 
-This package ships types at `dist/index.d.ts` and supports TypeScript strict mode.
+  addObject(obj: ConfigObject): this;
+  addFile(filePath: string): Promise<this>;
+  addS3(s3Path: string): Promise<this>;
+  build(): Configuration;
 
-## Compatibility
+  static buildFromObject(obj: ConfigObject, options?: ConfigurationFactoryOptions): Configuration;
+  static buildFromFiles(
+    files: string[],
+    options?: ConfigurationFactoryOptions,
+  ): Promise<Configuration>;
+  static buildFromS3(
+    s3Paths: string[],
+    options?: ConfigurationFactoryOptions,
+  ): Promise<Configuration>;
+}
+```
 
-- Node 22+
-- TypeScript target/lib: ES2024, module: NodeNext
-- ESM-first. CJS is available via `require` export.
+### ConfigurationProvider
+
+```typescript
+interface ConfigurationProvider {
+  has(path: string): boolean;
+  getValue<T>(path: string, options?: GetValueOptions): Promise<T | undefined>;
+}
+
+class DefaultConfigurationProvider implements ConfigurationProvider {
+  // Delegates to Configuration.getInstance()
+}
+```
+
+## Architecture
+
+The configuration system uses a modern, high-performance resolver architecture. For comprehensive technical details, see the **[Architecture Guide](./ARCHITECTURE.md)**.
+
+### Core Components
+
+```mermaid
+graph TB
+    subgraph "Configuration Layer"
+        Config[Configuration]
+        Factory[ConfigurationFactory]
+        Provider[ConfigurationProvider]
+    end
+
+    subgraph "Resolution Engine"
+        Engine[ResolutionEngine]
+        Registry[ResolverRegistry]
+        Cache[GlobalCache]
+    end
+
+    subgraph "Resolvers"
+        SSM[SSMResolver]
+        S3[S3Resolver]
+    end
+
+    Config --> Engine
+    Engine --> Registry
+    Engine --> Cache
+    Registry --> SSM
+    Registry --> S3
+    Factory --> Config
+    Provider --> Config
+```
+
+### Resolution Flow
+
+```mermaid
+sequenceDiagram
+    participant App as Application
+    participant Config as Configuration
+    participant Engine as ResolutionEngine
+    participant Cache as GlobalCache
+    participant Resolver as SSMResolver
+    participant AWS as AWS SSM
+
+    App->>Config: getValue("database.password")
+    Config->>Engine: resolve("ssm-secure:/prod/db/password")
+    Engine->>Cache: get(cacheKey)
+    Cache-->>Engine: cache miss
+    Engine->>Resolver: resolve(reference, options)
+    Resolver->>AWS: GetParameter(Name, WithDecryption)
+    AWS-->>Resolver: parameter value
+    Resolver->>Cache: set(cacheKey, value, options)
+    Resolver-->>Engine: resolved value
+    Engine-->>Config: resolved value
+    Config-->>App: "secret-password"
+```
+
+### Performance Features
+
+- **Batch Processing**: Multiple SSM parameters resolved in single API calls
+- **Intelligent Caching**: Priority-based eviction with memory pressure handling
+- **Circuit Breaker**: Automatic failure detection and recovery
+- **Memory Management**: Adaptive cleanup and out-of-memory protection
 
 ## License
 
