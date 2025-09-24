@@ -27,7 +27,7 @@ describe("ResolutionEngine", () => {
     try {
       const batchErrorResolver = registry.getResolver("batch-error");
       if (batchErrorResolver?.resolveBatch) {
-        vi.mocked(batchErrorResolver.resolveBatch).mockResolvedValue([]);
+        vi.mocked(batchErrorResolver.resolveBatch).mockImplementation(async () => []);
       }
     } catch (error) {
       // Ignore errors during cleanup - registry might be mocked to throw
@@ -163,9 +163,9 @@ describe("ResolutionEngine", () => {
       // Configure the batch error resolver to throw for this test
       const batchErrorResolver = registry.getResolver("batch-error");
       if (batchErrorResolver?.resolveBatch) {
-        vi.mocked(batchErrorResolver.resolveBatch).mockRejectedValue(
-          new Error("Batch resolution failed"),
-        );
+        vi.mocked(batchErrorResolver.resolveBatch).mockImplementation(async () => {
+          throw new Error("Batch resolution failed");
+        });
       }
 
       const config = {
@@ -373,9 +373,9 @@ describe("ResolutionEngine", () => {
       // Configure the batch error resolver to throw for this test
       const batchErrorResolver = registry.getResolver("batch-error");
       if (batchErrorResolver?.resolveBatch) {
-        vi.mocked(batchErrorResolver.resolveBatch).mockRejectedValue(
-          new Error("Batch resolution failed"),
-        );
+        vi.mocked(batchErrorResolver.resolveBatch).mockImplementation(async () => {
+          throw new Error("Batch resolution failed");
+        });
       }
 
       const config = {
@@ -562,7 +562,7 @@ function createMockRegistry(): ResolverRegistry {
   // Batch error resolver (supports batching but fails when called)
   const batchErrorResolver = createMockResolver("batch-error", true);
   // Don't set up the error by default - let individual tests configure it
-  batchErrorResolver.resolveBatch!.mockResolvedValue([]);
+  batchErrorResolver.resolveBatch!.mockImplementation(async () => []);
   resolvers.set("batch-error", batchErrorResolver);
 
   return {
