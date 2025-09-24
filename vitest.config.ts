@@ -7,9 +7,9 @@ export default defineConfig({
     // Collect tests from all workspace packages to run a single, merged session
     include: [
       // When running from repo root
-      "packages/*/test/**/*.{test,spec}.?(c|m)[jt]s?(x)",
+      "packages/*/tests/**/*.{test,spec}.?(c|m)[jt]s?(x)",
       // When running from a package directory (pnpm -r test)
-      "**/test/**/*.{test,spec}.?(c|m)[jt]s?(x)",
+      "**/tests/**/*.{test,spec}.?(c|m)[jt]s?(x)",
     ],
     exclude: ["**/node_modules/**", "**/dist/**"],
     coverage: {
