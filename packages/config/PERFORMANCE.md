@@ -11,6 +11,7 @@ The `@t68/config` package is designed for high-performance production environmen
 ### Batch Processing
 
 **SSM Parameter Resolution**
+
 - **Up to 10 parameters** per `GetParameters` API call
 - **~80% reduction** in AWS API calls for typical usage
 - **Automatic grouping** by decryption requirements
@@ -21,10 +22,10 @@ The `@t68/config` package is designed for high-performance production environmen
 const config = {
   database: {
     host: "ssm:/prod/db/host",
-    port: "ssm:/prod/db/port", 
+    port: "ssm:/prod/db/port",
     user: "ssm:/prod/db/user",
-    password: "ssm-secure:/prod/db/password"
-  }
+    password: "ssm-secure:/prod/db/password",
+  },
 };
 
 // Results in only 2 API calls:
@@ -35,6 +36,7 @@ const config = {
 ### Advanced Caching System
 
 **GlobalCache Features**
+
 - **Priority-based eviction** (`LOW`, `NORMAL`, `HIGH`, `CRITICAL`)
 - **Memory pressure monitoring** with adaptive cleanup
 - **Circuit breaker pattern** for failure recovery
@@ -42,9 +44,10 @@ const config = {
 - **Eviction storm prevention** with temporary limit increases
 
 **Cache Configuration**
+
 ```typescript
 const cache = GlobalCache.getInstance({
-  maxSizeBytes: 512 * 1024 * 1024,    // 512MB
+  maxSizeBytes: 512 * 1024 * 1024,     // 512MB
   maxEntries: 50000,                   // 50K entries
   maxEntrySizeBytes: 10 * 1024 * 1024, // 10MB per entry
   memoryPressureThreshold: 0.8,        // 80% threshold
@@ -54,7 +57,7 @@ const cache = GlobalCache.getInstance({
   enablePriorityEviction: true,
   minCacheSize: 1000,                  // Never below 1K entries
   cleanupIntervalMs: 30000,            // 30 seconds
-  defaultTtlMs: 10 * 60 * 1000        // 10 minutes
+  defaultTtlMs: 10 * 60 * 1000,        // 10 minutes
 });
 ```
 
@@ -89,14 +92,14 @@ console.log(`Cache starvation events: ${stats.starvationEvents}`);
 
 ### Alert Thresholds
 
-| Metric | Threshold | Action |
-|--------|-----------|--------|
-| Hit ratio | < 70% | Increase cache size or TTL |
-| Efficiency score | < 0.6 | Optimize cache configuration |
-| Memory pressure | HIGH/CRITICAL | Increase memory limits |
-| Eviction storms | > 0 | Check memory pressure |
-| Circuit breaker | OPEN | Investigate failures |
-| Starvation events | > 0 | Adjust priority settings |
+| Metric            | Threshold     | Action                       |
+| ----------------- | ------------- | ---------------------------- |
+| Hit ratio         | < 70%         | Increase cache size or TTL   |
+| Efficiency score  | < 0.6         | Optimize cache configuration |
+| Memory pressure   | HIGH/CRITICAL | Increase memory limits       |
+| Eviction storms   | > 0           | Check memory pressure        |
+| Circuit breaker   | OPEN          | Investigate failures         |
+| Starvation events | > 0           | Adjust priority settings     |
 
 ## Optimization Strategies
 
@@ -112,8 +115,8 @@ const dbConfig = {
     port: "ssm:/prod/db/port",
     database: "ssm:/prod/db/name",
     username: "ssm:/prod/db/username",
-    password: "ssm-secure:/prod/db/password"
-  }
+    password: "ssm-secure:/prod/db/password",
+  },
 };
 
 // Access all at once to trigger batch resolution
@@ -128,13 +131,13 @@ Use appropriate cache priorities for different types of data:
 // Critical configuration (never evicted except under extreme pressure)
 const criticalConfig = {
   serviceKey: "ssm-secure:/prod/service/key", // HIGH priority (secure)
-  licenseKey: "ssm-secure:/prod/license/key"  // HIGH priority (secure)
+  licenseKey: "ssm-secure:/prod/license/key", // HIGH priority (secure)
 };
 
 // Regular configuration (normal eviction rules)
 const regularConfig = {
-  endpoint: "ssm:/prod/service/endpoint",     // NORMAL priority
-  timeout: "ssm:/prod/service/timeout"       // NORMAL priority
+  endpoint: "ssm:/prod/service/endpoint", // NORMAL priority
+  timeout: "ssm:/prod/service/timeout",   // NORMAL priority
 };
 ```
 
@@ -145,16 +148,16 @@ Configure appropriate memory limits based on your environment:
 ```typescript
 // Production environment (high memory)
 const prodCache = GlobalCache.getInstance({
-  maxSizeBytes: 1024 * 1024 * 1024,  // 1GB
+  maxSizeBytes: 1024 * 1024 * 1024,   // 1GB
   maxEntries: 100000,                 // 100K entries
-  memoryPressureThreshold: 0.85       // 85% threshold
+  memoryPressureThreshold: 0.85,      // 85% threshold
 });
 
 // Development environment (limited memory)
 const devCache = GlobalCache.getInstance({
   maxSizeBytes: 128 * 1024 * 1024,    // 128MB
   maxEntries: 10000,                  // 10K entries
-  memoryPressureThreshold: 0.75       // 75% threshold
+  memoryPressureThreshold: 0.75,      // 75% threshold
 });
 ```
 
@@ -162,21 +165,21 @@ const devCache = GlobalCache.getInstance({
 
 ### SSM Resolution Performance
 
-| Scenario | Individual Calls | Batch Calls | Improvement |
-|----------|------------------|-------------|-------------|
-| 5 parameters | 5 API calls | 1 API call | 80% reduction |
-| 10 parameters | 10 API calls | 1 API call | 90% reduction |
-| 15 parameters | 15 API calls | 2 API calls | 87% reduction |
-| Mixed protocols | 20 API calls | 2 API calls | 90% reduction |
+| Scenario        | Individual Calls | Batch Calls | Improvement   |
+| --------------- | ---------------- | ----------- | ------------- |
+| 5 parameters    | 5 API calls      | 1 API call  | 80% reduction |
+| 10 parameters   | 10 API calls     | 1 API call  | 90% reduction |
+| 15 parameters   | 15 API calls     | 2 API calls | 87% reduction |
+| Mixed protocols | 20 API calls     | 2 API calls | 90% reduction |
 
 ### Cache Performance
 
-| Cache Size | Hit Ratio | Memory Usage | Efficiency Score |
-|------------|-----------|--------------|------------------|
-| 1K entries | 65% | 10MB | 0.72 |
-| 10K entries | 85% | 100MB | 0.89 |
-| 50K entries | 92% | 500MB | 0.94 |
-| 100K entries | 95% | 1GB | 0.96 |
+| Cache Size   | Hit Ratio | Memory Usage | Efficiency Score |
+| ------------ | --------- | ------------ | ---------------- |
+| 1K entries   | 65%       | 10MB         | 0.72             |
+| 10K entries  | 85%       | 100MB        | 0.89             |
+| 50K entries  | 92%       | 500MB        | 0.94             |
+| 100K entries | 95%       | 1GB          | 0.96             |
 
 ## Best Practices
 
@@ -195,15 +198,15 @@ await Configuration.getInstance().preload();
 // Set up periodic monitoring
 setInterval(() => {
   const stats = GlobalCache.getInstance().getStats();
-  
+
   if (stats.hitRatio < 0.7) {
     logger.warn("Low cache hit ratio", { hitRatio: stats.hitRatio });
   }
-  
+
   if (stats.memoryPressure >= MemoryPressureLevel.HIGH) {
     logger.warn("High memory pressure", { pressure: stats.memoryPressure });
   }
-  
+
   if (stats.circuitBreakerState === CircuitBreakerState.OPEN) {
     logger.error("Circuit breaker open", { failures: stats.circuitBreakerFailures });
   }
@@ -216,13 +219,13 @@ setInterval(() => {
 // High-frequency access: Longer TTL, higher priority
 const highFrequencyConfig = {
   apiEndpoint: "ssm:/prod/api/endpoint", // Long TTL, HIGH priority
-  rateLimits: "ssm:/prod/api/limits"     // Long TTL, HIGH priority
+  rateLimits: "ssm:/prod/api/limits",    // Long TTL, HIGH priority
 };
 
 // Infrequent access: Shorter TTL, lower priority
 const infrequentConfig = {
   maintenanceMessage: "s3://bucket/maintenance.txt", // Short TTL, LOW priority
-  helpText: "s3://bucket/help.txt"                   // Short TTL, LOW priority
+  helpText: "s3://bucket/help.txt",                  // Short TTL, LOW priority
 };
 ```
 

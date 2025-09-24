@@ -146,12 +146,12 @@ const factory = new ConfigurationFactory({
 
 // Add multiple sources in sequence
 factory
-  .addObject({ 
+  .addObject({
     environment: "production",
-    service: { name: "api-server" }
+    service: { name: "api-server" },
   })
   .addObject({
-    database: { host: "localhost", port: 5432 }
+    database: { host: "localhost", port: 5432 },
   });
 
 // Add configuration files

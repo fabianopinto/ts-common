@@ -82,7 +82,7 @@ interface ConfigResolver<TOptions extends Record<string, unknown> = Record<strin
   readonly supportsBatch?: boolean;
   resolveBatch?(
     requests: BatchResolutionRequest<TOptions>[],
-    logger: Logger
+    logger: Logger,
   ): Promise<BatchResolutionResult[]>;
 }
 ```
@@ -112,21 +112,25 @@ interface GlobalCacheConfig {
 ### Edge Case Handling
 
 #### Out-of-Memory Protection
+
 - **Memory pressure monitoring** with adaptive cleanup
 - **Size limits** per entry and total cache
 - **Intelligent eviction** based on priority and usage patterns
 
 #### Cache Starvation Prevention
+
 - **Priority-based eviction** (`LOW`, `NORMAL`, `HIGH`, `CRITICAL`)
 - **Resolution cost consideration** for intelligent caching decisions
 - **Minimum cache size** protection
 
 #### Eviction Storm Prevention
+
 - **Storm detection** monitoring eviction patterns
 - **Temporary limit increases** during high pressure
 - **Adaptive behavior** to prevent cascading failures
 
 #### Circuit Breaker Pattern
+
 - **Automatic failure detection** with configurable thresholds
 - **State management** (`CLOSED`, `OPEN`, `HALF_OPEN`)
 - **Self-healing** with automatic recovery
@@ -148,13 +152,14 @@ export class SSMResolver implements ConfigResolver<SSMResolverOptions> {
     return {
       withDecryption: options.withDecryption ?? isSecureProtocol,
       retries: options.retries ?? 3,
-      cacheTtlMs: options.cacheTtlMs ?? 5 * 60 * 1000
+      cacheTtlMs: options.cacheTtlMs ?? 5 * 60 * 1000,
     };
   }
 }
 ```
 
 **Key Features:**
+
 - **Protocol Intelligence**: Auto-detects decryption needs from protocol
 - **Batch Optimization**: Up to 10 parameters per `GetParameters` API call
 - **Advanced Caching**: Priority-based caching with circuit breaker
@@ -170,11 +175,16 @@ export class S3Resolver implements ConfigResolver<S3ResolverOptions> {
   public readonly supportsBatch = false; // Individual resolution only
 
   // Supports both content and metadata retrieval
-  public async resolve(reference: string, options: S3ResolverOptions, logger: Logger): Promise<string>
+  public async resolve(
+    reference: string,
+    options: S3ResolverOptions,
+    logger: Logger,
+  ): Promise<string>;
 }
 ```
 
 **Capabilities:**
+
 - **Content retrieval** from S3 objects
 - **Metadata extraction** with selective field support
 - **Streaming support** for large objects
@@ -193,8 +203,8 @@ const config = {
     host: "ssm:/prod/db/host",
     port: "ssm:/prod/db/port",
     user: "ssm:/prod/db/user",
-    password: "ssm-secure:/prod/db/password"
-  }
+    password: "ssm-secure:/prod/db/password",
+  },
 };
 
 // Results in 2 API calls:
@@ -231,13 +241,13 @@ Automatic failure detection and recovery:
 enum CircuitBreakerState {
   CLOSED,    // Normal operation
   OPEN,      // Failing fast, cache disabled
-  HALF_OPEN  // Testing recovery
+  HALF_OPEN, // Testing recovery
 }
 
 // Configuration
 {
-  circuitBreakerThreshold: 5,         // Failures before opening
-  circuitBreakerResetTimeoutMs: 60000 // 1 minute recovery timeout
+  circuitBreakerThreshold: 5,          // Failures before opening
+  circuitBreakerResetTimeoutMs: 60000, // 1 minute recovery timeout
 }
 ```
 
@@ -261,11 +271,7 @@ export class CustomResolver implements ConfigResolver<CustomOptions> {
     return reference.startsWith("custom://");
   }
 
-  public async resolve(
-    reference: string,
-    options: CustomOptions,
-    logger: Logger
-  ): Promise<string> {
+  public async resolve(reference: string, options: CustomOptions, logger: Logger): Promise<string> {
     // Custom resolution logic
     return "resolved-value";
   }
@@ -286,7 +292,7 @@ export class BatchCustomResolver implements ConfigResolver<CustomOptions> {
 
   public async resolveBatch(
     requests: BatchResolutionRequest<CustomOptions>[],
-    logger: Logger
+    logger: Logger,
   ): Promise<BatchResolutionResult[]> {
     // Batch resolution logic
     // Group requests, make bulk API calls, return results
@@ -311,7 +317,7 @@ const cache = GlobalCache.getInstance({
   enablePriorityEviction: true,
   minCacheSize: 1000,                  // Never below 1K entries
   cleanupIntervalMs: 30000,            // 30 seconds
-  defaultTtlMs: 10 * 60 * 1000         // 10 minutes
+  defaultTtlMs: 10 * 60 * 1000,        // 10 minutes
 });
 ```
 
@@ -405,20 +411,20 @@ const config = {
       host: "ssm:/prod/user-api/db/host",
       port: "ssm:/prod/user-api/db/port",
       username: "ssm:/prod/user-api/db/username",
-      password: "ssm-secure:/prod/user-api/db/password"
+      password: "ssm-secure:/prod/user-api/db/password",
     },
     external: {
       authService: "ssm:/prod/shared/auth-service-url",
       apiKeys: {
         stripe: "ssm-secure:/prod/user-api/stripe/api-key",
-        sendgrid: "ssm-secure:/prod/user-api/sendgrid/api-key"
-      }
-    }
+        sendgrid: "ssm-secure:/prod/user-api/sendgrid/api-key",
+      },
+    },
   },
   features: {
     enableNewUI: "ssm:/prod/user-api/features/new-ui",
-    enableBetaFeatures: "ssm:/prod/user-api/features/beta"
-  }
+    enableBetaFeatures: "ssm:/prod/user-api/features/beta",
+  },
 };
 ```
 
@@ -429,10 +435,13 @@ try {
   await Configuration.getInstance().preload();
 } catch (error) {
   if (error instanceof ConfigurationError) {
-    logger.error({
-      code: error.code,
-      context: error.context
-    }, "Configuration validation failed");
+    logger.error(
+      {
+        code: error.code,
+        context: error.context,
+      },
+      "Configuration validation failed",
+    );
 
     // Handle specific error types
     switch (error.code) {
@@ -443,7 +452,7 @@ try {
         // Handle missing S3 object
         break;
       default:
-        // Handle other configuration errors
+      // Handle other configuration errors
     }
   }
 
@@ -461,8 +470,8 @@ const dbConfig = {
     port: "ssm:/prod/db/port",
     database: "ssm:/prod/db/name",
     username: "ssm:/prod/db/username",
-    password: "ssm-secure:/prod/db/password"
-  }
+    password: "ssm-secure:/prod/db/password",
+  },
 };
 
 // Access all at once to trigger batch resolution
