@@ -1,8 +1,9 @@
 /**
  * @fileoverview AWS Step Functions error types and helpers.
  *
- * Defines `StepFunctionsError`, a service-specific error class with factory-backed
- * helpers that standardize `code` and HTTP `status` using `AwsErrorCodes.StepFunctions.*`.
+ * Defines `StepFunctionsError`, a service-specific error class with
+ * factory-backed helpers that standardize `code` and HTTP `status` using
+ * `AwsErrorCodes.StepFunctions.*`.
  */
 
 import {
@@ -14,10 +15,12 @@ import {
 } from "./base.js";
 import { AwsErrorCodes } from "./codes.js";
 
-/** An error for AWS Step Functions service-related issues. */
+/**
+ * An error for AWS Step Functions service-related issues.
+ */
 export class StepFunctionsError extends AwsError {
   /**
-   * Creates an instance of StepFunctionsError.
+   * Creates an instance of `StepFunctionsError`.
    *
    * @param message - Error message
    * @param options - Additional error options and context
@@ -28,12 +31,12 @@ export class StepFunctionsError extends AwsError {
   }
 
   /**
-   * Create a StepFunctionsError from an unknown input.
+   * Create a `StepFunctionsError` from an unknown input.
    *
    * @param err - Error to convert
    * @param message - Error message
    * @param context - Optional context to merge
-   * @returns A StepFunctionsError instance
+   * @returns A `StepFunctionsError` instance
    */
   public static from(err: unknown, message?: string, context?: ErrorContext): StepFunctionsError {
     return fromAwsError(
@@ -50,6 +53,7 @@ export class StepFunctionsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `StepFunctionsError` with execution not found details
    */
   public static executionNotFound(message = "Execution not found", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -68,6 +72,7 @@ export class StepFunctionsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `StepFunctionsError` with state machine not found details
    */
   public static stateMachineNotFound(
     message = "State machine not found",
@@ -89,6 +94,7 @@ export class StepFunctionsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `StepFunctionsError` with throttling details
    */
   public static throttling(message = "Step Functions throttling", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -107,6 +113,7 @@ export class StepFunctionsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `StepFunctionsError` with access denied details
    */
   public static accessDenied(
     message = "Step Functions access denied",
@@ -128,6 +135,7 @@ export class StepFunctionsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `StepFunctionsError` with validation error details
    */
   public static validation(
     message = "Step Functions validation error",
@@ -149,6 +157,7 @@ export class StepFunctionsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `StepFunctionsError` with internal error details
    */
   public static internal(message = "Step Functions internal error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(

@@ -1,11 +1,13 @@
 /**
- * @fileoverview This file contains the base error classes and types for the application.
+ * @fileoverview Base error classes and types for the application.
  *
- * It provides a foundation for creating more specific error types with support for
+ * Provides a foundation for creating more specific error types with support for
  * structured context, error codes, and cause-chaining.
  */
 
-/** Defines a record for structured error context. */
+/**
+ * Defines a record for structured error context.
+ */
 export type ErrorContext = Record<string, unknown>;
 
 /**
@@ -72,7 +74,9 @@ export class BaseError extends Error {
   }
 }
 
-/** Options for creating an `AppError`. */
+/**
+ * Options for creating an `AppError`.
+ */
 export interface AppErrorOptions extends BaseErrorOptions {
   /** An HTTP-like status code. */
   status?: number;

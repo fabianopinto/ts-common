@@ -15,10 +15,12 @@ import {
 } from "./base.js";
 import { AwsErrorCodes } from "./codes.js";
 
-/** An error for AWS CloudWatch Logs service-related issues. */
+/**
+ * An error for AWS CloudWatch Logs service-related issues.
+ */
 export class CloudWatchLogsError extends AwsError {
   /**
-   * Creates an instance of CloudWatchLogsError.
+   * Creates an instance of `CloudWatchLogsError`.
    *
    * @param message - Error message
    * @param options - Additional error options and context
@@ -29,12 +31,12 @@ export class CloudWatchLogsError extends AwsError {
   }
 
   /**
-   * Create a CloudWatchLogsError from an unknown input.
+   * Create a `CloudWatchLogsError` from an unknown input.
    *
    * @param err - Error to convert
    * @param message - Error message
    * @param context - Optional context to merge
-   * @returns A CloudWatchLogsError instance
+   * @returns A `CloudWatchLogsError` instance
    */
   public static from(err: unknown, message?: string, context?: ErrorContext): CloudWatchLogsError {
     return fromAwsError(
@@ -51,6 +53,7 @@ export class CloudWatchLogsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `CloudWatchLogsError` with log group not found details
    */
   public static logGroupNotFound(message = "Log group not found", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -69,6 +72,7 @@ export class CloudWatchLogsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `CloudWatchLogsError` with log stream not found details
    */
   public static logStreamNotFound(message = "Log stream not found", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -87,6 +91,7 @@ export class CloudWatchLogsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `CloudWatchLogsError` with throttling details
    */
   public static throttling(message = "CloudWatch Logs throttling", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -105,6 +110,7 @@ export class CloudWatchLogsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `CloudWatchLogsError` with access denied details
    */
   public static accessDenied(
     message = "CloudWatch Logs access denied",
@@ -126,6 +132,7 @@ export class CloudWatchLogsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `CloudWatchLogsError` with validation error details
    */
   public static validation(
     message = "CloudWatch Logs validation error",
@@ -147,6 +154,7 @@ export class CloudWatchLogsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `CloudWatchLogsError` with service unavailable details
    */
   public static serviceUnavailable(
     message = "CloudWatch Logs service unavailable",

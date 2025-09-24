@@ -2,7 +2,8 @@
  * @fileoverview AWS Lambda error types and helpers.
  *
  * Defines `LambdaError`, a service-specific error class with factory-backed
- * helpers that standardize `code` and HTTP `status` using `AwsErrorCodes.Lambda.*`.
+ * helpers that standardize `code` and HTTP `status` using
+ * `AwsErrorCodes.Lambda.*`.
  */
 
 import {
@@ -14,10 +15,12 @@ import {
 } from "./base.js";
 import { AwsErrorCodes } from "./codes.js";
 
-/** An error for AWS Lambda service-related issues. */
+/**
+ * An error for AWS Lambda service-related issues.
+ */
 export class LambdaError extends AwsError {
   /**
-   * Creates an instance of LambdaError.
+   * Creates an instance of `LambdaError`.
    *
    * @param message - Error message
    * @param options - Additional error options and context
@@ -28,12 +31,12 @@ export class LambdaError extends AwsError {
   }
 
   /**
-   * Create a LambdaError from an unknown input.
+   * Create a `LambdaError` from an unknown input.
    *
    * @param err - Error to convert
    * @param message - Error message
    * @param context - Optional context to merge
-   * @returns A LambdaError instance
+   * @returns A `LambdaError` instance
    */
   public static from(err: unknown, message?: string, context?: ErrorContext): LambdaError {
     return fromAwsError(
@@ -50,6 +53,7 @@ export class LambdaError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `LambdaError` with function not found details
    */
   public static functionNotFound(
     message = "Lambda function not found",
@@ -67,10 +71,11 @@ export class LambdaError extends AwsError {
   }
 
   /**
-   * Throttled (TooManyRequests).
+   * Throttled (`TooManyRequests`).
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `LambdaError` with throttling details
    */
   public static throttling(message = "Lambda throttling", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -89,6 +94,7 @@ export class LambdaError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `LambdaError` with access denied details
    */
   public static accessDenied(message = "Lambda access denied", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -107,6 +113,7 @@ export class LambdaError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `LambdaError` with timeout details
    */
   public static timeout(message = "Lambda request timed out", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -125,6 +132,7 @@ export class LambdaError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `LambdaError` with validation error details
    */
   public static validation(message = "Lambda validation error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -143,6 +151,7 @@ export class LambdaError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `LambdaError` with service unavailable details
    */
   public static serviceUnavailable(
     message = "Lambda service unavailable",
@@ -164,6 +173,7 @@ export class LambdaError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `LambdaError` with internal error details
    */
   public static internal(message = "Lambda internal error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(

@@ -1,12 +1,12 @@
 /**
  * @fileoverview Logger module for structured logging built on Pino.
  *
- * This module defines the interface and implementation for logging operations throughout the application.
- * It provides a consistent API for structured logging with different severity levels
- * and contextual information.
+ * This module defines the interface and implementation for logging operations
+ * throughout the application. It provides a consistent API for structured logging
+ * with different severity levels and contextual information.
  *
  * Features:
- * - Standard log levels (trace, debug, info, warn, error, fatal)
+ * - Standard log levels (`trace`, `debug`, `info`, `warn`, `error`, `fatal`)
  * - Structured logging with context objects
  * - Child logger creation for component-specific logging
  * - Runtime log level configuration
@@ -27,12 +27,15 @@ const require = createRequire(import.meta.url);
  * Mirrors `pino.Level` so you can import a stable level type from this package
  * without depending on Pino types directly.
  *
- * Valid values: "fatal" | "error" | "warn" | "info" | "debug" | "trace"
+ * Valid values: `"fatal"` | `"error"` | `"warn"` | `"info"` | `"debug"` |
+ * `"trace"`
  *
  * @example
+ * ```typescript
  * import { logger, type Level } from "@t68/logger";
  * const level: Level = "info";
  * logger.setLevel(level);
+ * ```
  */
 export type LogLevel = pino.Level;
 
@@ -63,7 +66,7 @@ function normalizeLevel(value: unknown, fallback: LogLevel): LogLevel {
 }
 
 /**
- * Logger interface for structured application logging
+ * Logger interface for structured application logging.
  *
  * Defines a consistent logging API that can be implemented using various
  * logging libraries. The current implementation uses Pino for high-performance
@@ -71,152 +74,173 @@ function normalizeLevel(value: unknown, fallback: LogLevel): LogLevel {
  */
 export interface Logger {
   /**
-   * Create a child logger with additional context
+   * Create a child logger with additional context.
    *
-   * Child loggers inherit settings from their parent but include
-   * additional context information with each log message.
+   * Child loggers inherit settings from their parent but include additional
+   * context information with each log message.
    *
    * @param bindings - Context properties to include with every log message
-   * @return A new child logger instance with the provided context
+   * @returns A new child logger instance with the provided context
    *
    * @example
+   * ```typescript
    * // Create a component-specific child logger
    * const componentLogger = logger.child({ component: "auth" });
    * componentLogger.info("User authenticated"); // logs with component="auth"
+   * ```
    */
   child(bindings: Record<string, unknown>): Logger;
 
   /**
-   * Check if a specific log level is enabled
+   * Check if a specific log level is enabled.
    *
-   * Useful for avoiding expensive operations when a particular
-   * log level is not enabled.
+   * Useful for avoiding expensive operations when a particular log level is not
+   * enabled.
    *
    * @param level - The log level to check
-   * @return True if the level is enabled, false otherwise
+   * @returns `true` if the level is enabled, `false` otherwise
    *
    * @example
+   * ```typescript
    * if (logger.isLevelEnabled("debug")) {
    *   // Only perform expensive debug operations if debug logging is enabled
    *   const debugData = generateExpensiveDebugData();
    *   logger.debug({ data: debugData }, "Debug info");
    * }
+   * ```
    */
   isLevelEnabled(level: LogLevel): boolean;
 
   /**
-   * Set the logger level
+   * Set the logger level.
    *
    * Changes the minimum level at which logs will be output.
    *
    * @param level - The new minimum log level
    *
    * @example
+   * ```typescript
    * // Set logger to only output warnings and above
    * logger.setLevel("warn");
+   * ```
    */
   setLevel(level: LogLevel): void;
 
   /**
-   * Log a trace message
+   * Log a trace message.
    *
    * For very detailed diagnostic information (more verbose than debug).
    *
    * @param obj - Optional context object to include with the message
    * @param msg - The log message
-   * @param ...args - Optional format arguments (printf-style)
+   * @param args - Optional format arguments (printf-style)
    *
    * @example
+   * ```typescript
    * logger.trace({ requestId }, "Processing request");
    * logger.trace("Value is %d", value);
+   * ```
    */
   trace: pino.LogFn;
 
   /**
-   * Log a debug message
+   * Log a debug message.
    *
    * For diagnostic information useful during development and troubleshooting.
    *
    * @param obj - Optional context object to include with the message
    * @param msg - The log message
-   * @param ...args - Optional format arguments (printf-style)
+   * @param args - Optional format arguments (printf-style)
    *
    * @example
+   * ```typescript
    * logger.debug({ user: "john" }, "User session created");
    * logger.debug("Debug value: %j", complexObject);
+   * ```
    */
   debug: pino.LogFn;
 
   /**
-   * Log an info message
+   * Log an info message.
    *
    * For general information about application operation.
    *
    * @param obj - Optional context object to include with the message
    * @param msg - The log message
-   * @param ...args - Optional format arguments (printf-style)
+   * @param args - Optional format arguments (printf-style)
    *
    * @example
+   * ```typescript
    * logger.info({ feature: "login" }, "Feature enabled");
    * logger.info("Application started on port %d", port);
+   * ```
    */
   info: pino.LogFn;
 
   /**
-   * Log a warning message
+   * Log a warning message.
    *
    * For potentially problematic situations that don't cause errors.
    *
    * @param obj - Optional context object to include with the message
    * @param msg - The log message
-   * @param ...args - Optional format arguments (printf-style)
+   * @param args - Optional format arguments (printf-style)
    *
    * @example
+   * ```typescript
    * logger.warn({ attemptCount: 3 }, "Retry limit approaching");
    * logger.warn("Resource usage at %d%%", usagePercent);
+   * ```
    */
   warn: pino.LogFn;
 
   /**
-   * Log an error message
+   * Log an error message.
    *
    * For error conditions that affect operation but don't stop the application.
    *
-   * @param obj - Optional context object (including error) to include with the message
+   * @param obj - Optional context object (including error) to include with the
+   *   message
    * @param msg - The log message
-   * @param ...args - Optional format arguments (printf-style)
+   * @param args - Optional format arguments (printf-style)
    *
    * @example
+   * ```typescript
    * try {
    *   // Some operation
    * } catch (error) {
    *   logger.error({ error }, "Operation failed");
    * }
    * logger.error("Failed to connect to %s", serviceUrl);
+   * ```
    */
   error: pino.LogFn;
 
   /**
-   * Log a fatal message
+   * Log a fatal message.
    *
-   * For severe error conditions that will likely lead to application termination.
+   * For severe error conditions that will likely lead to application
+   * termination.
    *
-   * @param obj - Optional context object (including error) to include with the message
+   * @param obj - Optional context object (including error) to include with the
+   *   message
    * @param msg - The log message
-   * @param ...args - Optional format arguments (printf-style)
+   * @param args - Optional format arguments (printf-style)
    *
    * @example
+   * ```typescript
    * logger.fatal({ error }, "System failure, shutting down");
    * logger.fatal("Critical resource unavailable: %s", resourceName);
+   * ```
    */
   fatal: pino.LogFn;
 }
 
 /**
- * Logger configuration options
+ * Logger configuration options.
  *
- * Defines options for configuring logger instances including
- * log level, name, and other Pino-specific settings.
+ * Defines options for configuring logger instances including log level, name,
+ * and other Pino-specific settings.
  */
 export interface LoggerOptions {
   /**
@@ -230,8 +254,9 @@ export interface LoggerOptions {
   name?: string;
 
   /**
-   * Whether to enable pretty printing (defaults to development environment)
-   * If enabled but 'pino-pretty' is not installed, the logger will fall back to JSON output.
+   * Whether to enable pretty printing (defaults to development environment).
+   * If enabled but `pino-pretty` is not installed, the logger will fall back to
+   * JSON output.
    */
   pretty?: boolean;
 
@@ -250,7 +275,7 @@ const DEFAULT_OPTIONS: LoggerOptions = {
 };
 
 /**
- * Creates Pino transport configuration based on options
+ * Creates Pino transport configuration based on options.
  *
  * @param options - Logger configuration options
  * @returns Pino transport configuration
@@ -279,10 +304,10 @@ function createTransport(options: LoggerOptions) {
 }
 
 /**
- * Base logger implementation using Pino
+ * Base logger implementation using Pino.
  *
- * Implements the Logger interface using Pino for high-performance
- * structured logging with support for different environments.
+ * Implements the Logger interface using Pino for high-performance structured
+ * logging with support for different environments.
  */
 export class BaseLogger implements Logger {
   private logger: pino.Logger;
@@ -294,7 +319,7 @@ export class BaseLogger implements Logger {
   public fatal: pino.LogFn;
 
   /**
-   * Create a new logger instance
+   * Create a new logger instance.
    *
    * @param options - Configuration options for the logger
    */
@@ -367,7 +392,7 @@ export class BaseLogger implements Logger {
   }
 
   /**
-   * Create a child logger with additional context
+   * Create a child logger with additional context.
    *
    * @param bindings - Context to include with every log from this child
    * @returns A new child logger instance
@@ -387,17 +412,17 @@ export class BaseLogger implements Logger {
   }
 
   /**
-   * Check if a log level is enabled
+   * Check if a log level is enabled.
    *
    * @param level - The log level to check
-   * @returns True if the level is enabled, false otherwise
+   * @returns `true` if the level is enabled, `false` otherwise
    */
   public isLevelEnabled(level: LogLevel): boolean {
     return this.logger.isLevelEnabled(level);
   }
 
   /**
-   * Set the minimum log level
+   * Set the minimum log level.
    *
    * @param level - The new minimum log level
    */
@@ -409,6 +434,6 @@ export class BaseLogger implements Logger {
 }
 
 /**
- * Default logger instance for convenience
+ * Default logger instance for convenience.
  */
 export const logger = new BaseLogger();

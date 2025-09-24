@@ -2,7 +2,8 @@
  * @fileoverview AWS SSM error types and helpers.
  *
  * Defines `SsmError`, a service-specific error class with factory-backed
- * helpers that standardize `code` and HTTP `status` using `AwsErrorCodes.SSM.*`.
+ * helpers that standardize `code` and HTTP `status` using
+ * `AwsErrorCodes.SSM.*`.
  */
 
 import {
@@ -14,10 +15,12 @@ import {
 } from "./base.js";
 import { AwsErrorCodes } from "./codes.js";
 
-/** An error for AWS SSM service-related issues. */
+/**
+ * An error for AWS SSM service-related issues.
+ */
 export class SsmError extends AwsError {
   /**
-   * Creates an instance of SsmError.
+   * Creates an instance of `SsmError`.
    *
    * @param message - Error message
    * @param options - Additional error options and context
@@ -28,12 +31,12 @@ export class SsmError extends AwsError {
   }
 
   /**
-   * Create an SsmError from an unknown input.
+   * Create an `SsmError` from an unknown input.
    *
    * @param err - Error to convert
    * @param message - Error message
    * @param context - Optional context to merge
-   * @returns An SsmError instance
+   * @returns An `SsmError` instance
    */
   public static from(err: unknown, message?: string, context?: ErrorContext): SsmError {
     return fromAwsError(
@@ -46,10 +49,11 @@ export class SsmError extends AwsError {
   }
 
   /**
-   * Parameter not found error (e.g., SSM ParameterNotFound).
+   * Parameter not found error (e.g., SSM `ParameterNotFound`).
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `SsmError` with parameter not found details
    */
   public static parameterNotFound(
     message = "SSM parameter not found",
@@ -71,6 +75,7 @@ export class SsmError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `SsmError` with throttling details
    */
   public static throttling(message = "SSM throttling error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -89,6 +94,7 @@ export class SsmError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `SsmError` with access denied details
    */
   public static accessDenied(message = "SSM access denied", options: AppErrorOptions = {}) {
     return makeAwsServiceError(

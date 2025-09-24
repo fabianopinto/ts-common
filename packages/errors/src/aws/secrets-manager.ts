@@ -1,9 +1,9 @@
 /**
  * @fileoverview AWS Secrets Manager error types and helpers.
  *
- * This module defines `SecretsManagerError`, a service-specific error class with
- * factory-backed static helpers that standardize `code` and HTTP `status` using
- * `AwsErrorCodes.SecretsManager.*`.
+ * This module defines `SecretsManagerError`, a service-specific error class
+ * with factory-backed static helpers that standardize `code` and HTTP `status`
+ * using `AwsErrorCodes.SecretsManager.*`.
  */
 
 import {
@@ -15,10 +15,12 @@ import {
 } from "./base.js";
 import { AwsErrorCodes } from "./codes.js";
 
-/** An error for AWS Secrets Manager service-related issues. */
+/**
+ * An error for AWS Secrets Manager service-related issues.
+ */
 export class SecretsManagerError extends AwsError {
   /**
-   * Creates an instance of SecretsManagerError.
+   * Creates an instance of `SecretsManagerError`.
    *
    * @param message - Error message
    * @param options - Additional error options and context
@@ -29,12 +31,12 @@ export class SecretsManagerError extends AwsError {
   }
 
   /**
-   * Create a SecretsManagerError from an unknown input.
+   * Create a `SecretsManagerError` from an unknown input.
    *
    * @param err - Error to convert
    * @param message - Error message
    * @param context - Optional context to merge
-   * @returns A SecretsManagerError instance
+   * @returns A `SecretsManagerError` instance
    */
   public static from(err: unknown, message?: string, context?: ErrorContext): SecretsManagerError {
     return fromAwsError(
@@ -51,6 +53,7 @@ export class SecretsManagerError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `SecretsManagerError` with secret not found details
    */
   public static secretNotFound(message = "Secret not found", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -69,6 +72,7 @@ export class SecretsManagerError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `SecretsManagerError` with decryption failure details
    */
   public static decryptionFailure(
     message = "Secret decryption failure",
@@ -90,6 +94,7 @@ export class SecretsManagerError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `SecretsManagerError` with throttling details
    */
   public static throttling(message = "Secrets Manager throttling", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -108,6 +113,7 @@ export class SecretsManagerError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `SecretsManagerError` with access denied details
    */
   public static accessDenied(
     message = "Secrets Manager access denied",
@@ -129,6 +135,7 @@ export class SecretsManagerError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `SecretsManagerError` with validation error details
    */
   public static validation(
     message = "Secrets Manager validation error",
@@ -150,6 +157,7 @@ export class SecretsManagerError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `SecretsManagerError` with internal error details
    */
   public static internal(
     message = "Secrets Manager internal error",

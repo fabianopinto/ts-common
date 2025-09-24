@@ -2,7 +2,8 @@
  * @fileoverview AWS EventBridge error types and helpers.
  *
  * Defines `EventBridgeError`, a service-specific error class with factory-backed
- * helpers that standardize `code` and HTTP `status` using `AwsErrorCodes.EventBridge.*`.
+ * helpers that standardize `code` and HTTP `status` using
+ * `AwsErrorCodes.EventBridge.*`.
  */
 
 import {
@@ -14,10 +15,12 @@ import {
 } from "./base.js";
 import { AwsErrorCodes } from "./codes.js";
 
-/** An error for AWS EventBridge (CloudWatch Events) service-related issues. */
+/**
+ * An error for AWS EventBridge (CloudWatch Events) service-related issues.
+ */
 export class EventBridgeError extends AwsError {
   /**
-   * Creates an instance of EventBridgeError.
+   * Creates an instance of `EventBridgeError`.
    *
    * @param message - Error message
    * @param options - Additional error options and context
@@ -28,12 +31,12 @@ export class EventBridgeError extends AwsError {
   }
 
   /**
-   * Create an EventBridgeError from an unknown input.
+   * Create an `EventBridgeError` from an unknown input.
    *
    * @param err - Error to convert
    * @param message - Error message
    * @param context - Optional context to merge
-   * @returns An EventBridgeError instance
+   * @returns An `EventBridgeError` instance
    */
   public static from(err: unknown, message?: string, context?: ErrorContext): EventBridgeError {
     return fromAwsError(
@@ -50,6 +53,7 @@ export class EventBridgeError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `EventBridgeError` with event bus not found details
    */
   public static busNotFound(message = "Event bus not found", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -68,6 +72,7 @@ export class EventBridgeError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `EventBridgeError` with rule not found details
    */
   public static ruleNotFound(message = "Event rule not found", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -86,6 +91,7 @@ export class EventBridgeError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `EventBridgeError` with throttling details
    */
   public static throttling(message = "EventBridge throttling", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -104,6 +110,7 @@ export class EventBridgeError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `EventBridgeError` with access denied details
    */
   public static accessDenied(message = "EventBridge access denied", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -122,6 +129,7 @@ export class EventBridgeError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `EventBridgeError` with validation error details
    */
   public static validation(
     message = "EventBridge validation error",

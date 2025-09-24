@@ -6,8 +6,9 @@
  */
 
 /**
- * Internal helper to throw consistent errors for invalid durations
- * @param kind - Type of error ("type" or "syntax")
+ * Internal helper to throw consistent errors for invalid durations.
+ *
+ * @param kind - Type of error (`"type"` or `"syntax"`)
  * @param reason - Reason for the error
  * @param input - Input value that caused the error
  */
@@ -25,7 +26,10 @@ export const DateUtils = {
    * @returns ISO string without milliseconds
    *
    * @example
-   * DateUtils.formatISO(new Date("2020-01-01T12:34:56.789Z")) // => "2020-01-01T12:34:56.000Z"
+   * ```typescript
+   * DateUtils.formatISO(new Date("2020-01-01T12:34:56.789Z"))
+   * // => "2020-01-01T12:34:56.000Z"
+   * ```
    */
   formatISO(date: Date = new Date()): string {
     const d = new Date(date.getTime());
@@ -39,7 +43,9 @@ export const DateUtils = {
    * @returns ISO string with milliseconds
    *
    * @example
+   * ```typescript
    * DateUtils.getCurrentTimestamp() // => "2020-01-01T12:34:56.789Z"
+   * ```
    */
   getCurrentTimestamp(): string {
     return new Date().toISOString();
@@ -52,7 +58,9 @@ export const DateUtils = {
    * @returns Unix timestamp in seconds
    *
    * @example
+   * ```typescript
    * DateUtils.toUnix(new Date("2020-01-01T12:34:56.789Z")) // => 1577836496
+   * ```
    */
   toUnix(date: Date = new Date()): number {
     return Math.floor(date.getTime() / 1000);
@@ -65,7 +73,9 @@ export const DateUtils = {
    * @returns Date instance
    *
    * @example
+   * ```typescript
    * DateUtils.fromUnix(1577836496) // => Date("2020-01-01T12:34:56.789Z")
+   * ```
    */
   fromUnix(seconds: number): Date {
     return new Date(seconds * 1000);
@@ -76,10 +86,15 @@ export const DateUtils = {
    *
    * @param a - First date
    * @param b - Second date
-   * @returns True if both dates fall on the same UTC calendar day
+   * @returns `true` if both dates fall on the same UTC calendar day
    *
    * @example
-   * DateUtils.isSameDay(new Date("2020-01-01T12:34:56.789Z"), new Date("2020-01-01T12:34:56.789Z")) // => true
+   * ```typescript
+   * DateUtils.isSameDay(
+   *   new Date("2020-01-01T12:34:56.789Z"),
+   *   new Date("2020-01-01T12:34:56.789Z")
+   * ) // => true
+   * ```
    */
   isSameDay(a: Date, b: Date): boolean {
     return (
@@ -97,7 +112,10 @@ export const DateUtils = {
    * @returns New Date instance
    *
    * @example
-   * DateUtils.addDays(new Date("2020-01-01T12:34:56.789Z"), 1) // => Date("2020-01-02T12:34:56.789Z")
+   * ```typescript
+   * DateUtils.addDays(new Date("2020-01-01T12:34:56.789Z"), 1)
+   * // => Date("2020-01-02T12:34:56.789Z")
+   * ```
    */
   addDays(date: Date, days: number): Date {
     const d = new Date(date.getTime());
@@ -110,11 +128,16 @@ export const DateUtils = {
    *
    * @param date - Base date
    * @param reference - Reference date (defaults to current time)
-   * @returns True if `date` is before `reference`
+   * @returns `true` if `date` is before `reference`
    *
    * @example
+   * ```typescript
    * DateUtils.isExpired(new Date("2020-01-01T12:34:56.789Z")) // => false
-   * DateUtils.isExpired(new Date("2020-01-01T12:34:56.789Z"), new Date("2020-01-02T12:34:56.789Z")) // => true
+   * DateUtils.isExpired(
+   *   new Date("2020-01-01T12:34:56.789Z"),
+   *   new Date("2020-01-02T12:34:56.789Z")
+   * ) // => true
+   * ```
    */
   isExpired(date: Date, reference: Date = new Date()): boolean {
     return date.getTime() < reference.getTime();
@@ -130,12 +153,14 @@ export const DateUtils = {
    *
    * @param input - Duration string (or bare millisecond string)
    * @returns Milliseconds (truncated to integer)
-   * @throws {TypeError|SyntaxError} When input is invalid
+   * @throws `TypeError` or `SyntaxError` when input is invalid
    *
    * @example
+   * ```typescript
    * DateUtils.parseDuration("1.5h") // => 5400000
    * DateUtils.parseDuration("1h 30m") // => 5400000
    * DateUtils.parseDuration("1500") // => 1500
+   * ```
    */
   parseDuration(input: string): number {
     if (typeof input !== "string") {
@@ -181,12 +206,15 @@ export const DateUtils = {
   /**
    * Promise that resolves after a delay. Accepts ms number or duration string.
    *
-   * @param duration - Milliseconds (number) or a duration string (e.g. "1.5h", "30s")
+   * @param duration - Milliseconds (number) or a duration string (e.g. `"1.5h"`,
+   *   `"30s"`)
    * @returns Promise that resolves after the specified duration
    *
    * @example
+   * ```typescript
    * await DateUtils.wait("1s")
    * await DateUtils.wait(500)
+   * ```
    */
   wait(duration: number | string): Promise<void> {
     let ms: number;

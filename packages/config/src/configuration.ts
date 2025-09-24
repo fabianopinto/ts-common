@@ -2,11 +2,13 @@
  * @fileoverview Configuration core: immutable global configuration with type-safe,
  * dot-notation access and automatic resolution of external references (AWS SSM and S3).
  *
- * Exposes the `Configuration` class that implements the `ConfigurationProvider` contract.
- * Instances are immutable and can only be created via the accompanying factory.
+ * Exposes the `Configuration` class that implements the `ConfigurationProvider`
+ * contract. Instances are immutable and can only be created via the accompanying
+ * factory.
  *
- * Resolution behavior is controlled via {@link ConfigurationOptions.resolve} at instance level and
- * can be overridden per call with {@link GetValueOptions} in {@link Configuration.getValue}.
+ * Resolution behavior is controlled via `ConfigurationOptions.resolve` at instance
+ * level and can be overridden per call with `GetValueOptions` in
+ * `Configuration.getValue`.
  */
 
 import { ConfigurationError } from "@t68/errors";
@@ -26,8 +28,8 @@ import type {
  * The global configuration store. Immutable after creation.
  * Provides dot-notation access and automatic resolution of SSM/S3 references.
  *
- * Use {@link Configuration.initialize} to create the singleton and
- * {@link Configuration.getInstance} to retrieve it.
+ * Use `Configuration.initialize` to create the singleton and
+ * `Configuration.getInstance` to retrieve it.
  */
 export class Configuration implements ConfigurationProvider {
   private static instance: Configuration | undefined;
@@ -36,8 +38,10 @@ export class Configuration implements ConfigurationProvider {
   private readonly resolveOptions: Required<NonNullable<ConfigurationOptions["resolve"]>>;
 
   /**
-   * @param {ConfigObject} data - Plain configuration object (hierarchical)
-   * @param {ConfigurationOptions} [options] - Behavior customization (logger, external resolution toggle)
+   * Creates a new Configuration instance.
+   *
+   * @param data - Plain configuration object (hierarchical)
+   * @param options - Behavior customization (logger, external resolution toggle)
    */
   private constructor(data: ConfigObject, options?: ConfigurationOptions) {
     this.logger = (options?.logger ?? baseLogger).child({ module: "config" });
@@ -52,11 +56,12 @@ export class Configuration implements ConfigurationProvider {
   }
 
   /**
-   * Initialize and set the global configuration instance. Overrides any existing instance.
+   * Initialize and set the global configuration instance. Overrides any existing
+   * instance.
    *
-   * @param {ConfigObject} data - Plain configuration object (hierarchical)
-   * @param {ConfigurationOptions} [options] - Behavior customization (logger, external resolution toggle)
-   * @returns {Configuration} The created global configuration instance
+   * @param data - Plain configuration object (hierarchical)
+   * @param options - Behavior customization (logger, external resolution toggle)
+   * @returns The created global configuration instance
    */
   public static initialize(data: ConfigObject, options?: ConfigurationOptions): Configuration {
     const cfg = new Configuration(data, options);
@@ -68,8 +73,8 @@ export class Configuration implements ConfigurationProvider {
   /**
    * Retrieve the global configuration instance. Throws if not initialized.
    *
-   * @returns {Configuration} The global configuration instance
-   * @throws {ConfigurationError} When the configuration has not been initialized
+   * @returns The global configuration instance
+   * @throws `ConfigurationError` when the configuration has not been initialized
    */
   public static getInstance(): Configuration {
     if (!Configuration.instance) {
@@ -82,11 +87,11 @@ export class Configuration implements ConfigurationProvider {
   }
 
   /**
-   * Check whether a dot-notation path exists in the configuration (without resolving
-   * external refs).
+   * Check whether a dot-notation path exists in the configuration (without
+   * resolving external refs).
    *
-   * @param {string} path - Dot-notation path, e.g. "database.primary.host"
-   * @returns {boolean} True when the path resolves to a value in the configuration
+   * @param path - Dot-notation path, e.g. `"database.primary.host"`
+   * @returns `true` when the path resolves to a value in the configuration
    */
   public has(path: string): boolean {
     return ObjectUtils.deepGet(this.data, path) !== undefined;
@@ -94,17 +99,19 @@ export class Configuration implements ConfigurationProvider {
 
   /**
    * Get a configuration value by dot-notation path.
-   * This will automatically resolve external references (ssm://, s3://) when enabled.
+   * This will automatically resolve external references (`ssm://`, `s3://`) when
+   * enabled.
    *
-   * Per-call options can override the instance-level resolution behavior configured in
-   * {@link ConfigurationOptions.resolve}.
+   * Per-call options can override the instance-level resolution behavior
+   * configured in `ConfigurationOptions.resolve`.
    *
    * @template T - Expected return type for the value
-   * @param {string} path - Dot-notation path, e.g. "service.endpoint"
-   * @param {GetValueOptions} [options] - Optional options for value retrieval
-   * @returns {Promise<T | undefined>} The resolved value or undefined when not present
+   * @param path - Dot-notation path, e.g. `"service.endpoint"`
+   * @param options - Optional options for value retrieval
+   * @returns The resolved value or `undefined` when not present
    *
    * @example
+   * ```typescript
    * // Default behavior (external resolution on)
    * const v1 = await Configuration.getInstance().getValue<string>("service.endpoint");
    *
@@ -125,6 +132,7 @@ export class Configuration implements ConfigurationProvider {
    *   "secrets.dbPassword",
    *   { resolve: true, ssmDecryption: false },
    * );
+   * ```
    */
   public async getValue<T = unknown>(
     path: string,
@@ -152,23 +160,24 @@ export class Configuration implements ConfigurationProvider {
 
   /**
    * Retrieve a configuration value without resolving external references.
-   * This is a shorthand for {@link Configuration.getValue} with `{ resolve: false }`.
+   * This is a shorthand for `Configuration.getValue` with `{ resolve: false }`.
    *
    * @template T - Expected return type for the value
-   * @param {string} path - Dot-notation path, e.g. "service.endpoint"
-   * @returns {Promise<T | undefined>} The raw value or undefined when not present
+   * @param path - Dot-notation path, e.g. `"service.endpoint"`
+   * @returns The raw value or `undefined` when not present
    */
   public async getRaw<T = unknown>(path: string): Promise<T | undefined> {
     return this.getValue<T>(path, { resolve: false });
   }
 
   /**
-   * Preload and validate all external references by walking the entire configuration tree.
-   * Uses the current instance-level resolution options. Intended to help apps fail fast
-   * at startup when credentials are missing or references are invalid.
+   * Preload and validate all external references by walking the entire
+   * configuration tree. Uses the current instance-level resolution options.
+   * Intended to help apps fail fast at startup when credentials are missing or
+   * references are invalid.
    *
-   * Note: The configuration remains immutable; this method only triggers resolution
-   * side-effects and discards the result.
+   * Note: The configuration remains immutable; this method only triggers
+   * resolution side-effects and discards the result.
    */
   public async preload(): Promise<void> {
     // Use a per-call cache to deduplicate identical references during the walk
@@ -177,14 +186,15 @@ export class Configuration implements ConfigurationProvider {
   }
 
   /**
-   * Resolve external references if enabled. For arrays and objects, resolve recursively.
+   * Resolve external references if enabled. For arrays and objects, resolve
+   * recursively.
    *
-   * The resolution options are defined by {@link ResolutionOptions}.
+   * The resolution options are defined by `ResolutionOptions`.
    *
-   * @param {ConfigValue} value - Value to resolve (may be an external reference)
-   * @param {typeof this.resolveOptions} [eff] - Effective resolution options
-   * @param {Map<string, Promise<ConfigValue>>} [cache] - Per-call memoization cache
-   * @returns {Promise<ConfigValue>} The resolved value
+   * @param value - Value to resolve (may be an external reference)
+   * @param eff - Effective resolution options
+   * @param cache - Per-call memoization cache
+   * @returns The resolved value
    */
   private async maybeResolve(
     value: ConfigValue,

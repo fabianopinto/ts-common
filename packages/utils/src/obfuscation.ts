@@ -1,5 +1,5 @@
 /**
- * @fileoverview Obfuscation Utilities
+ * @fileoverview Obfuscation utilities.
  *
  * Lightweight helpers to obfuscate sensitive data in strings, headers, and
  * deep objects. Supports full and partial masking, with pattern-based
@@ -15,21 +15,21 @@
 import { logger } from "@t68/logger";
 
 /**
- * Options for partial masking
+ * Options for partial masking.
  */
 export interface PartialMaskOptions {
-  /** How many characters to keep visible at the start. Default: 2 */
+  /** How many characters to keep visible at the start. Default: `2` */
   visibleStart?: number;
-  /** How many characters to keep visible at the end. Default: 2 */
+  /** How many characters to keep visible at the end. Default: `2` */
   visibleEnd?: number;
-  /** Mask character. Default: "*" */
+  /** Mask character. Default: `"*"` */
   maskChar?: string;
-  /** Minimum number of masked characters to enforce. Default: 4 */
+  /** Minimum number of masked characters to enforce. Default: `4` */
   minMasked?: number;
 }
 
 /**
- * Options for object obfuscation
+ * Options for object obfuscation.
  */
 export interface ObfuscateObjectOptions extends PartialMaskOptions {
   /**
@@ -38,7 +38,8 @@ export interface ObfuscateObjectOptions extends PartialMaskOptions {
    */
   patterns?: (string | RegExp)[];
   /**
-   * If true, fully mask matched values; otherwise partially mask. Default: true
+   * If `true`, fully mask matched values; otherwise partially mask. Default:
+   * `true`
    */
   fullMask?: boolean;
   /**
@@ -48,7 +49,7 @@ export interface ObfuscateObjectOptions extends PartialMaskOptions {
    * @param key - Property name
    * @param value - Property value
    * @param path - Array of property names leading to the current property
-   * @returns True if the property should be masked, false otherwise
+   * @returns `true` if the property should be masked, `false` otherwise
    */
   shouldMaskKey?: (key: string, value: unknown, path: string[]) => boolean;
 }
@@ -66,10 +67,10 @@ const DEFAULT_PATTERNS: RegExp[] = [
 ];
 
 /**
- * Normalize patterns to RegExp
+ * Normalize patterns to `RegExp`.
  *
- * @param patterns - Array of string or RegExp patterns
- * @returns Array of RegExp objects
+ * @param patterns - Array of string or `RegExp` patterns
+ * @returns Array of `RegExp` objects
  */
 function toRegexps(patterns?: (string | RegExp)[]): RegExp[] {
   const base = patterns?.length ? patterns : DEFAULT_PATTERNS;
@@ -77,11 +78,11 @@ function toRegexps(patterns?: (string | RegExp)[]): RegExp[] {
 }
 
 /**
- * Decide whether a key should be masked
+ * Decide whether a key should be masked.
  *
  * @param key - Property name
- * @param regs - Array of RegExp patterns
- * @returns True if the key matches any of the patterns, false otherwise
+ * @param regs - Array of `RegExp` patterns
+ * @returns `true` if the key matches any of the patterns, `false` otherwise
  */
 function keyMatches(key: string, regs: RegExp[]): boolean {
   return regs.some((r) => r.test(key));
@@ -92,11 +93,13 @@ export const ObfuscationUtils = {
    * Fully masks a string with the given character (length preserved).
    *
    * @param value - Input string to mask
-   * @param maskChar - Character to use for masking. Default: "*"
+   * @param maskChar - Character to use for masking. Default: `"*"`
    * @returns Masked string with original length
    *
    * @example
+   * ```typescript
    * ObfuscationUtils.mask("secret") // => "******"
+   * ```
    */
   mask(value: string, maskChar = "*"): string {
     if (!value) return value;
@@ -112,7 +115,9 @@ export const ObfuscationUtils = {
    * @returns A partially masked string
    *
    * @example
+   * ```typescript
    * ObfuscationUtils.partialMask("supersecret") // => "su******et"
+   * ```
    */
   partialMask(value: string, opts: PartialMaskOptions = {}): string {
     const { visibleStart = 2, visibleEnd = 2, maskChar = "*", minMasked = 4 } = opts;
@@ -143,16 +148,18 @@ export const ObfuscationUtils = {
   },
 
   /**
-   * Obfuscates HTTP header values, preserving schemes like "Bearer" while masking
-   * the credential part.
+   * Obfuscates HTTP header values, preserving schemes like `"Bearer"` while
+   * masking the credential part.
    *
    * @param headers - Header name/value pairs
    * @param opts - Partial mask options to control visibility and mask char
    * @returns A new headers object with sensitive values obfuscated
    *
    * @example
+   * ```typescript
    * ObfuscationUtils.obfuscateHeaders({ Authorization: "Bearer abcdef" })
    * // => { Authorization: "Bearer **cdef" } (last 4 visible by default)
+   * ```
    */
   obfuscateHeaders(
     headers: Record<string, string>,
@@ -192,14 +199,20 @@ export const ObfuscationUtils = {
    * - Circular reference safe
    * - Non-string values are left untouched
    *
-   * @typeParam T - The input object/array type
+   * @template T - The input object/array type
    * @param input - Any object/array to obfuscate
    * @param options - Controls matching and masking behavior
    * @returns A new object/array with sensitive values obfuscated
    *
    * @example
-   * ObfuscationUtils.obfuscateObject({ password: "p@ss", token: "abcd", keep: 1 })
+   * ```typescript
+   * ObfuscationUtils.obfuscateObject({
+   *   password: "p@ss",
+   *   token: "abcd",
+   *   keep: 1
+   * })
    * // => { password: "****", token: "ab**", keep: 1 }
+   * ```
    */
   obfuscateObject<T>(input: T, options: ObfuscateObjectOptions = {}): T {
     const { patterns, fullMask: full = true, shouldMaskKey, ...partial } = options;
@@ -247,17 +260,22 @@ export const ObfuscationUtils = {
   /**
    * Redact arbitrary substrings in an input string using patterns.
    *
-   * Accepts string or RegExp patterns. String patterns are treated as
+   * Accepts string or `RegExp` patterns. String patterns are treated as
    * case-insensitive literals. All matches are replaced by `replacement`.
    *
    * @param input - Input string
-   * @param patterns - Array of string literals or RegExp patterns
-   * @param replacement - Replacement token (default: "[REDACTED]")
+   * @param patterns - Array of string literals or `RegExp` patterns
+   * @param replacement - Replacement token (default: `"[REDACTED]"`)
    * @returns String with all pattern matches redacted
    *
    * @example
-   * ObfuscationUtils.redactString("token=abc123; email=john@x.dev", [/token=\w+/i, /\b\S+@\S+\b/])
+   * ```typescript
+   * ObfuscationUtils.redactString(
+   *   "token=abc123; email=john@x.dev",
+   *   [/token=\w+/i, /\b\S+@\S+\b/]
+   * )
    * // => "[REDACTED]; [REDACTED]"
+   * ```
    */
   redactString(
     input: string,

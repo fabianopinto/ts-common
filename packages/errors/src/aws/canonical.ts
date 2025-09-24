@@ -1,8 +1,9 @@
 /**
  * @fileoverview AWS service name canonicalization utilities.
  *
- * Provides `CanonicalService` and `canonicalService()` to normalize user-provided
- * service identifiers to stable enum-like values for error mapping.
+ * Provides `CanonicalService` and `canonicalService()` to normalize
+ * user-provided service identifiers to stable enum-like values for error
+ * mapping.
  */
 
 export type CanonicalService =
@@ -27,12 +28,13 @@ export type CanonicalService =
  * Normalizes service names to canonical values.
  *
  * @param input - The service name to normalize
- * @returns The canonical service name, or undefined if the input is invalid
+ * @returns The canonical service name, or `undefined` if the input is invalid
  */
 export function canonicalService(input?: string): CanonicalService | undefined {
   if (!input) return undefined;
   // Normalize by lowercasing and removing non-alphanumeric characters so
-  // variants like "CLOUDWATCH_LOGS" and "cloudwatch-logs" both map to the same key.
+  // variants like `CLOUDWATCH_LOGS` and `cloudwatch-logs` both map to the
+  // same key.
   const s = input.toLowerCase().replace(/[^a-z0-9]/g, "");
   const map: Record<string, CanonicalService> = {
     ssm: "SSM",

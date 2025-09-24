@@ -1,8 +1,9 @@
 /**
- * @fileoverview Retry Utilities
+ * @fileoverview Retry utilities.
  *
- * Provides retry helpers with configurable backoff strategies for wrapping async operations
- * that may fail transiently (e.g., network calls, eventual consistency checks).
+ * Provides retry helpers with configurable backoff strategies for wrapping async
+ * operations that may fail transiently (e.g., network calls, eventual consistency
+ * checks).
  *
  * Design:
  * - Uses the shared `logger` for safe failure logging (warn level)
@@ -32,7 +33,7 @@ export interface RetryOptions {
   maxDelayMs?: number;
   /** Backoff strategy to use for computing successive delays. */
   backoff?: BackoffStrategy;
-  /** Jitter ratio (0..1) used when backoff = "exponential-jitter". */
+  /** Jitter ratio (0..1) used when backoff = `"exponential-jitter"`. */
   jitterRatio?: number;
   /**
    * Optional callback invoked on each attempt error before delaying.
@@ -42,21 +43,21 @@ export interface RetryOptions {
    * @returns A promise that resolves when the callback is complete
    */
   onAttemptError?: (error: unknown, attempt: number) => void | Promise<void>;
-  /** Optional AbortSignal to cancel retries and abort the operation. */
+  /** Optional `AbortSignal` to cancel retries and abort the operation. */
   signal?: AbortSignal;
   /**
    * Predicate to decide whether an error should be retried.
-   * Return false to stop retrying and rethrow immediately.
+   * Return `false` to stop retrying and rethrow immediately.
    *
    * @param error - The error that occurred
    * @param attempt - The current attempt number
-   * @returns True if the error should be retried, false otherwise
+   * @returns `true` if the error should be retried, `false` otherwise
    */
   shouldRetry?: (error: unknown, attempt: number) => boolean | Promise<boolean>;
 }
 
 /**
- * Resolved options with defaults applied, keeping signal/shouldRetry optional.
+ * Resolved options with defaults applied, keeping `signal`/`shouldRetry` optional.
  */
 type ResolvedRetryOptions = Omit<Required<RetryOptions>, "signal" | "shouldRetry"> & {
   signal?: AbortSignal;
@@ -75,7 +76,7 @@ export class RetryExhaustedError extends Error {
   public readonly cause?: unknown;
 
   /**
-   * Creates a new RetryExhaustedError.
+   * Creates a new `RetryExhaustedError`.
    *
    * @param message - Error message
    * @param attempts - The number of attempts performed
@@ -154,14 +155,16 @@ export const RetryUtils = {
   /**
    * Retries an async function according to the provided options.
    *
-   * @typeParam T - The return type of the operation
+   * @template T - The return type of the operation
    * @param operation - Async function to execute
    * @param options - Retry options controlling attempts and backoff
-   * @returns Resolves with the operation result or rejects after exhausting attempts
-   * @throws {RetryExhaustedError} When all retry attempts are exhausted
-   * @throws {Error} AbortError when options.signal aborts during execution
+   * @returns Resolves with the operation result or rejects after exhausting
+   *   attempts
+   * @throws `RetryExhaustedError` when all retry attempts are exhausted
+   * @throws `AbortError` when `options.signal` aborts during execution
    *
    * @example
+   * ```typescript
    * const result = await RetryUtils.retryAsync(() => fetchThing(), {
    *   retries: 4,
    *   delayMs: 200,
@@ -169,6 +172,7 @@ export const RetryUtils = {
    *   maxDelayMs: 5_000,
    *   onAttemptError: (err, attempt) => logger.warn({ attempt, err }, "retrying"),
    * });
+   * ```
    */
   async retryAsync<T>(operation: () => Promise<T>, options: RetryOptions = {}): Promise<T> {
     const opts: ResolvedRetryOptions = { ...DEFAULTS, ...options } as ResolvedRetryOptions;

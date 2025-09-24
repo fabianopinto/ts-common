@@ -12,12 +12,14 @@ export const EnvUtils = {
    *
    * @param name - Environment variable name
    * @param defaultValue - Fallback returned when not set or empty
-   * @returns Trimmed value or defaultValue
+   * @returns Trimmed value or `defaultValue`
    *
    * @example
+   * ```typescript
    * // Suppose process.env.PORT = " 3000 "
    * EnvUtils.getEnv("PORT") // => "3000"
    * EnvUtils.getEnv("MISSING", "8080") // => "8080"
+   * ```
    */
   getEnv(name: string, defaultValue?: string): string | undefined {
     const v = process.env[name];
@@ -31,11 +33,13 @@ export const EnvUtils = {
    *
    * @param name - Environment variable name
    * @returns Trimmed value
-   * @throws {ConfigurationError} When the variable is missing or empty
+   * @throws `ConfigurationError` when the variable is missing or empty
    *
    * @example
+   * ```typescript
    * // Throws if not set
    * const secret = EnvUtils.requireEnv("API_SECRET")
+   * ```
    */
   requireEnv(name: string): string {
     const v = EnvUtils.getEnv(name);
@@ -52,16 +56,19 @@ export const EnvUtils = {
   /**
    * Parse a boolean environment variable.
    *
-   * Accepts common truthy values: `true, 1, yes, y, on` and falsy values:
-   * `false, 0, no, n, off` (case-insensitive). Returns default when not set or unrecognized.
+   * Accepts common truthy values: `true`, `1`, `yes`, `y`, `on` and falsy
+   * values: `false`, `0`, `no`, `n`, `off` (case-insensitive). Returns default
+   * when not set or unrecognized.
    *
    * @param name - Environment variable name
    * @param defaultValue - Fallback returned when not set or empty
-   * @returns Trimmed value or defaultValue
+   * @returns Trimmed value or `defaultValue`
    *
    * @example
+   * ```typescript
    * // Suppose process.env.DEBUG = "yes"
    * EnvUtils.getBoolEnv("DEBUG", false) // => true
+   * ```
    */
   getBoolEnv(name: string, defaultValue = false): boolean {
     const v = EnvUtils.getEnv(name);
@@ -79,11 +86,13 @@ export const EnvUtils = {
    *
    * @param name - Environment variable name
    * @param defaultValue - Fallback returned when not set or empty
-   * @returns Trimmed value or defaultValue
+   * @returns Trimmed value or `defaultValue`
    *
    * @example
+   * ```typescript
    * // Suppose process.env.TIMEOUT = "2500"
    * EnvUtils.getNumberEnv("TIMEOUT", 1000) // => 2500
+   * ```
    */
   getNumberEnv(name: string, defaultValue = 0): number {
     const v = EnvUtils.getEnv(name);
@@ -95,16 +104,18 @@ export const EnvUtils = {
   /**
    * Parse a JSON environment variable.
    *
-   * Returns defaultValue on parse failure.
+   * Returns `defaultValue` on parse failure.
    *
    * @param name - Environment variable name
    * @param defaultValue - Fallback returned when not set or empty
-   * @returns Trimmed value or defaultValue
+   * @returns Trimmed value or `defaultValue`
    *
    * @example
+   * ```typescript
    * // Suppose process.env.FEATURE_FLAGS = '{"beta":true}'
    * EnvUtils.getJsonEnv<{ beta: boolean }>("FEATURE_FLAGS") // => { beta: true }
    * EnvUtils.getJsonEnv("BAD_JSON", { beta: false }) // => { beta: false }
+   * ```
    */
   getJsonEnv<T = unknown>(name: string, defaultValue?: T): T | undefined {
     const v = EnvUtils.getEnv(name);

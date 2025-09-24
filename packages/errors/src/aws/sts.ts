@@ -1,8 +1,9 @@
 /**
- * AWS STS error types and helpers.
+ * @fileoverview AWS STS error types and helpers.
  *
  * Defines `StsError`, a service-specific error class with factory-backed
- * helpers that standardize `code` and HTTP `status` using `AwsErrorCodes.STS.*`.
+ * helpers that standardize `code` and HTTP `status` using
+ * `AwsErrorCodes.STS.*`.
  */
 
 import {
@@ -14,10 +15,12 @@ import {
 } from "./base.js";
 import { AwsErrorCodes } from "./codes.js";
 
-/** An error for AWS STS service-related issues. */
+/**
+ * An error for AWS STS service-related issues.
+ */
 export class StsError extends AwsError {
   /**
-   * Creates an instance of StsError.
+   * Creates an instance of `StsError`.
    *
    * @param message - Error message
    * @param options - Additional error options and context
@@ -28,12 +31,12 @@ export class StsError extends AwsError {
   }
 
   /**
-   * Create an StsError from an unknown input.
+   * Create an `StsError` from an unknown input.
    *
    * @param err - Error to convert
    * @param message - Error message
    * @param context - Optional context to merge
-   * @returns An StsError instance
+   * @returns An `StsError` instance
    */
   public static from(err: unknown, message?: string, context?: ErrorContext): StsError {
     return fromAwsError(
@@ -46,10 +49,11 @@ export class StsError extends AwsError {
   }
 
   /**
-   * Authentication failure (ExpiredToken/InvalidClientTokenId/etc.).
+   * Authentication failure (`ExpiredToken`/`InvalidClientTokenId`/etc.).
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `StsError` with authentication failure details
    */
   public static authentication(
     message = "STS authentication failed",
@@ -71,6 +75,7 @@ export class StsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `StsError` with access denied details
    */
   public static accessDenied(message = "STS access denied", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -89,6 +94,7 @@ export class StsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `StsError` with throttling details
    */
   public static throttling(message = "STS throttling", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -107,6 +113,7 @@ export class StsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `StsError` with validation error details
    */
   public static validation(message = "STS validation error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -125,6 +132,7 @@ export class StsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `StsError` with timeout details
    */
   public static timeout(message = "STS request timed out", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -143,6 +151,7 @@ export class StsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `StsError` with internal error details
    */
   public static internal(message = "STS internal error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(

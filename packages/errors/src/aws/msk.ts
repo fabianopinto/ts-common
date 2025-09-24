@@ -2,7 +2,8 @@
  * @fileoverview AWS MSK (Managed Streaming for Apache Kafka) error types and helpers.
  *
  * Defines `MskError`, a service-specific error class with factory-backed
- * helpers that standardize `code` and HTTP `status` using `AwsErrorCodes.MSK.*`.
+ * helpers that standardize `code` and HTTP `status` using
+ * `AwsErrorCodes.MSK.*`.
  */
 
 import {
@@ -14,10 +15,13 @@ import {
 } from "./base.js";
 import { AwsErrorCodes } from "./codes.js";
 
-/** An error for Amazon MSK (Managed Streaming for Apache Kafka) service-related issues. */
+/**
+ * An error for Amazon MSK (Managed Streaming for Apache Kafka)
+ * service-related issues.
+ */
 export class MskError extends AwsError {
   /**
-   * Creates an instance of MskError.
+   * Creates an instance of `MskError`.
    *
    * @param message - Error message
    * @param options - Additional error options and context
@@ -28,12 +32,12 @@ export class MskError extends AwsError {
   }
 
   /**
-   * Create an MskError from an unknown input.
+   * Create an `MskError` from an unknown input.
    *
    * @param err - Error to convert
    * @param message - Error message
    * @param context - Optional context to merge
-   * @returns An MskError instance
+   * @returns An `MskError` instance
    */
   public static from(err: unknown, message?: string, context?: ErrorContext): MskError {
     return fromAwsError(
@@ -50,9 +54,10 @@ export class MskError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `MskError` with cluster not found details
    */
   public static clusterNotFound(message = "MSK cluster not found", options: AppErrorOptions = {}) {
-    // There isn't a specific code defined earlier; using CLUSTER_NOT_FOUND from AwsErrorCodes.MSK
+    // Using `CLUSTER_NOT_FOUND` from `AwsErrorCodes.MSK`
     return makeAwsServiceError(
       MskError,
       message,
@@ -69,6 +74,7 @@ export class MskError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `MskError` with throttling details
    */
   public static throttling(message = "MSK throttling", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -87,6 +93,7 @@ export class MskError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `MskError` with access denied details
    */
   public static accessDenied(message = "MSK access denied", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -105,6 +112,7 @@ export class MskError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `MskError` with validation error details
    */
   public static validation(message = "MSK validation error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -123,6 +131,7 @@ export class MskError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `MskError` with timeout details
    */
   public static timeout(message = "MSK request timed out", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -141,6 +150,7 @@ export class MskError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `MskError` with internal error details
    */
   public static internal(message = "MSK internal error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(

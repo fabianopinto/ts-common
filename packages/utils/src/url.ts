@@ -1,5 +1,5 @@
 /**
- * @fileoverview URL and Query Utilities
+ * @fileoverview URL and query utilities.
  *
  * Lightweight helpers for URL path joining and query string manipulation.
  */
@@ -13,8 +13,11 @@ export const UrlUtils = {
    * @returns Joined URL string with a single slash between parts
    *
    * @example
-   * UrlUtils.join("https://api.example.com/", "/v1/users") // => "https://api.example.com/v1/users"
+   * ```typescript
+   * UrlUtils.join("https://api.example.com/", "/v1/users")
+   * // => "https://api.example.com/v1/users"
    * UrlUtils.join("/root/", "child") // => "/root/child"
+   * ```
    */
   join(base: string, path: string): string {
     if (!base) return path;
@@ -26,12 +29,17 @@ export const UrlUtils = {
    * Adds or replaces query parameters on a URL string.
    *
    * @param url - URL or path string
-   * @param params - Key/value pairs to set as query parameters (undefined values are skipped)
+   * @param params - Key/value pairs to set as query parameters (`undefined`
+   *   values are skipped)
    * @returns URL with updated query string
    *
    * @example
-   * UrlUtils.withQuery("/users", { page: 2, q: "john" }) // => "/users?page=2&q=john"
-   * UrlUtils.withQuery("https://x.dev?a=1", { a: 3, b: "y" }) // => "https://x.dev/?a=3&b=y"
+   * ```typescript
+   * UrlUtils.withQuery("/users", { page: 2, q: "john" })
+   * // => "/users?page=2&q=john"
+   * UrlUtils.withQuery("https://x.dev?a=1", { a: 3, b: "y" })
+   * // => "https://x.dev/?a=3&b=y"
+   * ```
    */
   withQuery(url: string, params: Record<string, string | number | boolean | undefined>): string {
     const u = new URL(url, "resolve://");
@@ -46,13 +54,16 @@ export const UrlUtils = {
   },
 
   /**
-   * Converts an object to a query string without leading '?'.
+   * Converts an object to a query string without leading `'?'`.
    *
-   * @param params - Key/value pairs (undefined values are skipped)
-   * @returns Encoded query string (without leading '?')
+   * @param params - Key/value pairs (`undefined` values are skipped)
+   * @returns Encoded query string (without leading `'?'`)
    *
    * @example
-   * UrlUtils.toQueryString({ a: 1, b: "x", skip: undefined }) // => "a=1&b=x"
+   * ```typescript
+   * UrlUtils.toQueryString({ a: 1, b: "x", skip: undefined })
+   * // => "a=1&b=x"
+   * ```
    */
   toQueryString(params: Record<string, string | number | boolean | undefined>): string {
     const usp = new URLSearchParams();
@@ -64,16 +75,21 @@ export const UrlUtils = {
   },
 
   /**
-   * Parse a query string (with or without leading '?') or a full URL into an object.
+   * Parse a query string (with or without leading `'?'`) or a full URL into an
+   * object.
    *
    * Duplicate keys are coalesced into arrays.
    *
    * @param input - Query string or full URL
-   * @returns Object mapping keys to string or string[] values
+   * @returns Object mapping keys to string or `string[]` values
    *
    * @example
-   * UrlUtils.parseQueryString("?a=1&b=x&b=y") // => { a: "1", b: ["x","y"] }
-   * UrlUtils.parseQueryString("https://x.dev/path?a=1") // => { a: "1" }
+   * ```typescript
+   * UrlUtils.parseQueryString("?a=1&b=x&b=y")
+   * // => { a: "1", b: ["x","y"] }
+   * UrlUtils.parseQueryString("https://x.dev/path?a=1")
+   * // => { a: "1" }
+   * ```
    */
   parseQueryString(input: string): Record<string, string | string[]> {
     let usp: URLSearchParams;

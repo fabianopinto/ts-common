@@ -1,8 +1,9 @@
 /**
  * @fileoverview External reference resolvers for configuration values.
  *
- * Supports AWS Systems Manager Parameter Store (ssm://) and S3 objects (s3://),
- * with retry/backoff via `RetryUtils` and structured logging via `@t68/logger`.
+ * Supports AWS Systems Manager Parameter Store (`ssm://`) and S3 objects
+ * (`s3://`), with retry/backoff via `RetryUtils` and structured logging via
+ * `@t68/logger`.
  */
 
 import { ConfigurationError } from "@t68/errors";
@@ -12,23 +13,28 @@ import { RetryUtils } from "@t68/utils";
 /**
  * Resolve an AWS SSM parameter value.
  *
- * Uses AWS SDK v3 and relies on default AWS credential/region providers available
- * in the process environment. The parameter is fetched with optional decryption.
+ * Uses AWS SDK v3 and relies on default AWS credential/region providers
+ * available in the process environment. The parameter is fetched with optional
+ * decryption.
  *
- * @param {string} ssmPath - Parameter reference in the form `ssm://<parameterName>`
- * @param {Logger} logger - Optional logger instance for diagnostics
- * @param {Object} [opts] - Resolution options
- * @param {boolean} [opts.withDecryption] - Whether to enable decryption of the parameter value (default: true)
- * @returns {Promise<string>} The string parameter value
- * @throws {ConfigurationError} When the parameter is not found or has no string value
+ * @param ssmPath - Parameter reference in the form `ssm://<parameterName>`
+ * @param logger - Optional logger instance for diagnostics
+ * @param opts - Resolution options
+ * @param opts.withDecryption - Whether to enable decryption of the parameter
+ *   value (default: `true`)
+ * @returns The string parameter value
+ * @throws `ConfigurationError` when the parameter is not found or has no string
+ *   value
  *
  * @example
+ * ```typescript
  * const value = await resolveSSM("ssm://my-parameter");
  * const value = await resolveSSM(
  *   "ssm://my-parameter",
  *   logger.child({ label: "my-resolver" }),
  *   { withDecryption: false },
  * );
+ * ```
  */
 export async function resolveSSM(
   ssmPath: string,
@@ -77,13 +83,15 @@ export async function resolveSSM(
  * Uses AWS SDK v3 and the default credentials/region provider chain.
  * Automatically handles both `transformToString` and Node stream bodies.
  *
- * @param {string} s3Path - Object reference in the form `s3://<bucket>/<key>`
- * @param {Logger} [logger] - Optional logger instance for diagnostics
- * @returns {Promise<string>} Object body as a UTF-8 string
- * @throws {ConfigurationError} When the S3 path is invalid or the body is empty
+ * @param s3Path - Object reference in the form `s3://<bucket>/<key>`
+ * @param logger - Optional logger instance for diagnostics
+ * @returns Object body as a UTF-8 string
+ * @throws `ConfigurationError` when the S3 path is invalid or the body is empty
  *
  * @example
+ * ```typescript
  * const text = await resolveS3("s3://my-bucket/config.json");
+ * ```
  */
 export async function resolveS3(s3Path: string, logger: Logger = defaultLogger): Promise<string> {
   // s3Path expected format: s3://<bucket>/<key>
@@ -142,10 +150,10 @@ export async function resolveS3(s3Path: string, logger: Logger = defaultLogger):
 }
 
 /**
- * Determine whether a value is an external reference (ssm:// or s3://).
+ * Determine whether a value is an external reference (`ssm://` or `s3://`).
  *
- * @param {unknown} value - Unknown value to test
- * @returns {value is string} True when the value is a string beginning with ssm:// or s3://
+ * @param value - Unknown value to test
+ * @returns `true` when the value is a string beginning with `ssm://` or `s3://`
  */
 export function isExternalRef(value: unknown): value is string {
   return typeof value === "string" && /^(ssm|s3):\/\//.test(value);

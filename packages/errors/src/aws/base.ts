@@ -1,8 +1,9 @@
 /**
  * @fileoverview AWS base error types and utilities.
  *
- * Provides the `AwsError` base class and the `makeAwsServiceError` factory used by
- * service-specific errors to standardize `code`, HTTP `status`, and operational behavior.
+ * Provides the `AwsError` base class and the `makeAwsServiceError` factory used
+ * by service-specific errors to standardize `code`, HTTP `status`, and
+ * operational behavior.
  */
 
 import { AppError, type AppErrorOptions } from "../base.js";
@@ -11,9 +12,6 @@ export type { AppErrorOptions, ErrorContext } from "../base.js";
 
 /**
  * Base error for AWS service-related issues.
- *
- * @param message - Error message
- * @param options - The error options
  */
 export class AwsError extends AppError {
   public constructor(message: string, options: AppErrorOptions = {}) {
@@ -23,10 +21,12 @@ export class AwsError extends AppError {
   }
 
   /**
-   * Authentication/authorization failure (e.g., invalid credentials, expired tokens).
+   * Authentication/authorization failure (e.g., invalid credentials, expired
+   * tokens).
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `AwsError` with authentication failure details
    */
   public static authentication(
     message = "AWS authentication failed",
@@ -48,6 +48,7 @@ export class AwsError extends AppError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `AwsError` with access denied details
    */
   public static accessDenied(message = "AWS access denied", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -62,10 +63,11 @@ export class AwsError extends AppError {
   }
 
   /**
-   * Throttling error (TooManyRequests / ProvisionedThroughputExceededException).
+   * Throttling error (`TooManyRequests` / `ProvisionedThroughputExceededException`).
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `AwsError` with throttling details
    */
   public static throttling(message = "AWS throttling error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -84,6 +86,7 @@ export class AwsError extends AppError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `AwsError` with timeout details
    */
   public static timeout(message = "AWS request timed out", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -98,10 +101,11 @@ export class AwsError extends AppError {
   }
 
   /**
-   * Resource not found (e.g., ParameterNotFound, NoSuchKey).
+   * Resource not found (e.g., `ParameterNotFound`, `NoSuchKey`).
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `AwsError` with not found details
    */
   public static notFound(message = "AWS resource not found", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -120,6 +124,7 @@ export class AwsError extends AppError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `AwsError` with conflict details
    */
   public static conflict(message = "AWS resource conflict", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -138,6 +143,7 @@ export class AwsError extends AppError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `AwsError` with validation error details
    */
   public static validation(message = "AWS validation error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -156,6 +162,7 @@ export class AwsError extends AppError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `AwsError` with service unavailable details
    */
   public static serviceUnavailable(
     message = "AWS service unavailable",
@@ -177,6 +184,7 @@ export class AwsError extends AppError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `AwsError` with internal error details
    */
   public static internal(message = "AWS internal error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -191,7 +199,9 @@ export class AwsError extends AppError {
   }
 }
 
-/** Constructor type for service-specific AwsError subclasses. */
+/**
+ * Constructor type for service-specific `AwsError` subclasses.
+ */
 export type AwsErrorCtor<E extends AwsError> = new (
   message: string,
   options?: AppErrorOptions,
@@ -200,10 +210,13 @@ export type AwsErrorCtor<E extends AwsError> = new (
 /**
  * Factory to create service errors with consistent defaults and overrides.
  *
+ * @template E - The AWS error type to create
  * @param Ctor - The service error class constructor
  * @param message - Error message
- * @param defaults - Default AppErrorOptions (e.g., `code`, `status`)
- * @param options - Optional overrides/extra context. `isOperational` defaults to true
+ * @param defaults - Default `AppErrorOptions` (e.g., `code`, `status`)
+ * @param options - Optional overrides/extra context. `isOperational` defaults
+ *   to `true`
+ * @returns The created AWS service error instance
  */
 export function makeAwsServiceError<E extends AwsError>(
   Ctor: AwsErrorCtor<E>,
@@ -220,13 +233,16 @@ export function makeAwsServiceError<E extends AwsError>(
 }
 
 /**
- * Create a service-specific AwsError from an unknown input, preserving structure and context.
+ * Create a service-specific `AwsError` from an unknown input, preserving
+ * structure and context.
  *
+ * @template E - The AWS error type to create
  * @param Ctor - The service error class constructor
  * @param err - Unknown error-like value
+ * @param fallback - Fallback defaults for `code` and `status`
  * @param message - Error message override
  * @param context - Optional context to merge
- * @param fallback - Fallback defaults for `code` and `status`
+ * @returns The created AWS service error instance
  */
 export function fromAwsError<E extends AwsError>(
   Ctor: AwsErrorCtor<E>,

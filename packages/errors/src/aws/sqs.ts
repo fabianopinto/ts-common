@@ -2,7 +2,8 @@
  * @fileoverview AWS SQS error types and helpers.
  *
  * Defines `SqsError`, a service-specific error class with factory-backed
- * helpers that standardize `code` and HTTP `status` using `AwsErrorCodes.SQS.*`.
+ * helpers that standardize `code` and HTTP `status` using
+ * `AwsErrorCodes.SQS.*`.
  */
 
 import {
@@ -14,10 +15,12 @@ import {
 } from "./base.js";
 import { AwsErrorCodes } from "./codes.js";
 
-/** An error for Amazon SQS service-related issues. */
+/**
+ * An error for Amazon SQS service-related issues.
+ */
 export class SqsError extends AwsError {
   /**
-   * Creates an instance of SqsError.
+   * Creates an instance of `SqsError`.
    *
    * @param message - Error message
    * @param options - Additional error options and context
@@ -28,12 +31,12 @@ export class SqsError extends AwsError {
   }
 
   /**
-   * Create an SqsError from an unknown input.
+   * Create an `SqsError` from an unknown input.
    *
    * @param err - Error to convert
    * @param message - Error message
    * @param context - Optional context to merge
-   * @returns An SqsError instance
+   * @returns An `SqsError` instance
    */
   public static from(err: unknown, message?: string, context?: ErrorContext): SqsError {
     return fromAwsError(
@@ -50,6 +53,7 @@ export class SqsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `SqsError` with queue not found details
    */
   public static queueNotFound(message = "SQS queue not found", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -68,6 +72,7 @@ export class SqsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `SqsError` with message too large details
    */
   public static messageTooLarge(message = "SQS message too large", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -86,6 +91,7 @@ export class SqsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `SqsError` with throttling details
    */
   public static throttling(message = "SQS throttling", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -104,6 +110,7 @@ export class SqsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `SqsError` with access denied details
    */
   public static accessDenied(message = "SQS access denied", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -122,6 +129,7 @@ export class SqsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `SqsError` with validation error details
    */
   public static validation(message = "SQS validation error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -140,6 +148,7 @@ export class SqsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `SqsError` with timeout details
    */
   public static timeout(message = "SQS request timed out", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -158,6 +167,7 @@ export class SqsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `SqsError` with internal error details
    */
   public static internal(message = "SQS internal error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(

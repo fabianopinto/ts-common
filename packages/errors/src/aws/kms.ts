@@ -2,7 +2,8 @@
  * @fileoverview AWS KMS error types and helpers.
  *
  * Defines `KmsError`, a service-specific error class with factory-backed
- * helpers that standardize `code` and HTTP `status` using `AwsErrorCodes.KMS.*`.
+ * helpers that standardize `code` and HTTP `status` using
+ * `AwsErrorCodes.KMS.*`.
  */
 
 import {
@@ -14,10 +15,12 @@ import {
 } from "./base.js";
 import { AwsErrorCodes } from "./codes.js";
 
-/** An error for AWS KMS service-related issues. */
+/**
+ * An error for AWS KMS service-related issues.
+ */
 export class KmsError extends AwsError {
   /**
-   * Creates an instance of KmsError.
+   * Creates an instance of `KmsError`.
    *
    * @param message - Error message
    * @param options - Additional error options and context
@@ -28,12 +31,12 @@ export class KmsError extends AwsError {
   }
 
   /**
-   * Create a KmsError from an unknown input.
+   * Create a `KmsError` from an unknown input.
    *
    * @param err - Error to convert
    * @param message - Error message
    * @param context - Optional context to merge
-   * @returns A KmsError instance
+   * @returns A `KmsError` instance
    */
   public static from(err: unknown, message?: string, context?: ErrorContext): KmsError {
     return fromAwsError(
@@ -50,6 +53,7 @@ export class KmsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `KmsError` with key not found details
    */
   public static keyNotFound(message = "KMS key not found", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -68,6 +72,7 @@ export class KmsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `KmsError` with invalid ciphertext details
    */
   public static invalidCiphertext(
     message = "KMS invalid ciphertext",
@@ -89,6 +94,7 @@ export class KmsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `KmsError` with throttling details
    */
   public static throttling(message = "KMS throttling", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -107,6 +113,7 @@ export class KmsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `KmsError` with access denied details
    */
   public static accessDenied(message = "KMS access denied", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -125,6 +132,7 @@ export class KmsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `KmsError` with internal error details
    */
   public static internal(message = "KMS internal error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(

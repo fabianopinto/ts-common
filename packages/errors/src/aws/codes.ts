@@ -1,4 +1,3 @@
-// Centralized error code constants for discoverability and consistency.
 /**
  * @fileoverview Centralized AWS error code constants and types.
  *
@@ -136,5 +135,12 @@ export const AwsErrorCodes = {
   },
 } as const;
 
+/**
+ * Helper type to extract all nested values from a nested object.
+ */
 type ValueOf<T> = T[keyof T];
+
+/**
+ * Union type of all AWS error codes across all services.
+ */
 export type AwsErrorCode = ValueOf<ValueOf<typeof AwsErrorCodes>>;

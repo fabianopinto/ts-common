@@ -1,14 +1,16 @@
 /**
  * @fileoverview Database error types, codes, and helpers.
  *
- * Provides `DatabaseError` and related constants/utilities for connection, query,
- * transaction, and resource errors with standardized codes and statuses.
+ * Provides `DatabaseError` and related constants/utilities for connection,
+ * query, transaction, and resource errors with standardized codes and statuses.
  */
 
 import { AppError, AppErrorOptions, type ErrorContext } from "./base.js";
 import { makeServiceError } from "./service-error.js";
 
-/** Centralized database error code constants. */
+/**
+ * Centralized database error code constants.
+ */
 export const DatabaseErrorCodes = {
   CONNECTION_FAILED: "DB_CONNECTION_FAILED",
   QUERY_FAILED: "DB_QUERY_FAILED",
@@ -25,7 +27,9 @@ export const DatabaseErrorCodes = {
   INTERNAL_ERROR: "DB_INTERNAL_ERROR",
 } as const;
 
-/** Union of all database error code string literals. */
+/**
+ * Union of all database error code string literals.
+ */
 export type DatabaseErrorCode = (typeof DatabaseErrorCodes)[keyof typeof DatabaseErrorCodes];
 
 // Named exports for ergonomic imports in consumers (database)
@@ -49,7 +53,7 @@ export const DB_INTERNAL_ERROR = DatabaseErrorCodes.INTERNAL_ERROR;
  */
 export class DatabaseError extends AppError {
   /**
-   * Creates an instance of DatabaseError.
+   * Creates an instance of `DatabaseError`.
    *
    * @param message - Error message
    * @param options - Error options
@@ -66,10 +70,11 @@ export class DatabaseError extends AppError {
   public static readonly codes = DatabaseErrorCodes;
 
   /**
-   * Attaches or merges extra context to the error, returning a new DatabaseError instance.
+   * Attaches or merges extra context to the error, returning a new
+   * `DatabaseError` instance.
    *
    * @param extra - Additional context to merge into the error's context
-   * @returns A new DatabaseError with merged context
+   * @returns A new `DatabaseError` with merged context
    */
   public withContext(extra: ErrorContext): DatabaseError {
     return new DatabaseError(this.message, {
@@ -82,26 +87,27 @@ export class DatabaseError extends AppError {
   }
 
   /**
-   * Type guard to detect a DatabaseError instance.
+   * Type guard to detect a `DatabaseError` instance.
    *
    * @param err - Unknown value to test
-   * @returns True if `err` is a DatabaseError
+   * @returns `true` if `err` is a `DatabaseError`
    */
   public static is(err: unknown): err is DatabaseError {
     return err instanceof DatabaseError;
   }
 
   /**
-   * Creates a DatabaseError from an unknown value, preserving structure and context.
+   * Creates a `DatabaseError` from an unknown value, preserving structure and
+   * context.
    *
-   * - Reuses an existing DatabaseError instance when appropriate
-   * - Converts other AppError instances while preserving details
-   * - Wraps native Error or non-error values as the cause
+   * - Reuses an existing `DatabaseError` instance when appropriate
+   * - Converts other `AppError` instances while preserving details
+   * - Wraps native `Error` or non-error values as the cause
    *
    * @param err - Unknown error-like value
    * @param message - Optional override message
    * @param context - Optional context to merge
-   * @returns A DatabaseError instance
+   * @returns A `DatabaseError` instance
    */
   public static from(err: unknown, message?: string, context?: ErrorContext): DatabaseError {
     if (err instanceof DatabaseError) {
@@ -135,7 +141,7 @@ export class DatabaseError extends AppError {
    *
    * @param message - Error message
    * @param options - Additional error options
-   * @returns A DatabaseError with code DB_CONNECTION_FAILED and status 503
+   * @returns A `DatabaseError` with code `DB_CONNECTION_FAILED` and status `503`
    */
   public static connection(message = "Database connection failed", options: AppErrorOptions = {}) {
     return makeServiceError(
@@ -154,7 +160,7 @@ export class DatabaseError extends AppError {
    *
    * @param message - Error message
    * @param options - Additional error options
-   * @returns A DatabaseError with code DB_QUERY_FAILED and status 500
+   * @returns A `DatabaseError` with code `DB_QUERY_FAILED` and status `500`
    */
   public static queryFailed(message = "Database query failed", options: AppErrorOptions = {}) {
     return makeServiceError(
@@ -173,7 +179,7 @@ export class DatabaseError extends AppError {
    *
    * @param message - Error message
    * @param options - Additional error options
-   * @returns A DatabaseError with code DB_TRANSACTION_FAILED and status 500
+   * @returns A `DatabaseError` with code `DB_TRANSACTION_FAILED` and status `500`
    */
   public static transactionFailed(
     message = "Database transaction failed",
@@ -195,7 +201,7 @@ export class DatabaseError extends AppError {
    *
    * @param message - Error message
    * @param options - Additional error options
-   * @returns A DatabaseError with code DB_DEADLOCK and status 409
+   * @returns A `DatabaseError` with code `DB_DEADLOCK` and status `409`
    */
   public static deadlock(message = "Database deadlock detected", options: AppErrorOptions = {}) {
     return makeServiceError(
@@ -210,11 +216,13 @@ export class DatabaseError extends AppError {
   }
 
   /**
-   * A serialization failure occurred (e.g., due to concurrent updates) requiring retry.
+   * A serialization failure occurred (e.g., due to concurrent updates) requiring
+   * retry.
    *
    * @param message - Error message
    * @param options - Additional error options
-   * @returns A DatabaseError with code DB_SERIALIZATION_FAILURE and status 409
+   * @returns A `DatabaseError` with code `DB_SERIALIZATION_FAILURE` and status
+   *   `409`
    */
   public static serializationFailure(
     message = "Database serialization failure",
@@ -236,7 +244,7 @@ export class DatabaseError extends AppError {
    *
    * @param message - Error message
    * @param options - Additional error options
-   * @returns A DatabaseError with code DB_UNIQUE_VIOLATION and status 409
+   * @returns A `DatabaseError` with code `DB_UNIQUE_VIOLATION` and status `409`
    */
   public static uniqueViolation(
     message = "Unique constraint violation",
@@ -258,7 +266,7 @@ export class DatabaseError extends AppError {
    *
    * @param message - Error message
    * @param options - Additional error options
-   * @returns A DatabaseError with code DB_TIMEOUT and status 504
+   * @returns A `DatabaseError` with code `DB_TIMEOUT` and status `504`
    */
   public static timeout(message = "Database timeout", options: AppErrorOptions = {}) {
     return makeServiceError(
@@ -277,7 +285,7 @@ export class DatabaseError extends AppError {
    *
    * @param message - Error message
    * @param options - Additional error options
-   * @returns A DatabaseError with code DB_THROTTLING and status 429
+   * @returns A `DatabaseError` with code `DB_THROTTLING` and status `429`
    */
   public static throttling(message = "Database throttling", options: AppErrorOptions = {}) {
     return makeServiceError(
@@ -296,7 +304,7 @@ export class DatabaseError extends AppError {
    *
    * @param message - Error message
    * @param options - Additional error options
-   * @returns A DatabaseError with code DB_NOT_FOUND and status 404
+   * @returns A `DatabaseError` with code `DB_NOT_FOUND` and status `404`
    */
   public static notFound(message = "Database resource not found", options: AppErrorOptions = {}) {
     return makeServiceError(
@@ -315,7 +323,7 @@ export class DatabaseError extends AppError {
    *
    * @param message - Error message
    * @param options - Additional error options
-   * @returns A DatabaseError with code DB_CONFLICT and status 409
+   * @returns A `DatabaseError` with code `DB_CONFLICT` and status `409`
    */
   public static conflict(message = "Database conflict", options: AppErrorOptions = {}) {
     return makeServiceError(
@@ -334,7 +342,7 @@ export class DatabaseError extends AppError {
    *
    * @param message - Error message
    * @param options - Additional error options
-   * @returns A DatabaseError with code DB_VALIDATION_ERROR and status 400
+   * @returns A `DatabaseError` with code `DB_VALIDATION_ERROR` and status `400`
    */
   public static validation(message = "Database validation error", options: AppErrorOptions = {}) {
     return makeServiceError(
@@ -353,7 +361,8 @@ export class DatabaseError extends AppError {
    *
    * @param message - Error message
    * @param options - Additional error options
-   * @returns A DatabaseError with code DB_SERVICE_UNAVAILABLE and status 503
+   * @returns A `DatabaseError` with code `DB_SERVICE_UNAVAILABLE` and status
+   *   `503`
    */
   public static serviceUnavailable(
     message = "Database service unavailable",
@@ -375,7 +384,7 @@ export class DatabaseError extends AppError {
    *
    * @param message - Error message
    * @param options - Additional error options
-   * @returns A DatabaseError with code DB_INTERNAL_ERROR and status 500
+   * @returns A `DatabaseError` with code `DB_INTERNAL_ERROR` and status `500`
    */
   public static internal(message = "Database internal error", options: AppErrorOptions = {}) {
     return makeServiceError(

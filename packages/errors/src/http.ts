@@ -1,11 +1,14 @@
 /**
- * @fileoverview This file contains error classes and types for handling HTTP-specific errors.
- * It provides a standardized way to represent common HTTP error conditions.
+ * @fileoverview Error classes and types for handling HTTP-specific errors.
+ *
+ * Provides a standardized way to represent common HTTP error conditions.
  */
 
 import { AppError, AppErrorOptions, type ErrorContext } from "./base.js";
 
-/** A collection of standard HTTP error codes. */
+/**
+ * A collection of standard HTTP error codes.
+ */
 export enum ErrorCode {
   /** 400 Bad Request */
   BAD_REQUEST = "BAD_REQUEST",
@@ -27,7 +30,9 @@ export enum ErrorCode {
   INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR",
 }
 
-/** Maps `ErrorCode` enum members to HTTP status codes. */
+/**
+ * Maps `ErrorCode` enum members to HTTP status codes.
+ */
 export const errorCodeToHttpStatus: Record<ErrorCode, number> = {
   [ErrorCode.BAD_REQUEST]: 400,
   [ErrorCode.UNAUTHORIZED]: 401,
@@ -41,16 +46,18 @@ export const errorCodeToHttpStatus: Record<ErrorCode, number> = {
 };
 
 /**
- * Get HTTP status number for a given ErrorCode.
+ * Get HTTP status number for a given `ErrorCode`.
  *
- * @param code - The ErrorCode to look up
+ * @param code - The `ErrorCode` to look up
  * @returns The HTTP status code
  */
 export function httpStatusFor(code: ErrorCode): number {
   return errorCodeToHttpStatus[code];
 }
 
-/** Options for creating an `HttpError`. */
+/**
+ * Options for creating an `HttpError`.
+ */
 export interface HttpErrorOptions extends AppErrorOptions {
   /** The specific HTTP error code. */
   code: ErrorCode;
@@ -80,10 +87,11 @@ export class HttpError extends AppError {
   public static readonly codes = ErrorCode;
 
   /**
-   * Attaches or merges extra context to the error, returning a new HttpError instance.
+   * Attaches or merges extra context to the error, returning a new `HttpError`
+   * instance.
    *
    * @param extra - Additional context to merge
-   * @returns A new HttpError with merged context
+   * @returns A new `HttpError` with merged context
    */
   public withContext(extra: ErrorContext): HttpError {
     return new HttpError(this.message, {
@@ -95,22 +103,24 @@ export class HttpError extends AppError {
   }
 
   /**
-   * Type guard to detect an HttpError instance.
+   * Type guard to detect an `HttpError` instance.
    *
    * @param err - The value to check
-   * @returns True if the value is an HttpError instance
+   * @returns `true` if the value is an `HttpError` instance
    */
   public static is(err: unknown): err is HttpError {
     return err instanceof HttpError;
   }
 
   /**
-   * Creates an HttpError from an unknown value and an explicit HTTP ErrorCode.
+   * Creates an `HttpError` from an unknown value and an explicit HTTP
+   * `ErrorCode`.
    *
    * @param err - Unknown error-like value
-   * @param code - A specific HTTP ErrorCode to apply
+   * @param code - A specific HTTP `ErrorCode` to apply
    * @param message - Error message override
    * @param context - Optional context to merge
+   * @returns An `HttpError` instance with the specified error code
    */
   public static fromCode(
     err: unknown,
@@ -186,99 +196,108 @@ export class HttpError extends AppError {
   }
 
   /**
-   * Create a BAD_REQUEST HttpError from unknown input.
+   * Create a `BAD_REQUEST` `HttpError` from unknown input.
    *
    * @param err - The error to convert
    * @param message - Error message override
    * @param context - Optional context to merge
+   * @returns A `BAD_REQUEST` `HttpError` instance
    */
   public static fromBadRequest(err: unknown, message?: string, context?: ErrorContext) {
     return HttpError.fromCode(err, ErrorCode.BAD_REQUEST, message, context);
   }
 
   /**
-   * Create an UNAUTHORIZED HttpError from unknown input.
+   * Create an `UNAUTHORIZED` `HttpError` from unknown input.
    *
    * @param err - The error to convert
    * @param message - Error message override
    * @param context - Optional context to merge
+   * @returns An `UNAUTHORIZED` `HttpError` instance
    */
   public static fromUnauthorized(err: unknown, message?: string, context?: ErrorContext) {
     return HttpError.fromCode(err, ErrorCode.UNAUTHORIZED, message, context);
   }
 
   /**
-   * Create a FORBIDDEN HttpError from unknown input.
+   * Create a `FORBIDDEN` `HttpError` from unknown input.
    *
    * @param err - The error to convert
    * @param message - Error message override
    * @param context - Optional context to merge
+   * @returns A `FORBIDDEN` `HttpError` instance
    */
   public static fromForbidden(err: unknown, message?: string, context?: ErrorContext) {
     return HttpError.fromCode(err, ErrorCode.FORBIDDEN, message, context);
   }
 
   /**
-   * Create a NOT_FOUND HttpError from unknown input.
+   * Create a `NOT_FOUND` `HttpError` from unknown input.
    *
    * @param err - The error to convert
    * @param message - Error message override
    * @param context - Optional context to merge
+   * @returns A `NOT_FOUND` `HttpError` instance
    */
   public static fromNotFound(err: unknown, message?: string, context?: ErrorContext) {
     return HttpError.fromCode(err, ErrorCode.NOT_FOUND, message, context);
   }
 
   /**
-   * Create a METHOD_NOT_ALLOWED HttpError from unknown input.
+   * Create a `METHOD_NOT_ALLOWED` `HttpError` from unknown input.
    *
    * @param err - The error to convert
    * @param message - Error message override
    * @param context - Optional context to merge
+   * @returns A `METHOD_NOT_ALLOWED` `HttpError` instance
    */
   public static fromMethodNotAllowed(err: unknown, message?: string, context?: ErrorContext) {
     return HttpError.fromCode(err, ErrorCode.METHOD_NOT_ALLOWED, message, context);
   }
 
   /**
-   * Create a CONFLICT HttpError from unknown input.
+   * Create a `CONFLICT` `HttpError` from unknown input.
    *
    * @param err - The error to convert
    * @param message - Error message override
    * @param context - Optional context to merge
+   * @returns A `CONFLICT` `HttpError` instance
    */
   public static fromConflict(err: unknown, message?: string, context?: ErrorContext) {
     return HttpError.fromCode(err, ErrorCode.CONFLICT, message, context);
   }
 
   /**
-   * Create an UNPROCESSABLE_ENTITY HttpError from unknown input.
+   * Create an `UNPROCESSABLE_ENTITY` `HttpError` from unknown input.
    *
    * @param err - The error to convert
    * @param message - Error message override
    * @param context - Optional context to merge
+   * @returns An `UNPROCESSABLE_ENTITY` `HttpError` instance
    */
   public static fromUnprocessableEntity(err: unknown, message?: string, context?: ErrorContext) {
     return HttpError.fromCode(err, ErrorCode.UNPROCESSABLE_ENTITY, message, context);
   }
 
   /**
-   * Create a TOO_MANY_REQUESTS HttpError from unknown input.
+   * Create a `TOO_MANY_REQUESTS` `HttpError` from unknown input.
    *
    * @param err - The error to convert
    * @param message - Error message override
    * @param context - Optional context to merge
+   * @returns A `TOO_MANY_REQUESTS` `HttpError` instance
    */
   public static fromTooManyRequests(err: unknown, message?: string, context?: ErrorContext) {
     return HttpError.fromCode(err, ErrorCode.TOO_MANY_REQUESTS, message, context);
   }
 
   /**
-   * Create an INTERNAL_SERVER_ERROR HttpError from unknown input.
+   * Create an `INTERNAL_SERVER_ERROR` `HttpError` from unknown input.
    *
    * @param err - The error to convert
    * @param message - Error message override
    * @param context - Optional context to merge
+   * @returns An `INTERNAL_SERVER_ERROR` `HttpError` instance
    */
   public static fromInternalServerError(err: unknown, message?: string, context?: ErrorContext) {
     return HttpError.fromCode(err, ErrorCode.INTERNAL_SERVER_ERROR, message, context);

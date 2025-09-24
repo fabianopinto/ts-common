@@ -6,7 +6,7 @@
  */
 
 /**
- * Tokenize a string into word parts from mixed casing and separators
+ * Tokenize a string into word parts from mixed casing and separators.
  *
  * @param value - Input string
  * @returns Array of word parts
@@ -25,10 +25,11 @@ function tokenize(value: string): string[] {
 
 export const StringUtils = {
   /**
-   * Returns true if the provided value is null/undefined or only whitespace.
+   * Returns `true` if the provided value is `null`/`undefined` or only
+   * whitespace.
    *
    * @param value - Value to check
-   * @returns True when value is empty after trimming
+   * @returns `true` when value is empty after trimming
    */
   isEmpty(value: string | null | undefined): boolean {
     return value == null || value.trim().length === 0;
@@ -43,8 +44,10 @@ export const StringUtils = {
    * @returns Title-cased string with words separated by a single space
    *
    * @example
+   * ```typescript
    * StringUtils.toTitleCase("hello world") // => "Hello World"
    * StringUtils.toTitleCase("HTTP server") // => "Http Server"
+   * ```
    */
   toTitleCase(value: string): string {
     const parts = tokenize(value);
@@ -58,7 +61,9 @@ export const StringUtils = {
    * @returns Normalized string with single spaces
    *
    * @example
+   * ```typescript
    * StringUtils.normalizeWhitespace("  a\t b\n c  ") // => "a b c"
+   * ```
    */
   normalizeWhitespace(value: string): string {
     return value.replace(/\s+/g, " ").trim();
@@ -71,7 +76,9 @@ export const StringUtils = {
    * @returns String with first character uppercased
    *
    * @example
+   * ```typescript
    * StringUtils.capitalize("hello") // => "Hello"
+   * ```
    */
   capitalize(value: string): string {
     if (!value) return value;
@@ -85,9 +92,11 @@ export const StringUtils = {
    * @returns camelCased string
    *
    * @example
+   * ```typescript
    * StringUtils.toCamelCase("hello world") // => "helloWorld"
    * StringUtils.toCamelCase("Hello_world") // => "helloWorld"
    * StringUtils.toCamelCase("HTTP server") // => "httpServer"
+   * ```
    */
   toCamelCase(value: string): string {
     const parts = tokenize(value);
@@ -106,8 +115,10 @@ export const StringUtils = {
    * @returns kebab-cased string
    *
    * @example
+   * ```typescript
    * StringUtils.toKebabCase("Hello World") // => "hello-world"
    * StringUtils.toKebabCase("HTTPServer")  // => "http-server"
+   * ```
    */
   toKebabCase(value: string): string {
     const parts = tokenize(value).map((p) => p.toLowerCase());
@@ -121,8 +132,10 @@ export const StringUtils = {
    * @returns snake_cased string
    *
    * @example
+   * ```typescript
    * StringUtils.toSnakeCase("Hello World") // => "hello_world"
    * StringUtils.toSnakeCase("HTTPServer")  // => "http_server"
+   * ```
    */
   toSnakeCase(value: string): string {
     const parts = tokenize(value).map((p) => p.toLowerCase());
@@ -135,12 +148,14 @@ export const StringUtils = {
    *
    * @param value - Input string
    * @param maxLength - Maximum length of the result
-   * @param ellipsis - Ellipsis/suffix to use when truncating (default "…")
+   * @param ellipsis - Ellipsis/suffix to use when truncating (default `"…"`)
    * @returns Possibly truncated string
    *
    * @example
+   * ```typescript
    * StringUtils.truncate("abcdef", 4) // => "abc…"
    * StringUtils.truncate("abc", 4)    // => "abc"
+   * ```
    */
   truncate(value: string, maxLength: number, ellipsis = "…"): string {
     if (maxLength <= 0) return "";
@@ -151,14 +166,16 @@ export const StringUtils = {
   },
 
   /**
-   * Safely parse a JSON string, returning undefined on failure.
+   * Safely parse a JSON string, returning `undefined` on failure.
    *
    * @param value - JSON string to parse
-   * @returns Parsed value, or undefined if parsing fails
+   * @returns Parsed value, or `undefined` if parsing fails
    *
    * @example
+   * ```typescript
    * StringUtils.tryParseJson('{"a":1}') // => { a: 1 }
    * StringUtils.tryParseJson('not json') // => undefined
+   * ```
    */
   tryParseJson<T = unknown>(value: string): T | undefined {
     try {
@@ -175,7 +192,9 @@ export const StringUtils = {
    * @returns Slugified string (lowercase, hyphen-separated)
    *
    * @example
+   * ```typescript
    * StringUtils.slugify("Héllo, World!") // => "hello-world"
+   * ```
    */
   slugify(value: string): string {
     return value
@@ -194,7 +213,9 @@ export const StringUtils = {
    * @returns Clean string without ANSI escape codes
    *
    * @example
+   * ```typescript
    * StringUtils.stripAnsi("\u001B[31mError\u001B[0m") // => "Error"
+   * ```
    */
   stripAnsi(value: string): string {
     const re = /\u001B\[[0-?]*[ -\/]*[@-~]/g;

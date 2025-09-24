@@ -2,7 +2,8 @@
  * @fileoverview AWS SNS error types and helpers.
  *
  * Defines `SnsError`, a service-specific error class with factory-backed
- * helpers that standardize `code` and HTTP `status` using `AwsErrorCodes.SNS.*`.
+ * helpers that standardize `code` and HTTP `status` using
+ * `AwsErrorCodes.SNS.*`.
  */
 
 import {
@@ -14,10 +15,12 @@ import {
 } from "./base.js";
 import { AwsErrorCodes } from "./codes.js";
 
-/** An error for Amazon SNS service-related issues. */
+/**
+ * An error for Amazon SNS service-related issues.
+ */
 export class SnsError extends AwsError {
   /**
-   * Creates an instance of SnsError.
+   * Creates an instance of `SnsError`.
    *
    * @param message - Error message
    * @param options - Additional error options and context
@@ -28,12 +31,12 @@ export class SnsError extends AwsError {
   }
 
   /**
-   * Create an SnsError from an unknown input.
+   * Create an `SnsError` from an unknown input.
    *
    * @param err - Error to convert
    * @param message - Error message
    * @param context - Optional context to merge
-   * @returns An SnsError instance
+   * @returns An `SnsError` instance
    */
   public static from(err: unknown, message?: string, context?: ErrorContext): SnsError {
     return fromAwsError(
@@ -50,6 +53,7 @@ export class SnsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `SnsError` with topic not found details
    */
   public static topicNotFound(message = "SNS topic not found", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -68,6 +72,7 @@ export class SnsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `SnsError` with throttling details
    */
   public static throttling(message = "SNS throttling", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -86,6 +91,7 @@ export class SnsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `SnsError` with access denied details
    */
   public static accessDenied(message = "SNS access denied", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -104,6 +110,7 @@ export class SnsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `SnsError` with validation error details
    */
   public static validation(message = "SNS validation error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -122,6 +129,7 @@ export class SnsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `SnsError` with internal error details
    */
   public static internal(message = "SNS internal error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(

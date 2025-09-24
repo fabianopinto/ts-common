@@ -2,7 +2,8 @@
  * @fileoverview AWS Kinesis error types and helpers.
  *
  * Defines `KinesisError`, a service-specific error class with factory-backed
- * helpers that standardize `code` and HTTP `status` using `AwsErrorCodes.Kinesis.*`.
+ * helpers that standardize `code` and HTTP `status` using
+ * `AwsErrorCodes.Kinesis.*`.
  */
 
 import {
@@ -14,10 +15,12 @@ import {
 } from "./base.js";
 import { AwsErrorCodes } from "./codes.js";
 
-/** An error for AWS Kinesis service-related issues. */
+/**
+ * An error for AWS Kinesis service-related issues.
+ */
 export class KinesisError extends AwsError {
   /**
-   * Creates an instance of KinesisError.
+   * Creates an instance of `KinesisError`.
    *
    * @param message - Error message
    * @param options - Additional error options and context
@@ -28,12 +31,12 @@ export class KinesisError extends AwsError {
   }
 
   /**
-   * Create a KinesisError from an unknown input.
+   * Create a `KinesisError` from an unknown input.
    *
    * @param err - Error to convert
    * @param message - Error message
    * @param context - Optional context to merge
-   * @returns A KinesisError instance
+   * @returns A `KinesisError` instance
    */
   public static from(err: unknown, message?: string, context?: ErrorContext): KinesisError {
     return fromAwsError(
@@ -50,6 +53,7 @@ export class KinesisError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `KinesisError` with provisioned throughput exceeded details
    */
   public static provisionedThroughputExceeded(
     message = "Kinesis provisioned throughput exceeded",
@@ -71,6 +75,7 @@ export class KinesisError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `KinesisError` with throttling details
    */
   public static throttling(message = "Kinesis throttling", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -89,6 +94,7 @@ export class KinesisError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `KinesisError` with stream not found details
    */
   public static streamNotFound(
     message = "Kinesis stream not found",
@@ -110,6 +116,7 @@ export class KinesisError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `KinesisError` with access denied details
    */
   public static accessDenied(message = "Kinesis access denied", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -128,6 +135,7 @@ export class KinesisError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `KinesisError` with validation error details
    */
   public static validation(message = "Kinesis validation error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -146,6 +154,7 @@ export class KinesisError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `KinesisError` with timeout details
    */
   public static timeout(message = "Kinesis request timed out", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -164,6 +173,7 @@ export class KinesisError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `KinesisError` with internal error details
    */
   public static internal(message = "Kinesis internal error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(

@@ -19,8 +19,8 @@ import { randomBytes, randomInt as nodeRandomInt, randomUUID as nodeRandomUUID }
  *
  * @param min - The minimum value of the range (inclusive)
  * @param max - The maximum value of the range (inclusive)
- * @returns A random integer in the range [min, max]
- * @throws {RangeError} If min > max or the range is invalid
+ * @returns A random integer in the range `[min, max]`
+ * @throws `RangeError` if `min > max` or the range is invalid
  */
 function randomIntRejection(min: number, max: number): number {
   const range = BigInt(max) - BigInt(min) + 1n;
@@ -69,14 +69,15 @@ export const RandomUtils = {
   },
 
   /**
-   * Generate a random integer in the inclusive range [min, max].
+   * Generate a random integer in the inclusive range `[min, max]`.
    *
-   * Uses Node's CSPRNG and applies rejection sampling when needed to avoid modulo bias.
+   * Uses Node's CSPRNG and applies rejection sampling when needed to avoid
+   * modulo bias.
    *
    * @param min - The minimum value of the range (inclusive)
    * @param max - The maximum value of the range (inclusive)
-   * @returns A random integer in the range [min, max]
-   * @throws {RangeError} If min > max or the range is invalid
+   * @returns A random integer in the range `[min, max]`
+   * @throws `RangeError` if `min > max` or the range is invalid
    */
   randomInt(min: number, max: number): number {
     if (!Number.isFinite(min) || !Number.isFinite(max))
@@ -132,7 +133,7 @@ export const RandomUtils = {
    *
    * @param arr - The array to pick from
    * @returns A random element from the array
-   * @throws {RangeError} If the array is empty
+   * @throws `RangeError` if the array is empty
    */
   pickOne<T>(arr: T[]): T {
     if (arr.length === 0) throw new RangeError("array must be non-empty");

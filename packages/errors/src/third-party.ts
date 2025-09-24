@@ -9,7 +9,9 @@
 import { AppError, AppErrorOptions, type ErrorContext } from "./base.js";
 import { makeServiceError } from "./service-error.js";
 
-/** Centralized third-party service error code constants. */
+/**
+ * Centralized third-party service error code constants.
+ */
 export const ThirdPartyErrorCodes = {
   AUTHENTICATION_ERROR: "THIRD_PARTY_AUTHENTICATION_ERROR",
   ACCESS_DENIED: "THIRD_PARTY_ACCESS_DENIED",
@@ -23,7 +25,9 @@ export const ThirdPartyErrorCodes = {
   INTERNAL_ERROR: "THIRD_PARTY_INTERNAL_ERROR",
 } as const;
 
-/** Union of all third-party error code string literals. */
+/**
+ * Union of all third-party error code string literals.
+ */
 export type ThirdPartyErrorCode = (typeof ThirdPartyErrorCodes)[keyof typeof ThirdPartyErrorCodes];
 
 // Named exports for ergonomic imports in consumers (third-party)
@@ -44,7 +48,7 @@ export const THIRD_PARTY_INTERNAL_ERROR = ThirdPartyErrorCodes.INTERNAL_ERROR;
  */
 export class ThirdPartyServiceError extends AppError {
   /**
-   * Creates an instance of ThirdPartyServiceError.
+   * Creates an instance of `ThirdPartyServiceError`.
    *
    * @param message - Error message
    * @param options - The error options
@@ -61,8 +65,8 @@ export class ThirdPartyServiceError extends AppError {
   public static readonly codes = ThirdPartyErrorCodes;
 
   /**
-   * Merges the given `extra` context with the current error's context, returning a new
-   * `ThirdPartyServiceError` instance with the merged context.
+   * Merges the given `extra` context with the current error's context, returning
+   * a new `ThirdPartyServiceError` instance with the merged context.
    *
    * @param extra - The additional error context to merge
    * @returns A new `ThirdPartyServiceError` instance with the merged context
@@ -78,7 +82,8 @@ export class ThirdPartyServiceError extends AppError {
   }
 
   /**
-   * Convenience type guard to check if the given error is an instance of `ThirdPartyServiceError`.
+   * Convenience type guard to check if the given error is an instance of
+   * `ThirdPartyServiceError`.
    *
    * @param err - The error to check
    * @returns `true` if the error is a `ThirdPartyServiceError`, `false` otherwise
@@ -88,12 +93,12 @@ export class ThirdPartyServiceError extends AppError {
   }
 
   /**
-   * Create a ThirdPartyServiceError from an unknown input.
+   * Create a `ThirdPartyServiceError` from an unknown input.
    *
    * @param err - The error to convert
    * @param message - Optional override message
    * @param context - Optional context to merge
-   * @returns A ThirdPartyServiceError instance
+   * @returns A `ThirdPartyServiceError` instance
    */
   public static from(
     err: unknown,
@@ -134,7 +139,8 @@ export class ThirdPartyServiceError extends AppError {
    *
    * @param message - Error message
    * @param options - Additional error options
-   * @returns A ThirdPartyServiceError with code TP_AUTHENTICATION_ERROR and status 401
+   * @returns A `ThirdPartyServiceError` with code `TP_AUTHENTICATION_ERROR` and
+   *   status `401`
    */
   public static authentication(
     message = "Third-party authentication failed",
@@ -156,7 +162,8 @@ export class ThirdPartyServiceError extends AppError {
    *
    * @param message - Error message
    * @param options - Additional error options
-   * @returns A ThirdPartyServiceError with code TP_ACCESS_DENIED and status 403
+   * @returns A `ThirdPartyServiceError` with code `TP_ACCESS_DENIED` and status
+   *   `403`
    */
   public static accessDenied(message = "Third-party access denied", options: AppErrorOptions = {}) {
     return makeServiceError(
@@ -175,7 +182,7 @@ export class ThirdPartyServiceError extends AppError {
    *
    * @param message - Error message
    * @param options - Additional error options
-   * @returns A ThirdPartyServiceError with code TP_THROTTLING and status 429
+   * @returns A `ThirdPartyServiceError` with code `TP_THROTTLING` and status `429`
    */
   public static throttling(message = "Third-party throttling", options: AppErrorOptions = {}) {
     return makeServiceError(
@@ -194,7 +201,7 @@ export class ThirdPartyServiceError extends AppError {
    *
    * @param message - Error message
    * @param options - Additional error options
-   * @returns A ThirdPartyServiceError with code TP_RATE_LIMIT and status 429
+   * @returns A `ThirdPartyServiceError` with code `TP_RATE_LIMIT` and status `429`
    */
   public static rateLimit(
     message = "Third-party rate limit exceeded",
@@ -216,7 +223,7 @@ export class ThirdPartyServiceError extends AppError {
    *
    * @param message - Error message
    * @param options - Additional error options
-   * @returns A ThirdPartyServiceError with code TP_TIMEOUT and status 504
+   * @returns A `ThirdPartyServiceError` with code `TP_TIMEOUT` and status `504`
    */
   public static timeout(message = "Third-party request timed out", options: AppErrorOptions = {}) {
     return makeServiceError(
@@ -235,7 +242,7 @@ export class ThirdPartyServiceError extends AppError {
    *
    * @param message - Error message
    * @param options - Additional error options
-   * @returns A ThirdPartyServiceError with code TP_NOT_FOUND and status 404
+   * @returns A `ThirdPartyServiceError` with code `TP_NOT_FOUND` and status `404`
    */
   public static notFound(
     message = "Third-party resource not found",
@@ -257,7 +264,7 @@ export class ThirdPartyServiceError extends AppError {
    *
    * @param message - Error message
    * @param options - Additional error options
-   * @returns A ThirdPartyServiceError with code TP_CONFLICT and status 409
+   * @returns A `ThirdPartyServiceError` with code `TP_CONFLICT` and status `409`
    */
   public static conflict(message = "Third-party resource conflict", options: AppErrorOptions = {}) {
     return makeServiceError(
@@ -276,7 +283,8 @@ export class ThirdPartyServiceError extends AppError {
    *
    * @param message - Error message
    * @param options - Additional error options
-   * @returns A ThirdPartyServiceError with code TP_VALIDATION_ERROR and status 400
+   * @returns A `ThirdPartyServiceError` with code `TP_VALIDATION_ERROR` and
+   *   status `400`
    */
   public static validation(
     message = "Third-party validation error",
@@ -298,7 +306,8 @@ export class ThirdPartyServiceError extends AppError {
    *
    * @param message - Error message
    * @param options - Additional error options
-   * @returns A ThirdPartyServiceError with code TP_SERVICE_UNAVAILABLE and status 503
+   * @returns A `ThirdPartyServiceError` with code `TP_SERVICE_UNAVAILABLE` and
+   *   status `503`
    */
   public static serviceUnavailable(
     message = "Third-party service unavailable",
@@ -320,7 +329,8 @@ export class ThirdPartyServiceError extends AppError {
    *
    * @param message - Error message
    * @param options - Additional error options
-   * @returns A ThirdPartyServiceError with code TP_INTERNAL_ERROR and status 500
+   * @returns A `ThirdPartyServiceError` with code `TP_INTERNAL_ERROR` and status
+   *   `500`
    */
   public static internal(message = "Third-party internal error", options: AppErrorOptions = {}) {
     return makeServiceError(

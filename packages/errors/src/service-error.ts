@@ -1,13 +1,16 @@
 /**
  * @fileoverview Shared service error utilities.
  *
- * Provides a generic factory and constructor type used by service-oriented error classes
- * (e.g., database and third-party service errors) to ensure consistent defaults and options.
+ * Provides a generic factory and constructor type used by service-oriented error
+ * classes (e.g., database and third-party service errors) to ensure consistent
+ * defaults and options.
  */
 
 import { AppError, AppErrorOptions } from "./base.js";
 
-/** Constructor type for service-specific AppError subclasses. */
+/**
+ * Constructor type for service-specific `AppError` subclasses.
+ */
 export type AppErrorCtor<E extends AppError> = new (
   message: string,
   options?: AppErrorOptions,

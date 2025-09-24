@@ -14,10 +14,12 @@ import {
 } from "./base.js";
 import { AwsErrorCodes } from "./codes.js";
 
-/** An error for AWS S3 service-related issues. */
+/**
+ * An error for AWS S3 service-related issues.
+ */
 export class S3Error extends AwsError {
   /**
-   * Creates an instance of S3Error.
+   * Creates an instance of `S3Error`.
    *
    * @param message - Error message
    * @param options - Additional error options and context
@@ -28,12 +30,12 @@ export class S3Error extends AwsError {
   }
 
   /**
-   * Create an S3Error from an unknown input.
+   * Create an `S3Error` from an unknown input.
    *
    * @param err - Error to convert
    * @param message - Error message
    * @param context - Optional context to merge
-   * @returns An S3Error instance
+   * @returns An `S3Error` instance
    */
   public static from(err: unknown, message?: string, context?: ErrorContext): S3Error {
     return fromAwsError(
@@ -50,6 +52,7 @@ export class S3Error extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `S3Error` with bucket not found details
    */
   public static bucketNotFound(message = "S3 bucket not found", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -68,6 +71,7 @@ export class S3Error extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `S3Error` with object not found details
    */
   public static objectNotFound(message = "S3 object not found", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -86,6 +90,7 @@ export class S3Error extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `S3Error` with access denied details
    */
   public static accessDenied(message = "S3 access denied", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -104,6 +109,7 @@ export class S3Error extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `S3Error` with throttling details
    */
   public static throttling(message = "S3 throttling", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -122,6 +128,7 @@ export class S3Error extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `S3Error` with validation error details
    */
   public static validation(message = "S3 validation error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -140,6 +147,7 @@ export class S3Error extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `S3Error` with timeout details
    */
   public static timeout(message = "S3 request timed out", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -158,6 +166,7 @@ export class S3Error extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `S3Error` with internal error details
    */
   public static internal(message = "S3 internal error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(

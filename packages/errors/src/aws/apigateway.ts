@@ -2,7 +2,8 @@
  * @fileoverview AWS API Gateway error types and helpers.
  *
  * Defines `ApiGatewayError`, a service-specific error class with factory-backed
- * helpers that standardize `code` and HTTP `status` using `AwsErrorCodes.ApiGateway.*`.
+ * helpers that standardize `code` and HTTP `status` using
+ * `AwsErrorCodes.ApiGateway.*`.
  */
 
 import {
@@ -14,10 +15,12 @@ import {
 } from "./base.js";
 import { AwsErrorCodes } from "./codes.js";
 
-/** An error for Amazon API Gateway service-related issues. */
+/**
+ * An error for Amazon API Gateway service-related issues.
+ */
 export class ApiGatewayError extends AwsError {
   /**
-   * Creates an instance of ApiGatewayError.
+   * Creates an instance of `ApiGatewayError`.
    *
    * @param message - Error message
    * @param options - Additional error options and context
@@ -28,12 +31,12 @@ export class ApiGatewayError extends AwsError {
   }
 
   /**
-   * Create an ApiGatewayError from an unknown input.
+   * Create an `ApiGatewayError` from an unknown input.
    *
    * @param err - Error to convert
    * @param message - Error message
    * @param context - Optional context to merge
-   * @returns An ApiGatewayError instance
+   * @returns An `ApiGatewayError` instance
    */
   public static from(err: unknown, message?: string, context?: ErrorContext): ApiGatewayError {
     return fromAwsError(
@@ -50,6 +53,7 @@ export class ApiGatewayError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `ApiGatewayError` with resource not found details
    */
   public static notFound(
     message = "API Gateway resource not found",
@@ -71,6 +75,7 @@ export class ApiGatewayError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `ApiGatewayError` with throttling details
    */
   public static throttling(message = "API Gateway throttling", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -89,6 +94,7 @@ export class ApiGatewayError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `ApiGatewayError` with access denied details
    */
   public static accessDenied(message = "API Gateway access denied", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -107,6 +113,7 @@ export class ApiGatewayError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `ApiGatewayError` with validation error details
    */
   public static validation(
     message = "API Gateway validation error",
@@ -128,6 +135,7 @@ export class ApiGatewayError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `ApiGatewayError` with timeout details
    */
   public static timeout(message = "API Gateway request timed out", options: AppErrorOptions = {}) {
     return makeAwsServiceError(
@@ -146,6 +154,7 @@ export class ApiGatewayError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns An `ApiGatewayError` with internal error details
    */
   public static internal(message = "API Gateway internal error", options: AppErrorOptions = {}) {
     return makeAwsServiceError(

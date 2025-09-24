@@ -1,5 +1,5 @@
 /**
- * AWS CloudWatch Metrics error types and helpers.
+ * @fileoverview AWS CloudWatch Metrics error types and helpers.
  *
  * Defines `CloudWatchMetricsError`, a service-specific error class with
  * factory-backed helpers that standardize `code` and HTTP `status` using
@@ -15,10 +15,12 @@ import {
 } from "./base.js";
 import { AwsErrorCodes } from "./codes.js";
 
-/** An error for AWS CloudWatch Metrics (GetMetricData/PutMetricData) issues. */
+/**
+ * An error for AWS CloudWatch Metrics (`GetMetricData`/`PutMetricData`) issues.
+ */
 export class CloudWatchMetricsError extends AwsError {
   /**
-   * Creates an instance of CloudWatchMetricsError.
+   * Creates an instance of `CloudWatchMetricsError`.
    *
    * @param message - Error message
    * @param options - Additional error options and context
@@ -29,12 +31,12 @@ export class CloudWatchMetricsError extends AwsError {
   }
 
   /**
-   * Create a CloudWatchMetricsError from an unknown input.
+   * Create a `CloudWatchMetricsError` from an unknown input.
    *
    * @param err - Error to convert
    * @param message - Error message
    * @param context - Optional context to merge
-   * @returns A CloudWatchMetricsError instance
+   * @returns A `CloudWatchMetricsError` instance
    */
   public static from(
     err: unknown,
@@ -55,6 +57,7 @@ export class CloudWatchMetricsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `CloudWatchMetricsError` with throttling details
    */
   public static throttling(
     message = "CloudWatch Metrics throttling",
@@ -76,6 +79,7 @@ export class CloudWatchMetricsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `CloudWatchMetricsError` with limit exceeded details
    */
   public static limitExceeded(
     message = "CloudWatch Metrics limit exceeded",
@@ -97,6 +101,7 @@ export class CloudWatchMetricsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `CloudWatchMetricsError` with access denied details
    */
   public static accessDenied(
     message = "CloudWatch Metrics access denied",
@@ -118,6 +123,7 @@ export class CloudWatchMetricsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `CloudWatchMetricsError` with validation error details
    */
   public static validation(
     message = "CloudWatch Metrics validation error",
@@ -139,6 +145,7 @@ export class CloudWatchMetricsError extends AwsError {
    *
    * @param message - Error message
    * @param options - Additional error options
+   * @returns A `CloudWatchMetricsError` with internal error details
    */
   public static internal(
     message = "CloudWatch Metrics internal error",
