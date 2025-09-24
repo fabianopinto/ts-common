@@ -5,8 +5,7 @@
  * and optimization features of the resolution engine.
  */
 
-import { describe, it, expect, beforeEach, vi } from "vitest";
-import { ConfigurationError } from "@t68/errors";
+import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 
 import { ResolutionEngine } from "../../src/resolvers/resolution-engine.js";
 import type { ConfigResolver, ResolverRegistry } from "../../src/resolvers/base.js";
@@ -21,6 +20,11 @@ describe("ResolutionEngine", () => {
     logger = createTestLogger();
     registry = createMockRegistry();
     engine = new ResolutionEngine(registry, logger);
+  });
+
+  afterEach(() => {
+    // Clean up any pending promises to prevent unhandled rejections
+    vi.clearAllMocks();
   });
 
   describe("initialization", () => {
@@ -531,7 +535,9 @@ function createMockRegistry(): ResolverRegistry {
 
   // Batch error resolver (supports batching but fails)
   const batchErrorResolver = createMockResolver("batch-error", true);
-  batchErrorResolver.resolveBatch!.mockRejectedValue(new Error("Batch resolution failed"));
+  batchErrorResolver.resolveBatch!.mockImplementation(async () => {
+    throw new Error("Batch resolution failed");
+  });
   resolvers.set("batch-error", batchErrorResolver);
 
   return {

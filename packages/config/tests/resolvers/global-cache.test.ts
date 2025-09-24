@@ -1905,19 +1905,27 @@ describe("GlobalCache", () => {
       expect(entry?.failureCount).toBe(0);
     });
 
-    it("should update access metadata on retrieval", () => {
+    it("should update access metadata on retrieval", async () => {
       cache.set("access-test", "value", { protocol: "test", priority: CachePriority.NORMAL });
 
       const entry1 = cache.get("access-test");
       const firstAccess = entry1?.lastAccessedAt;
       const firstCount = entry1?.accessCount;
 
+      expect(firstAccess).toBeDefined();
+      expect(firstCount).toBeDefined();
+
       // Small delay to ensure timestamp difference
-      setTimeout(() => {
-        const entry2 = cache.get("access-test");
-        expect(entry2?.lastAccessedAt).toBeGreaterThanOrEqual(firstAccess!);
-        expect(entry2?.accessCount).toBeGreaterThan(firstCount!);
-      }, 1);
+      await new Promise((resolve) => {
+        setTimeout(() => {
+          const entry2 = cache.get("access-test");
+          if (firstAccess && firstCount) {
+            expect(entry2?.lastAccessedAt).toBeGreaterThanOrEqual(firstAccess);
+            expect(entry2?.accessCount).toBeGreaterThan(firstCount);
+          }
+          resolve(undefined);
+        }, 10); // Increased delay for more reliable timing
+      });
     });
   });
 
