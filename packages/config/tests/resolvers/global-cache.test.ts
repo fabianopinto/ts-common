@@ -249,16 +249,31 @@ describe("GlobalCache", () => {
       expect(stats.evictionStorms).toBeGreaterThanOrEqual(0);
     });
 
-    it("should temporarily increase limits during storms", () => {
-      const largeValue = "x".repeat(1000);
+    it("should temporarily increase limits during storms and reset them after a timeout", () => {
+      vi.useFakeTimers();
 
-      // Trigger eviction storm
-      for (let i = 0; i < 200; i++) {
-        cache.set(`storm${i}`, largeValue, { protocol: "test", priority: CachePriority.LOW });
+      const initialConfig = cache.getConfig();
+      const initialMaxEntries = initialConfig.maxEntries;
+      const initialMaxSizeBytes = initialConfig.maxSizeBytes;
+
+      // Trigger an eviction storm by causing more than 100 evictions.
+      // The cache is configured with maxEntries: 100.
+      for (let i = 0; i < 205; i++) {
+        cache.set(`storm${i}`, `value${i}`, { protocol: "test", priority: CachePriority.LOW });
       }
 
-      const stats = cache.getStats();
-      expect(stats.totalEntries).toBeGreaterThan(50); // Should have many entries
+      const stormedConfig = cache.getConfig();
+      expect(stormedConfig.maxEntries).toBe(Math.floor(initialMaxEntries * 1.2));
+      expect(stormedConfig.maxSizeBytes).toBe(Math.floor(initialMaxSizeBytes * 1.2));
+
+      // Advance time by 5 minutes to trigger the reset
+      vi.advanceTimersByTime(5 * 60 * 1000);
+
+      const finalConfig = cache.getConfig();
+      expect(finalConfig.maxEntries).toBe(initialMaxEntries);
+      expect(finalConfig.maxSizeBytes).toBe(initialMaxSizeBytes);
+
+      vi.useRealTimers();
     });
   });
 
@@ -821,6 +836,21 @@ describe("GlobalCache", () => {
       const stats = cache.getStats();
       expect(stats.totalEntries).toBeGreaterThan(0);
       expect(stats.hits + stats.misses).toBeGreaterThan(0);
+    });
+
+    it("should handle internal errors during get operation", () => {
+      const getError = new Error("Internal map error");
+      const handleCacheErrorSpy = vi.spyOn(cache as any, "handleCacheError");
+      const internalCache = (cache as any).cache;
+      vi.spyOn(internalCache, "get").mockImplementation(() => {
+        throw getError;
+      });
+
+      const result = cache.get("any-key");
+
+      expect(result).toBeUndefined();
+      expect(handleCacheErrorSpy).toHaveBeenCalledWith(getError, "get");
+      expect(cache.getStats().misses).toBe(1);
     });
   });
 
@@ -1951,6 +1981,59 @@ describe("GlobalCache", () => {
       const instance2 = GlobalCache.getInstance();
       expect(instance1).not.toBe(instance2);
       expect(instance2.get("reset-test")).toBeUndefined();
+    });
+  });
+
+  describe("intelligent eviction", () => {
+    it("should not evict entries with higher or equal priority", () => {
+      // Fill the cache just enough to not trigger eviction on the next entry
+      for (let i = 0; i < 9; i++) {
+        cache.set(`low${i}`, "v", { protocol: "test", priority: CachePriority.LOW });
+      }
+      cache.set("high1", "v-high", { protocol: "test", priority: CachePriority.HIGH });
+
+      // This should trigger eviction of LOW priority entries, but not HIGH
+      cache.set("normal-trigger", "v-normal", { protocol: "test", priority: CachePriority.NORMAL });
+
+      expect(cache.get("high1")?.value).toBe("v-high");
+    });
+
+    it("should protect CRITICAL entries unless memory pressure is CRITICAL", () => {
+      for (let i = 0; i < 9; i++) {
+        cache.set(`normal${i}`, "v", { protocol: "test", priority: CachePriority.NORMAL });
+      }
+      cache.set("critical1", "v-critical", { protocol: "test", priority: CachePriority.CRITICAL });
+
+      // This should trigger eviction of NORMAL priority entries
+      cache.set("another-normal", "v-normal", { protocol: "test", priority: CachePriority.NORMAL });
+
+      // CRITICAL entry should be safe because memory pressure is not CRITICAL
+      expect(cache.get("critical1")?.value).toBe("v-critical");
+    });
+
+    it("should evict CRITICAL entries when memory pressure is CRITICAL", () => {
+      // Reset and create a cache with a very small size to easily trigger CRITICAL pressure
+      GlobalCache.reset();
+      cache = GlobalCache.getInstance({
+        maxSizeBytes: 200,
+        maxEntries: 10,
+        minCacheSize: 1,
+      });
+
+      const largeValue = "x".repeat(50); // ~100 bytes
+      cache.set("critical1", largeValue, { protocol: "test", priority: CachePriority.CRITICAL });
+      cache.set("normal1", largeValue, { protocol: "test", priority: CachePriority.NORMAL });
+
+      // At this point, size is 200 bytes, which is the max size.
+      // The next set call will trigger eviction.
+      // The memory pressure is CRITICAL (200/200 = 1.0)
+
+      // This should trigger eviction. The `normal1` entry (lower priority) should be evicted.
+      cache.set("low-trigger", "v", { protocol: "test", priority: CachePriority.LOW });
+
+      // The `normal1` entry should be evicted to make space.
+      expect(cache.get("critical1")).toBeDefined();
+      expect(cache.get("normal1")).toBeUndefined();
     });
   });
 });

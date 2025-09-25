@@ -343,13 +343,6 @@ export class GlobalCache {
         throw new Error(`Entry size ${sizeBytes} exceeds maximum ${this.config.maxEntrySizeBytes}`);
       }
 
-      // Check memory pressure and adapt caching behavior
-      const memoryPressure = this.getMemoryPressureLevel();
-      if (memoryPressure === MemoryPressureLevel.CRITICAL && priority < CachePriority.HIGH) {
-        // Reject low-priority entries during `CRITICAL` memory pressure
-        return false;
-      }
-
       // Intelligent eviction with edge case protection
       if (this.shouldEvict(sizeBytes)) {
         const evicted = this.evictEntriesIntelligent(sizeBytes, priority);
@@ -573,8 +566,12 @@ export class GlobalCache {
         break;
       }
 
-      // Don't evict entries with higher priority than the new entry
-      if (this.config.enablePriorityEviction && entry.priority >= newEntryPriority) {
+      // Don't evict entries with higher priority than the new entry, unless memory pressure is critical
+      if (
+        this.config.enablePriorityEviction &&
+        entry.priority > newEntryPriority &&
+        this.getMemoryPressureLevel() !== MemoryPressureLevel.CRITICAL
+      ) {
         continue;
       }
 

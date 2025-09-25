@@ -42,6 +42,30 @@ describe("S3Resolver", () => {
       await expect(resolver.initialize(logger)).resolves.not.toThrow();
     });
 
+    it("should throw ConfigurationError on initialization failure", async () => {
+      const importError = new Error("SDK import failed");
+      vi.doMock("@aws-sdk/client-s3", () => {
+        throw importError;
+      });
+
+      try {
+        await resolver.initialize(logger);
+        // Fail if no error is thrown
+        expect.fail("Expected initialize to throw, but it did not.");
+      } catch (error) {
+        expect(error).toBeInstanceOf(ConfigurationError);
+        const configError = error as ConfigurationError;
+        expect(configError.message).toBe("Failed to initialize S3 resolver");
+        expect(configError.code).toBe("CONFIG_S3_INIT_ERROR");
+      }
+
+      // Check that the logger was called with an error payload
+      expect(logger.error).toHaveBeenCalledWith(
+        expect.objectContaining({ error: expect.any(Error) }),
+        "Failed to initialize S3 resolver",
+      );
+    });
+
     it("should have correct protocol", () => {
       expect(resolver.protocol).toBe("s3");
     });
@@ -282,6 +306,24 @@ describe("S3Resolver", () => {
         ContentType: "text/plain",
         // ContentLength and NonExistent should be omitted
       });
+    });
+
+    it("should handle errors during metadata resolution", async () => {
+      const metadataError = new Error("Metadata fetch failed");
+      mockS3.mockSend.mockRejectedValue(metadataError);
+
+      await expect(
+        resolver.resolve("s3://bucket/file.json", { metadata: true }, logger),
+      ).rejects.toThrow(ConfigurationError);
+
+      expect(logger.error).toHaveBeenCalledWith(
+        expect.objectContaining({
+          error: expect.objectContaining({
+            cause: metadataError,
+          }),
+        }),
+        "Failed to resolve S3 object metadata",
+      );
     });
   });
 
