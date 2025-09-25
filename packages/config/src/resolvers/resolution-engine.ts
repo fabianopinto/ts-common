@@ -9,6 +9,14 @@
 import type { Logger } from "@t68/logger";
 
 import type { ConfigValue } from "../types.js";
+
+/**
+ * @internal
+ * A wrapper to store errors in the cache without causing unhandled promise rejections.
+ */
+class ErrorWrapper {
+  constructor(public readonly error: unknown) {}
+}
 import {
   type BatchResolutionRequest,
   type ConfigResolver,
@@ -255,9 +263,13 @@ export class ResolutionEngine {
     } catch (error) {
       this.logger.error({ error, protocol, count: requests.length }, "Batch resolution failed");
 
-      // Store error for all requests in the batch
+      // Store error for all requests in the batch, wrapped to avoid unhandled rejections
+      const wrappedError = new ErrorWrapper(error);
       for (const request of requests) {
-        context.cache.set(request.reference, Promise.reject(error));
+        context.cache.set(
+          request.reference,
+          Promise.resolve(wrappedError) as unknown as Promise<ConfigValue>,
+        );
       }
     }
   }
@@ -272,14 +284,15 @@ export class ResolutionEngine {
       // Check cache first (from batch operations)
       const cached = context.cache.get(value);
       if (cached) {
-        try {
-          const result = await cached;
-          this.stats.cacheHits++;
-          return result;
-        } catch (error) {
-          // Cached error, re-throw
-          throw error;
+        const result = await cached;
+
+        // If the cached value is a wrapped error, throw it
+        if (result instanceof ErrorWrapper) {
+          throw result.error;
         }
+
+        this.stats.cacheHits++;
+        return result;
       }
 
       // Fallback to individual resolution

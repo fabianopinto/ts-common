@@ -1905,19 +1905,26 @@ describe("GlobalCache", () => {
       expect(entry?.failureCount).toBe(0);
     });
 
-    it.skip("should update access metadata on retrieval", () => {
+    it("should update access metadata on retrieval", () => {
+      // Use fake timers to make timestamp checks deterministic
+      vi.useFakeTimers();
+
       cache.set("access-test", "value", { protocol: "test", priority: CachePriority.NORMAL });
 
+      // Initial access
+      vi.setSystemTime(new Date("2025-01-01T00:00:00.000Z"));
       const entry1 = cache.get("access-test");
-      const firstAccess = entry1?.lastAccessedAt;
-      const firstCount = entry1?.accessCount;
+      const firstAccess = entry1?.lastAccessedAt!;
+      const firstCount = entry1?.accessCount!;
 
-      // Small delay to ensure timestamp difference
-      setTimeout(() => {
-        const entry2 = cache.get("access-test");
-        expect(entry2?.lastAccessedAt).toBeGreaterThanOrEqual(firstAccess!);
-        expect(entry2?.accessCount).toBeGreaterThan(firstCount!);
-      }, 1);
+      // Advance time and access again
+      vi.setSystemTime(new Date("2025-01-01T00:00:00.010Z"));
+      const entry2 = cache.get("access-test");
+
+      expect(entry2?.lastAccessedAt).toBeGreaterThanOrEqual(firstAccess);
+      expect(entry2?.accessCount).toBeGreaterThan(firstCount);
+
+      vi.useRealTimers();
     });
   });
 
