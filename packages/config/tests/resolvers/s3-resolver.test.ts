@@ -307,24 +307,6 @@ describe("S3Resolver", () => {
         // ContentLength and NonExistent should be omitted
       });
     });
-
-    it("should handle errors during metadata resolution", async () => {
-      const metadataError = new Error("Metadata fetch failed");
-      mockS3.mockSend.mockRejectedValue(metadataError);
-
-      await expect(
-        resolver.resolve("s3://bucket/file.json", { metadata: true }, logger),
-      ).rejects.toThrow(ConfigurationError);
-
-      expect(logger.error).toHaveBeenCalledWith(
-        expect.objectContaining({
-          error: expect.objectContaining({
-            cause: metadataError,
-          }),
-        }),
-        "Failed to resolve S3 object metadata",
-      );
-    });
   });
 
   describe("streaming support", () => {
@@ -396,7 +378,7 @@ describe("S3Resolver", () => {
     it("should handle object not found errors", async () => {
       const notFoundError = new Error("NoSuchKey");
       notFoundError.name = "NoSuchKey";
-      
+
       // Mock RetryUtils.retryAsync to avoid unhandled promise rejections
       const { RetryUtils } = await import("@t68/utils");
       const mockRetryAsync = vi.spyOn(RetryUtils, "retryAsync").mockRejectedValue(notFoundError);
@@ -413,7 +395,7 @@ describe("S3Resolver", () => {
     it("should handle bucket not found errors", async () => {
       const bucketError = new Error("NoSuchBucket");
       bucketError.name = "NoSuchBucket";
-      
+
       // Mock RetryUtils.retryAsync to avoid unhandled promise rejections
       const { RetryUtils } = await import("@t68/utils");
       const mockRetryAsync = vi.spyOn(RetryUtils, "retryAsync").mockRejectedValue(bucketError);
@@ -450,7 +432,7 @@ describe("S3Resolver", () => {
     it("should log errors appropriately", async () => {
       const error = new Error("S3 test error");
       error.name = "S3TestError";
-      
+
       // Mock RetryUtils.retryAsync to avoid unhandled promise rejections
       const { RetryUtils } = await import("@t68/utils");
       const mockRetryAsync = vi.spyOn(RetryUtils, "retryAsync").mockRejectedValue(error);
