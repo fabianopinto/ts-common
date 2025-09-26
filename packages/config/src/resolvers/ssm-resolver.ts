@@ -126,7 +126,7 @@ export class SSMResolver implements ConfigResolver<SSMResolverOptions> {
   public validateReference(reference: string): boolean {
     // Must match ssm:/ or ssm-secure:/ followed by a non-empty parameter name
     const match = reference.match(/^ssm(-secure)?:\/(.+)$/);
-    return match !== null && match[2].length > 0 && match[2] !== "/";
+    return match !== null && match[2] !== undefined && match[2].length > 0 && match[2] !== "/";
   }
 
   /**

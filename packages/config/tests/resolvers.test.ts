@@ -7,16 +7,37 @@
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { ConfigurationError } from "@t68/errors";
+import { RetryUtils } from "@t68/utils";
 
 import { resolveSSM, resolveS3, isExternalRef } from "../src/resolvers.js";
 import { createTestLogger } from "./__fixtures__/test-helpers.js";
 
 describe("Legacy Resolvers", () => {
   let logger: ReturnType<typeof createTestLogger>;
+  let mockRetryAsync: ReturnType<typeof vi.spyOn>;
+
+  /**
+   * Helper function to configure the centralized RetryUtils mock.
+   * By default, it passes through to the actual function call.
+   */
+  const configureRetryMock = (behavior: "passthrough" | "reject", error?: Error) => {
+    if (behavior === "reject" && error) {
+      mockRetryAsync.mockRejectedValue(error);
+    } else {
+      // Default pass-through behavior
+      mockRetryAsync.mockImplementation(async (fn: () => Promise<any>) => {
+        return await fn();
+      });
+    }
+  };
 
   beforeEach(() => {
     logger = createTestLogger();
     vi.clearAllMocks();
+
+    // Create centralized RetryUtils mock - defaults to pass-through behavior
+    mockRetryAsync = vi.spyOn(RetryUtils, "retryAsync");
+    configureRetryMock("passthrough");
   });
 
   describe("resolveSSM", () => {
@@ -113,16 +134,11 @@ describe("Legacy Resolvers", () => {
 
     it("should handle AWS SDK errors", async () => {
       const awsError = new Error("AWS Error");
-      
-      // Mock RetryUtils.retryAsync to avoid retry logging and unhandled promise rejections
-      const { RetryUtils } = await import("@t68/utils");
-      const mockRetryAsync = vi.spyOn(RetryUtils, "retryAsync").mockRejectedValue(awsError);
-      
-      try {
-        await expect(resolveSSM("ssm://error-param", logger)).rejects.toThrow("AWS Error");
-      } finally {
-        mockRetryAsync.mockRestore();
-      }
+
+      // Configure centralized mock to reject with error
+      configureRetryMock("reject", awsError);
+
+      await expect(resolveSSM("ssm://error-param", logger)).rejects.toThrow("AWS Error");
     });
 
     it("should log debug information when enabled", async () => {
@@ -274,16 +290,11 @@ describe("Legacy Resolvers", () => {
 
     it("should handle AWS SDK errors", async () => {
       const s3Error = new Error("S3 Error");
-      
-      // Mock RetryUtils.retryAsync to avoid retry logging and unhandled promise rejections
-      const { RetryUtils } = await import("@t68/utils");
-      const mockRetryAsync = vi.spyOn(RetryUtils, "retryAsync").mockRejectedValue(s3Error);
-      
-      try {
-        await expect(resolveS3("s3://my-bucket/error.txt", logger)).rejects.toThrow("S3 Error");
-      } finally {
-        mockRetryAsync.mockRestore();
-      }
+
+      // Configure centralized mock to reject with error
+      configureRetryMock("reject", s3Error);
+
+      await expect(resolveS3("s3://my-bucket/error.txt", logger)).rejects.toThrow("S3 Error");
     });
 
     it("should log debug information when enabled", async () => {

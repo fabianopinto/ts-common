@@ -5,11 +5,10 @@
  * and edge cases for the resolver registry implementation.
  */
 
-import { describe, it, expect, beforeEach, vi } from "vitest";
-import { ConfigurationError } from "@t68/errors";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { DefaultResolverRegistry } from "../../src/resolvers/registry.js";
 import type { ConfigResolver } from "../../src/resolvers/base.js";
+import { DefaultResolverRegistry } from "../../src/resolvers/registry.js";
 import { createTestLogger } from "../__fixtures__/test-helpers.js";
 
 describe("DefaultResolverRegistry", () => {

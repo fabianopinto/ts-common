@@ -9,6 +9,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { Readable } from "node:stream";
 import { ConfigurationError } from "@t68/errors";
+import { RetryUtils } from "@t68/utils";
 
 import { S3Resolver } from "../../src/resolvers/s3-resolver.js";
 import {
@@ -22,6 +23,22 @@ describe("S3Resolver", () => {
   let resolver: S3Resolver;
   let logger: ReturnType<typeof createTestLogger>;
   let mockS3: ReturnType<typeof createMockS3Client>;
+  let mockRetryAsync: ReturnType<typeof vi.spyOn>;
+
+  /**
+   * Helper function to configure the centralized RetryUtils mock.
+   * By default, it passes through to the actual function call.
+   */
+  const configureRetryMock = (behavior: "passthrough" | "reject", error?: Error) => {
+    if (behavior === "reject" && error) {
+      mockRetryAsync.mockRejectedValue(error);
+    } else {
+      // Default pass-through behavior
+      mockRetryAsync.mockImplementation(async (fn: () => Promise<any>) => {
+        return await fn();
+      });
+    }
+  };
 
   beforeEach(async () => {
     resetTestEnvironment();
@@ -31,9 +48,14 @@ describe("S3Resolver", () => {
     // Mock AWS SDK
     mockS3 = createMockS3Client();
     vi.doMock("@aws-sdk/client-s3", () => mockS3);
+
+    // Create centralized RetryUtils mock - defaults to pass-through behavior
+    mockRetryAsync = vi.spyOn(RetryUtils, "retryAsync");
+    configureRetryMock("passthrough");
   });
 
   afterEach(() => {
+    mockRetryAsync.mockRestore();
     vi.restoreAllMocks();
   });
 
@@ -226,6 +248,36 @@ describe("S3Resolver", () => {
       await resolver.initialize(logger);
     });
 
+    it("should handle and log errors when metadata resolution fails", async () => {
+      const bucket = "test-bucket";
+      const key = "test-key";
+      const error = new Error("S3 metadata error");
+
+      // Mock the S3 client to throw an error
+      mockS3.mockSend.mockRejectedValueOnce(error);
+
+      // Test the error handling
+      await expect(
+        (resolver as any).resolveMetadata(bucket, key, { metadata: true }, logger),
+      ).rejects.toThrow(ConfigurationError);
+
+      // Verify the error was logged
+      expect(logger.error).toHaveBeenCalledWith(
+        { error, bucket, key },
+        "Failed to resolve S3 object metadata",
+      );
+
+      // Verify the error details
+      const thrownError = await (resolver as any)
+        .resolveMetadata(bucket, key, { metadata: true }, logger)
+        .catch((e) => e);
+
+      expect(thrownError).toBeInstanceOf(ConfigurationError);
+      expect(thrownError.code).toBe("CONFIG_S3_METADATA_ERROR");
+      expect(thrownError.context).toEqual({ bucket, key });
+      expect(thrownError.isOperational).toBe(true);
+    });
+
     it("should retrieve metadata when requested", async () => {
       const metadata = {
         ContentType: "application/json",
@@ -379,34 +431,24 @@ describe("S3Resolver", () => {
       const notFoundError = new Error("NoSuchKey");
       notFoundError.name = "NoSuchKey";
 
-      // Mock RetryUtils.retryAsync to avoid unhandled promise rejections
-      const { RetryUtils } = await import("@t68/utils");
-      const mockRetryAsync = vi.spyOn(RetryUtils, "retryAsync").mockRejectedValue(notFoundError);
+      // Configure centralized mock to reject with error
+      configureRetryMock("reject", notFoundError);
 
-      try {
-        await expect(resolver.resolve("s3://bucket/missing.json", {}, logger)).rejects.toThrow(
-          ConfigurationError,
-        );
-      } finally {
-        mockRetryAsync.mockRestore();
-      }
+      await expect(resolver.resolve("s3://bucket/missing.json", {}, logger)).rejects.toThrow(
+        ConfigurationError,
+      );
     });
 
     it("should handle bucket not found errors", async () => {
       const bucketError = new Error("NoSuchBucket");
       bucketError.name = "NoSuchBucket";
 
-      // Mock RetryUtils.retryAsync to avoid unhandled promise rejections
-      const { RetryUtils } = await import("@t68/utils");
-      const mockRetryAsync = vi.spyOn(RetryUtils, "retryAsync").mockRejectedValue(bucketError);
+      // Configure centralized mock to reject with error
+      configureRetryMock("reject", bucketError);
 
-      try {
-        await expect(resolver.resolve("s3://missing-bucket/file.txt", {}, logger)).rejects.toThrow(
-          ConfigurationError,
-        );
-      } finally {
-        mockRetryAsync.mockRestore();
-      }
+      await expect(resolver.resolve("s3://missing-bucket/file.txt", {}, logger)).rejects.toThrow(
+        ConfigurationError,
+      );
     });
 
     it("should handle empty body responses", async () => {
@@ -433,26 +475,21 @@ describe("S3Resolver", () => {
       const error = new Error("S3 test error");
       error.name = "S3TestError";
 
-      // Mock RetryUtils.retryAsync to avoid unhandled promise rejections
-      const { RetryUtils } = await import("@t68/utils");
-      const mockRetryAsync = vi.spyOn(RetryUtils, "retryAsync").mockRejectedValue(error);
+      // Configure centralized mock to reject with error
+      configureRetryMock("reject", error);
 
       try {
-        try {
-          await resolver.resolve("s3://bucket/error.txt", {}, logger);
-        } catch (e) {
-          // Expected to throw
-        }
-
-        expect(logger.error).toHaveBeenCalledWith(
-          expect.objectContaining({
-            reference: "s3://bucket/error.txt",
-          }),
-          "Failed to resolve S3 object",
-        );
-      } finally {
-        mockRetryAsync.mockRestore();
+        await resolver.resolve("s3://bucket/error.txt", {}, logger);
+      } catch (e) {
+        // Expected to throw
       }
+
+      expect(logger.error).toHaveBeenCalledWith(
+        expect.objectContaining({
+          reference: "s3://bucket/error.txt",
+        }),
+        "Failed to resolve S3 object",
+      );
     });
   });
 

@@ -7,8 +7,6 @@
  * Designed for production resilience and optimal performance.
  */
 
-import type { Logger } from "@t68/logger";
-
 /**
  * Cache entry priority levels for intelligent eviction.
  */

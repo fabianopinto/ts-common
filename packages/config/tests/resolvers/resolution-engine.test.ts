@@ -94,6 +94,19 @@ describe("ResolutionEngine", () => {
 
       expect(result).toBe("unknown://reference"); // Unchanged
     });
+
+    it("should default external to true when undefined", async () => {
+      const result = await engine.resolve("ssm://test-param", {
+        resolvers: { ssm: true },
+        // external is undefined, should default to true
+      });
+
+      expect(result).toBe("resolved-ssm-value");
+
+      const stats = engine.getStats();
+      expect(stats.totalReferences).toBe(1);
+      expect(stats.individualResolutions).toBe(1);
+    });
   });
 
   describe("batch resolution", () => {
@@ -146,7 +159,7 @@ describe("ResolutionEngine", () => {
 
     it("should handle batch resolution errors", async () => {
       const mockResolver = createMockResolver("batch-error", true);
-      
+
       // Use async implementation to avoid unhandled rejection
       mockResolver.resolveBatch.mockImplementation(async () => {
         throw new Error("Batch resolution failed");
@@ -381,6 +394,154 @@ describe("ResolutionEngine", () => {
       );
     });
 
+    it("should handle individual errors in batch results", async () => {
+      const mockResolver = createMockResolver("batch-mixed", true);
+
+      // Mock batch resolver to return mixed success/error results
+      mockResolver.resolveBatch.mockImplementation(async (requests) => {
+        return requests.map((req, index) => {
+          if (index === 0) {
+            return {
+              reference: req.reference,
+              value: "batch-mixed-resolved-param1",
+            };
+          } else {
+            return {
+              reference: req.reference,
+              error: new Error(`Failed to resolve ${req.reference}`),
+            };
+          }
+        });
+      });
+
+      registry.getResolver = vi.fn().mockReturnValue(mockResolver);
+
+      const config = {
+        param1: "batch-mixed://param1", // This will succeed
+        param2: "batch-mixed://param2", // This will have an error
+      };
+
+      // The resolution should fail when trying to access the cached error
+      await expect(
+        engine.resolve(config, {
+          external: true,
+          resolvers: { "batch-mixed": true },
+        }),
+      ).rejects.toThrow("Failed to resolve batch-mixed://param2");
+
+      const stats = engine.getStats();
+      expect(stats.batchOperations).toBe(1); // Batch operation succeeded
+      expect(stats.totalReferences).toBe(2); // Both references were processed
+    });
+
+    it("should skip batch protocols with zero requests", async () => {
+      const mockResolver = createMockResolver("empty-batch", true);
+
+      // Track if resolveBatch was called
+      const resolveBatchSpy = vi.spyOn(mockResolver, "resolveBatch");
+
+      registry.getResolver = vi.fn().mockImplementation((protocol) => {
+        if (protocol === "empty-batch") return mockResolver;
+        return null; // No resolver for other protocols
+      });
+
+      // Mock the executeBatchOperations method to simulate empty requests
+      const originalExecuteBatchOperations = (engine as any).executeBatchOperations;
+      (engine as any).executeBatchOperations = vi.fn().mockImplementation(async (context) => {
+        // Add a protocol with empty requests array to simulate the scenario
+        context.batchRequests.set("empty-batch", []);
+
+        // Call the original method which should skip the empty protocol
+        return originalExecuteBatchOperations.call(engine, context);
+      });
+
+      const result = await engine.resolve("plain-value", {
+        external: true,
+        resolvers: { "empty-batch": true },
+      });
+
+      // Should return unchanged since it's not an external reference
+      expect(result).toBe("plain-value");
+
+      // resolveBatch should not have been called due to zero requests
+      expect(resolveBatchSpy).not.toHaveBeenCalled();
+
+      const stats = engine.getStats();
+      expect(stats.batchOperations).toBe(0); // No batch operations executed
+
+      // Restore original method
+      (engine as any).executeBatchOperations = originalExecuteBatchOperations;
+    });
+
+    it("should skip resolvers that don't support batch operations", async () => {
+      // Create a resolver that doesn't support batch operations
+      const nonBatchResolver = createMockResolver("non-batch", false);
+
+      // Track if resolveBatch was called (it shouldn't exist)
+      expect(nonBatchResolver.resolveBatch).toBeUndefined();
+
+      registry.getResolver = vi.fn().mockImplementation((protocol) => {
+        if (protocol === "non-batch") return nonBatchResolver;
+        return null;
+      });
+
+      // Mock executeBatchOperations to add requests for non-batch protocol
+      const originalExecuteBatchOperations = (engine as any).executeBatchOperations;
+      (engine as any).executeBatchOperations = vi.fn().mockImplementation(async (context) => {
+        // Add requests for a protocol that doesn't support batching
+        context.batchRequests.set("non-batch", [
+          { reference: "non-batch://param1", options: {} },
+          { reference: "non-batch://param2", options: {} },
+        ]);
+
+        // Call the original method which should skip the non-batch protocol
+        return originalExecuteBatchOperations.call(engine, context);
+      });
+
+      const result = await engine.resolve("plain-value", {
+        external: true,
+        resolvers: { "non-batch": true },
+      });
+
+      expect(result).toBe("plain-value");
+
+      const stats = engine.getStats();
+      expect(stats.batchOperations).toBe(0); // No batch operations executed
+
+      // Restore original method
+      (engine as any).executeBatchOperations = originalExecuteBatchOperations;
+    });
+
+    it("should skip protocols with no resolver", async () => {
+      registry.getResolver = vi.fn().mockReturnValue(null); // No resolver found
+
+      // Mock executeBatchOperations to add requests for unknown protocol
+      const originalExecuteBatchOperations = (engine as any).executeBatchOperations;
+      (engine as any).executeBatchOperations = vi.fn().mockImplementation(async (context) => {
+        // Add requests for a protocol with no resolver
+        context.batchRequests.set("unknown", [
+          { reference: "unknown://param1", options: {} },
+          { reference: "unknown://param2", options: {} },
+        ]);
+
+        // Call the original method which should skip the unknown protocol
+        return originalExecuteBatchOperations.call(engine, context);
+      });
+
+      const result = await engine.resolve("plain-value", {
+        external: true,
+        resolvers: { unknown: true },
+      });
+
+      expect(result).toBe("plain-value");
+
+      const stats = engine.getStats();
+      expect(stats.batchOperations).toBe(0); // No batch operations executed
+
+      // Restore original method
+      (engine as any).executeBatchOperations = originalExecuteBatchOperations;
+    });
+
     it("should handle general resolution engine errors", async () => {
       // Force an error by making registry throw
       registry.getResolver = vi.fn().mockImplementation(() => {
@@ -504,6 +665,33 @@ describe("ResolutionEngine", () => {
         malformed2: "protocol-only:", // Unchanged
         valid: "resolved-ssm-value",
       });
+    });
+
+    it("should handle protocol extraction edge case", async () => {
+      // Create a custom resolver that bypasses isExternalReference check
+      const mockResolver = createMockResolver("test", false);
+      registry.getResolver = vi.fn().mockReturnValue(mockResolver);
+
+      // Directly test the collectReferences method by mocking isExternalReference
+      const baseModule = await import("../../src/resolvers/base.js");
+      const originalIsExternalReference = baseModule.isExternalReference;
+
+      // Mock isExternalReference to return true for our test case
+      vi.spyOn(baseModule, "isExternalReference").mockReturnValue(true);
+
+      // Mock extractProtocol to return null when called from collectReferences
+      vi.spyOn(baseModule, "extractProtocol").mockReturnValue(null);
+
+      const result = await engine.resolve("edge-case-reference", {
+        external: true,
+        resolvers: { test: true },
+      });
+
+      // Should return unchanged since protocol extraction returned null
+      expect(result).toBe("edge-case-reference");
+
+      // Restore original functions
+      vi.restoreAllMocks();
     });
 
     it("should handle large nested structures", async () => {
