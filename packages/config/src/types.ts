@@ -92,21 +92,23 @@ export interface GetValueOptions {
  */
 export interface ConfigurationProvider {
   /**
-   * Returns `true` if the given dot-notation path exists (without resolving
+   * Returns `true` if the given path exists (without resolving
    * external references).
    *
-   * @param path - Dot-notation path, e.g. `"service.endpoint"`
+   * @param path - Path as dot-notation string or array of path segments,
+   *   e.g. `"service.endpoint"` or `["service", "endpoint"]`
    * @returns `true` when the path resolves to a value in the configuration
    */
-  has(path: string): boolean;
+  has(path: string | string[]): boolean;
   /**
-   * Retrieve a value by dot-notation path. Returns `undefined` if not found.
+   * Retrieve a value by path. Returns `undefined` if not found.
    * External references may be resolved depending on implementation.
    *
    * @template T - Expected value type at the provided path
-   * @param path - Dot-notation path, e.g. `"service.endpoint"`
+   * @param path - Path as dot-notation string or array of path segments,
+   *   e.g. `"service.endpoint"` or `["service", "endpoint"]`
    * @param options - Optional options for value retrieval
    * @returns The resolved value or `undefined` when not present
    */
-  getValue<T = unknown>(path: string, options?: GetValueOptions): Promise<T | undefined>;
+  getValue<T = unknown>(path: string | string[], options?: GetValueOptions): Promise<T | undefined>;
 }

@@ -15,34 +15,44 @@ import type { ConfigurationProvider, GetValueOptions } from "./types.js";
  */
 export class DefaultConfigurationProvider implements ConfigurationProvider {
   /**
-   * Check whether a dot-notation path exists in the configuration.
+   * Check whether a path exists in the configuration.
    *
-   * @param path - Dot-notation path, e.g. `"feature.flags.beta"`
+   * @param path - Path as dot-notation string or array of path segments,
+   *   e.g. `"feature.flags.beta"` or `["feature", "flags", "beta"]`
    * @returns `true` when the path resolves to a value in the configuration
    */
-  public has(path: string): boolean {
-    return Configuration.getInstance().has(path);
+  public has(path: string | string[]): boolean {
+    const pathStr = Array.isArray(path) ? path.join(".") : path;
+    return Configuration.getInstance().has(pathStr);
   }
 
   /**
-   * Get a configuration value by dot-notation path.
+   * Get a configuration value by path.
    *
    * @template T - Expected value type
-   * @param path - Dot-notation path, e.g. `"service.endpoint"`
+   * @param path - Path as dot-notation string or array of path segments,
+   *   e.g. `"service.endpoint"` or `["service", "endpoint"]`
    * @param options - Optional options for value retrieval
    * @returns The resolved value or `undefined` when not present
    *
    * @example
    * ```typescript
-   * const value = await DefaultConfigurationProvider
+   * // Using dot-notation string
+   * const value1 = await DefaultConfigurationProvider
    *   .getInstance()
    *   .getValue("service.endpoint");
+   *
+   * // Using array of path segments
+   * const value2 = await DefaultConfigurationProvider
+   *   .getInstance()
+   *   .getValue(["service", "endpoint"]);
    * ```
    */
   public async getValue<T = unknown>(
-    path: string,
+    path: string | string[],
     options?: GetValueOptions,
   ): Promise<T | undefined> {
-    return Configuration.getInstance().getValue<T>(path, options);
+    const pathStr = Array.isArray(path) ? path.join(".") : path;
+    return Configuration.getInstance().getValue<T>(pathStr, options);
   }
 }

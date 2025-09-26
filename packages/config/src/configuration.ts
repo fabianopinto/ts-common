@@ -126,18 +126,20 @@ export class Configuration implements ConfigurationProvider {
   }
 
   /**
-   * Check whether a dot-notation path exists in the configuration (without
+   * Check whether a path exists in the configuration (without
    * resolving external refs).
    *
-   * @param path - Dot-notation path, e.g. `"database.primary.host"`
+   * @param path - Path as dot-notation string or array of path segments,
+   *   e.g. `"database.primary.host"` or `["database", "primary", "host"]`
    * @returns `true` when the path resolves to a value in the configuration
    */
-  public has(path: string): boolean {
-    return ObjectUtils.deepGet(this.data, path) !== undefined;
+  public has(path: string | string[]): boolean {
+    const pathStr = Array.isArray(path) ? path.join(".") : path;
+    return ObjectUtils.deepGet(this.data, pathStr) !== undefined;
   }
 
   /**
-   * Get a configuration value by dot-notation path.
+   * Get a configuration value by path.
    * This will automatically resolve external references (`ssm://`, `s3://`) when
    * enabled.
    *
@@ -145,7 +147,8 @@ export class Configuration implements ConfigurationProvider {
    * configured in `ConfigurationOptions.resolve`.
    *
    * @template T - Expected return type for the value
-   * @param path - Dot-notation path, e.g. `"service.endpoint"`
+   * @param path - Path as dot-notation string or array of path segments,
+   *   e.g. `"service.endpoint"` or `["service", "endpoint"]`
    * @param options - Optional options for value retrieval
    * @returns The resolved value or `undefined` when not present
    *
@@ -153,6 +156,9 @@ export class Configuration implements ConfigurationProvider {
    * ```typescript
    * // Default behavior (external resolution on)
    * const v1 = await Configuration.getInstance().getValue<string>("service.endpoint");
+   *
+   * // Using array path
+   * const v2 = await Configuration.getInstance().getValue<string>(["service", "endpoint"]);
    *
    * // Disable resolution for this call only
    * const raw = await Configuration.getInstance().getValue<string>(
@@ -174,10 +180,11 @@ export class Configuration implements ConfigurationProvider {
    * ```
    */
   public async getValue<T = unknown>(
-    path: string,
+    path: string | string[],
     options?: GetValueOptions,
   ): Promise<T | undefined> {
-    const value = ObjectUtils.deepGet<ConfigValue | undefined>(this.data, path);
+    const pathStr = Array.isArray(path) ? path.join(".") : path;
+    const value = ObjectUtils.deepGet<ConfigValue | undefined>(this.data, pathStr);
     if (value === undefined) return undefined;
 
     // Compute effective resolution options for this call
@@ -203,10 +210,20 @@ export class Configuration implements ConfigurationProvider {
    * This is a shorthand for `Configuration.getValue` with `{ resolve: false }`.
    *
    * @template T - Expected return type for the value
-   * @param path - Dot-notation path, e.g. `"service.endpoint"`
+   * @param path - Path as dot-notation string or array of path segments,
+   *   e.g. `"service.endpoint"` or `["service", "endpoint"]`
    * @returns The raw value or `undefined` when not present
+   *
+   * @example
+   * ```typescript
+   * // Using dot-notation string
+   * const value1 = await Configuration.getInstance().getRaw<string>("service.endpoint");
+   *
+   * // Using array of path segments
+   * const value2 = await Configuration.getInstance().getRaw<string>(["service", "endpoint"]);
+   * ```
    */
-  public async getRaw<T = unknown>(path: string): Promise<T | undefined> {
+  public async getRaw<T = unknown>(path: string | string[]): Promise<T | undefined> {
     return this.getValue<T>(path, { resolve: false });
   }
 
